@@ -3,7 +3,7 @@
 -- (BN6's effect object #0x22, `sub_80E2CA4`; BN5's #0x22;
 -- docs/engine/dimming-chip-effects.md §3): each game makes its own
 -- (`controller.make`: its kind, its hand's, the flash and the sound of the
--- panels taken back). The usual dimming phases (@common/dimming), with an
+-- panels taken back). The usual dimming phases (@exelib/dimming), with an
 -- effect that takes back the
 -- panels the other side stole from the user's (they return after the
 -- dimming) and, every 31 ticks, drops a hand (./hand) on every panel an

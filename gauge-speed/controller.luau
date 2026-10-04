@@ -2,7 +2,7 @@
 -- SloGauge's and FstGauge's dimming controller, as BN5 and BN6 share it
 -- (BN6's effect object #0x1C, `sub_80E23A4`; BN5's #0x1C): each game makes
 -- its own (`gauge_speed.make`: its kind and its warning's sound). The usual
--- dimming phases (@common/dimming),
+-- dimming phases (@exelib/dimming),
 -- with an effect (`sub_80E23E8`) that makes the custom gauge fill slowly
 -- or fast for the rest of the round, and sets the user's side's slow or
 -- fast gauge timer (and, with per-player gauges outside a link battle,

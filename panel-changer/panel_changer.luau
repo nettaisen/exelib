@@ -7,9 +7,9 @@
 -- condition), shows them as the new type while its timer runs, then
 -- changes them, and lets its holder go on. What changes is a record
 -- (`panel_changer.change { ... }`, a row of the original's `byte_80E272C`),
--- defined by its users: the panel chips (@common/panel-chips: PnlRetrn,
+-- defined by its users: the panel chips (@exelib/panel-chips: PnlRetrn,
 -- HolyPanl, Snctuary, ComingRd, GoingRd) and AntiRecv's counterattack
--- (@common/antirecv/controller).
+-- (@exelib/antirecv/controller).
 
 local panels = require("../panels")
 

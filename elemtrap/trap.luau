@@ -12,7 +12,7 @@
 --
 -- Each game makes its kind with `trap.make_kind(id, look)` (what it
 -- watches, collides as, sparkles and strikes with) and sets it with
--- `trap.spawn` (the trap chips' controller, @common/traps/controller: BN6's
+-- `trap.spawn` (the trap chips' controller, @exelib/traps/controller: BN6's
 -- ElemTrap, BN5's AntiFire to AntiWood).
 
 local panels = require("../panels")

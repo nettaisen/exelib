@@ -2,8 +2,8 @@
 -- AreaGrab's and PanelGrab's dimming controller, as BN5 and BN6 share it
 -- (BN6's effect object #3, `sub_80E0710`; BN5's #3): each game makes its
 -- own (`grab.make`: its kind and its grab shot's). The usual dimming
--- phases (@common/dimming), with an effect that drops grab shots
--- (@common/grab/shot) on the first column in front
+-- phases (@exelib/dimming), with an effect that drops grab shots
+-- (@exelib/grab/shot) on the first column in front
 -- not wholly the user's side's (AreaGrab) or on the first panel past the
 -- user's side's front in the user's row (PanelGrab), then waits 61 ticks.
 -- See docs/engine/chips.md §3.6.8. Each chip's `dimming` hook is the made

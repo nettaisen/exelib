@@ -5,7 +5,7 @@
 -- field-object class and its entrance); between the games, their rock, its place sound and where the controller
 -- spawns (a maker taking a game's look).
 
-local dimming_chips = require("@common/dimming")
+local dimming_chips = require("@exelib/dimming")
 
 local cube = {}
 

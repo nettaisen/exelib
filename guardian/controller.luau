@@ -5,7 +5,7 @@
 -- ground, striking with the damage plus the bonus, and waits 30 ticks. Each game makes its own
 -- (`controller.make`) with its statue's spawn; the chip's `dimming` hook is the made controller's `hook`.
 
-local dimming_chips = require("@common/dimming")
+local dimming_chips = require("@exelib/dimming")
 
 local controller = {}
 
@@ -17,7 +17,7 @@ export type State = {
 export type Spec = {
     -- The kind's id.
     id: string,
-    -- The game's statue's spawn (@common/guardian/statue's).
+    -- The game's statue's spawn (@exelib/guardian/statue's).
     statue: (owner: Object?, x: number, y: number, damage: number, pos: Vec3) -> Object?,
 }
 
