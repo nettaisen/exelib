@@ -1,7 +1,7 @@
 --!strict
 -- The TimeBom chips' dimming controller, as BN5 and BN6 share it (BN6's
 -- effect object #0x27, `sub_80E31D8`): the usual dimming phases
--- (@common/dimming), with an effect that sets the chip's countdown bomb
+-- (@exelib/dimming), with an effect that sets the chip's countdown bomb
 -- (./countdown) where the game places it (BN6's: the first free enemy panel
 -- in front of the user), and waits 31 ticks.
 --

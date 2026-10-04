@@ -4,7 +4,7 @@
 -- panel in front of the user if it is free solid ground, and waits 31 ticks. A maker taking a game's fan and where
 -- the controller spawns.
 
-local dimming_chips = require("@common/dimming")
+local dimming_chips = require("@exelib/dimming")
 
 local controller = {}
 

@@ -19,7 +19,7 @@
 --   each spin, it draws RNG2 for a panel marker's style (9 or 11) and sets
 --   that marker (battle flag 0x40's); its spins count down on Timer 2.
 
-local regions = require("@common/regions")
+local regions = require("@exelib/regions")
 
 local top = {}
 

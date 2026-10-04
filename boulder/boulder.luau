@@ -22,7 +22,7 @@ export type Look = {
     sprite: SpriteAsset,
     -- What it is taken for: a field object, with the look something that takes its place shows (DustMan's junk).
     identity: Identity,
-    -- The game's debris kind (@common/rock/debris), and the effects it leaves: a puff when removed, a splash of
+    -- The game's debris kind (@exelib/rock/debris), and the effects it leaves: a puff when removed, a splash of
     -- dust when broken.
     debris: Kind,
     effects: { puff: Effect, splash: Effect },

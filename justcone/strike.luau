@@ -10,7 +10,7 @@
 -- element (BN6's Break, the secondary element 0x10; BN5's none: 0x080DBF66), which BN5's landing hits take too
 -- (0x080DBF7C; BN6's are of no element).
 
-local regions = require("@common/regions")
+local regions = require("@exelib/regions")
 
 local strike = {}
 

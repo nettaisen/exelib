@@ -2,7 +2,7 @@
 -- Invisibl's dimming controller, as BN5 and BN6 share it (BN6's effect
 -- object #0x5D, `sub_80E74D4`, which BN6's second WhiCapsl uses too; BN5's
 -- #0x5D): each game makes its own (`invisible.make`: its kind and sound).
--- The usual dimming phases (@common/dimming),
+-- The usual dimming phases (@exelib/dimming),
 -- with an effect that turns the user invisible, flashing for the chip's
 -- time (`sub_8010474`), then waits 31 ticks. See docs/engine/chips.md
 -- §3.6.10.

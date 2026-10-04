@@ -4,14 +4,14 @@
 -- dimming phases (its telop names Punisher, chip 0x175 in both games), with an effect that tells the statue to strike
 -- and waits 60 ticks. A maker taking a game's kind id and telop.
 
-local dimming_chips = require("@common/dimming")
+local dimming_chips = require("@exelib/dimming")
 
 local strike = {}
 
 -- A game's strike: its kind's id and the chip its telop names (Punisher).
 export type StrikeLook = { id: string, punisher: Chip }
 
--- The strike made for a game (what @common/guardian/statue's look takes as its `strike`).
+-- The strike made for a game (what @exelib/guardian/statue's look takes as its `strike`).
 export type Strike = {
     kind: Kind,
     -- `sub_80E6878`: the strike's dimming controller for `statue`.

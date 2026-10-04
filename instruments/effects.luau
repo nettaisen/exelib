@@ -4,7 +4,7 @@
 -- element's damage 0 that gives a status. A game gives its status and
 -- collision types (BN6's rules/status and rules/collision; BN5's own).
 
-local regions = require("@common/regions")
+local regions = require("@exelib/regions")
 
 local effects = {}
 

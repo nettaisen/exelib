@@ -15,8 +15,8 @@
 -- An obstacle: its update runs the obstacle framework's steps (the `obstacle` service) around its own actions.
 
 local debris = require("./debris")
-local element = require("@common/element")
-local regions = require("@common/regions")
+local element = require("@exelib/element")
+local regions = require("@exelib/regions")
 
 local rock = {}
 
@@ -30,7 +30,7 @@ export type Look = {
     id: string,
     -- The cubes' sheet (animation 0 a cube rising; the rows' are the cubes standing).
     sprite: SpriteAsset,
-    -- The game's debris kind (@common/rock/debris), and the effects it leaves: a puff when removed, dust when
+    -- The game's debris kind (@exelib/rock/debris), and the effects it leaves: a puff when removed, dust when
     -- broken.
     debris: Kind,
     effects: { puff: Effect, dust: Effect },
