@@ -9,7 +9,7 @@
 -- its look (`lance.make_kind`: its sprite, sound, and its hit by Param1;
 -- BN5's DrkLance).
 
-local regions = require("../regions")
+local regions = require("./regions")
 
 local lance = {}
 

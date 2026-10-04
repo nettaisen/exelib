@@ -12,7 +12,7 @@
 -- defines; how it animates is the user's too (`attachment.attach(kind,
 -- owner, look, slot, { anim = ... })`).
 
-local slot = require("../slot")
+local slot = require("./slot")
 
 local attachment = {}
 

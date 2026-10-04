@@ -12,7 +12,7 @@
 --
 -- An obstacle: its update runs the obstacle framework's steps (the `obstacle` service) around its own actions.
 
-local debris = require("../rock/debris")
+local debris = require("./rock/debris")
 
 local boulder = {}
 

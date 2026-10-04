@@ -14,7 +14,7 @@
 --
 -- An obstacle: its update runs the obstacle framework's steps (the `obstacle` service) around its own actions.
 
-local debris = require("./debris")
+local debris = require("@self/debris")
 local element = require("@exelib/element")
 local regions = require("@exelib/regions")
 
