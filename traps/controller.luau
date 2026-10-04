@@ -3,7 +3,7 @@
 -- effect object #0x2A, `sub_80E34C0`; BN5's #0x2A): AntiNavi, AntiDmg,
 -- AntiSwrd, AntiRecv, ElemTrap and BodyGrd (BN5's anti chips too). Each game
 -- makes its own kind (`traps.make_kind`). The usual dimming phases
--- (@common/dimming), with the telop hidden,
+-- (@exelib/dimming), with the telop hidden,
 -- and an effect that makes the chip its user's side's defensive chip (the
 -- linked record: the damage intake, a navi chip's arrival or a recovery
 -- springs the trap), with its object for the chips that have one

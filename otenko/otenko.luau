@@ -15,8 +15,8 @@
 -- silent, whatever removed it), and whether its blessing goes to the side's special bonus with each side keeping its
 -- own gauge (BN5's 0x080DBC78, battle flag 0x40).
 
-local dimming_chips = require("@common/dimming")
-local regions = require("@common/regions")
+local dimming_chips = require("@exelib/dimming")
+local regions = require("@exelib/regions")
 
 local otenko = {}
 

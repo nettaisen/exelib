@@ -4,7 +4,7 @@
 -- its key, blade, booms, sounds and attachment kind). When
 -- an AntiSwrd trap (or the AntiDmg program's stance, struck by a sword)
 -- catches a hit, the navi, invulnerable, swings a blade three times, each
--- swing sending a sonic boom (@common/swords/sonic_boom) along its row; the
+-- swing sending a sonic boom (@exelib/swords/sonic_boom) along its row; the
 -- last one's hit knocks back. The ruleset starts it by role
 -- (`actions.anti_sword_counter`, a game's rules/roles.luau).
 
@@ -29,7 +29,7 @@ export type Spec = {
     swing_sound: Sound,
     attachment: Kind,
     -- The blade's animation by its holder (none: the shared one's,
-    -- @common/swords/parts; BN6's gives its Beast forms' arms).
+    -- @exelib/swords/parts; BN6's gives its Beast forms' arms).
     blade_anim: ((Object) -> number)?,
     -- BN6's counter makes the navi invulnerable from its start to its end
     -- (`sub_80EEA5C`, `sub_800EB08` in `sub_80EEB18`) and restarts what his
