@@ -13,8 +13,8 @@
 --
 -- An obstacle: its update runs the obstacle framework's steps (the `obstacle` service) around its own actions.
 
-local regions = require("@common/regions")
-local rising_bubble = require("@common/rising-bubble/rising_bubble")
+local regions = require("@exelib/regions")
+local rising_bubble = require("@exelib/rising-bubble/rising_bubble")
 
 local statue = {}
 

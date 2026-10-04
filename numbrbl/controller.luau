@@ -10,7 +10,7 @@
 --
 -- NumbrBl's `dimming` hook is `controller.hook(kind, balls)`.
 
-local dimming_chips = require("@common/dimming")
+local dimming_chips = require("@exelib/dimming")
 
 local controller = {}
 

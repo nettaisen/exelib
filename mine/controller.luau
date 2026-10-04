@@ -2,7 +2,7 @@
 -- The Mine chip's dimming controller, as BN5 and BN6 share it (BN6's
 -- effect object #0x29, `sub_80E342C`; BN5's #0x29): each game makes its
 -- own (`controller.make`: its kind and its mine's). The usual dimming
--- phases (@common/dimming), with an effect that lays a mine (./land_mine)
+-- phases (@exelib/dimming), with an effect that lays a mine (./land_mine)
 -- for the user's side with the damage plus the bonus, and waits 121 ticks.
 --
 -- The chip's `dimming` hook (`sub_80E349E`, `off_802CCB4[11]`) is the made

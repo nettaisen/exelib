@@ -1,7 +1,7 @@
 --!strict
 -- CircGun's dimming controller, as BN5 and BN6 share it (BN6's effect
 -- object #0x5E, `sub_80E7568`; docs/engine/dimming-chip-effects.md §8): the
--- usual dimming phases (@common/dimming), with an effect that puts the gun
+-- usual dimming phases (@exelib/dimming), with an effect that puts the gun
 -- (./gun) on the
 -- far column's top panel, with the damage plus the bonus, and lasts until
 -- it is done; with none of the other side's panels in that column, it ends
