@@ -7,7 +7,7 @@
 --
 -- A game makes its snake kind with `snake.make_kind(id, look)`.
 
-local regions = require("../regions")
+local regions = require("./regions")
 
 local snake = {}
 

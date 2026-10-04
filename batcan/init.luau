@@ -10,7 +10,7 @@
 -- Each game makes its own (`batcan.make`) with its look: the bat cannon, the sound, the shot's collision types and
 -- spark, and whether raising the cannon restarts the navi's form overlay (BN6's; BN5's 0x080EE448 doesn't).
 
-local attachment = require("@exelib/attachment/attachment")
+local attachment = require("@exelib/attachment")
 
 local batcan = {}
 

@@ -11,7 +11,7 @@
 -- HolyPanl, Snctuary, ComingRd, GoingRd) and AntiRecv's counterattack
 -- (@exelib/antirecv/controller).
 
-local panels = require("../panels")
+local panels = require("./panels")
 
 local panel_changer = {}
 

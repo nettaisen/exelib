@@ -11,7 +11,7 @@
 -- the doubling, its collision types and sparks) and its variants with
 -- `tornado.variant`.
 
-local regions = require("../regions")
+local regions = require("./regions")
 
 local tornado = {}
 
