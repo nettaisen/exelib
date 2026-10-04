@@ -6,7 +6,7 @@
 -- then goes. Only drawn. Anubis and PoisPhar's statue sends them up over
 -- the poisoned area; Guardian's and Geddon's objects and AntiRecv use it
 -- too, a thrown BugBomb or BlkBomb that lands in a hole leaves one as a
--- puff of smoke, and the plus chips' sparkle is one (@common/instant/plus).
+-- puff of smoke, and the plus chips' sparkle is one (@exelib/instant/plus).
 
 local rising_bubble = {}
 

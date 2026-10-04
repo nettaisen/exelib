@@ -3,7 +3,7 @@
 -- `sub_80ECBB0`, of a game's `SpreaderLook`: its sound, attachment kind and
 -- bullets' kind;
 -- docs/engine/shot-chips.md §5): the navi raises its gun and on the second
--- tick fires a bullet (@common/bullet) from the panel ahead, which bursts
+-- tick fires a bullet (@exelib/bullet) from the panel ahead, which bursts
 -- where it finds something; 21 ticks of recovery. SpoutCross's charged
 -- shot fires its own bullet from its water cannon the same way.
 

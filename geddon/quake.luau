@@ -3,12 +3,12 @@
 -- BN6's docs/engine/dimming-chip-effects.md §12): it lists the field's solid panels, shuffles them, and changes one
 -- every 8 ticks, the last listed first (Geddon breaks them, the capsules crack them, a third change no chip uses
 -- poisons them), with a puff over each that changed; then it lets its holder go on. Geddon's and the capsules'
--- controller (@common/geddon/controller) spawns it.
+-- controller (@exelib/geddon/controller) spawns it.
 --
 -- Each game makes its own kind (`quake.make`) with its look: the puff, the bubble kind and the sounds.
 
-local panels = require("@common/panels")
-local rising_bubble = require("@common/rising-bubble/rising_bubble")
+local panels = require("@exelib/panels")
+local rising_bubble = require("@exelib/rising-bubble/rising_bubble")
 
 local quake = {}
 

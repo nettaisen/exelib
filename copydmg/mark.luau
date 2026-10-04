@@ -16,7 +16,7 @@
 -- Four states: init, flying (update), marking (destroy) and gone
 -- (finish).
 
-local regions = require("@common/regions")
+local regions = require("@exelib/regions")
 
 local mark = {}
 
