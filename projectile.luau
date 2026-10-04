@@ -1,5 +1,5 @@
 --!strict
--- Firing the projectile, as BN5 and BN6 share it (@common/projectile/projectile,
+-- Firing the projectile, as BN5 and BN6 share it (@exelib/projectile/projectile,
 -- the original's attack object #0), of a game's kind and buster
 -- (`projectile.make`): the shot of the buster and the charged shot, the cannons, AirShot,
 -- Reflectr and more. An action fires one with `projectile.fire`, from the
@@ -37,7 +37,7 @@ function projectile.make(kind: Kind, buster: Buster): Projectiles
 
     -- `sub_800FAAC`: a projectile from the panel in front of `navi`; returns
     -- the buster's recovery counted from that panel (`sub_800FAF6`: ticks by
-    -- the navi's Rapid and the open panels ahead, @common/buster).
+    -- the navi's Rapid and the open panels ahead, @exelib/buster).
     function p.fire(navi: Object, s: ProjectileShot): number
         local x, y = navi.panel_x + navi.facing, navi.panel_y
         shot.spawn(kind, navi, x, y, s)

@@ -4,7 +4,7 @@
 -- For 31 ticks the navi's trap is armed (the navi state "trap_armed": a hit is caught as AntiDmg's chip would, BN6's
 -- `sub_802CEF4`); a caught hit (requests 0x200 or 0x400) turns the stance into the counter (`sub_80105F2`: the game's
 -- AntiDmg counter, or AntiSwrd's for a sword hit) with the stance's 50 damage and the attack's variant 0 (the
--- counter's aim, @common/antidmg/counter). The navi's chips then wait 70 ticks. A game makes its own (`make`, its ids);
+-- counter's aim, @exelib/antidmg/counter). The navi's chips then wait 70 ticks. A game makes its own (`make`, its ids);
 -- the stance alone (`stance`) is BN5's ShadowSoul's B+Back too, with its own setup.
 
 export type State = {

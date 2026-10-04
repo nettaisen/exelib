@@ -7,7 +7,7 @@
 -- (`immobilizer.make_kind(id, look)`); BN6's instant chip effect 9
 -- (lib/instant/immobilize) and BN5's MagnetSoul's B+Back spawn it.
 
-local regions = require("@common/regions")
+local regions = require("@exelib/regions")
 
 local immobilizer = {}
 

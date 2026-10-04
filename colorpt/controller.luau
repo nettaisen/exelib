@@ -1,13 +1,13 @@
 --!strict
 -- ColorPt's and DblPoint's dimming controller, as BN5 and BN6 share it (BN6's effect object #0x50, `sub_80E6480`;
 -- BN5's #0x50, 0x080E650C, the same code; BN6's docs/engine/dimming-chips.md §10.1). The usual dimming phases (BN6's
--- lib/dimming), with an effect (`sub_80E64C4`) that sends a point (@common/colorpt/point) from each panel of the
+-- lib/dimming), with an effect (`sub_80E64C4`) that sends a point (@exelib/colorpt/point) from each panel of the
 -- user's front column that is solid, free and may go to the other side (`sub_80E650A`), then waits until they are
 -- all gone. Each game makes its own (`controller.make`) with its point; a chip's `dimming` hook is the made
 -- controller's `hook(point)`.
 
-local dimming_chips = require("@common/dimming")
-local panels = require("@common/panels")
+local dimming_chips = require("@exelib/dimming")
+local panels = require("@exelib/panels")
 
 local controller = {}
 
@@ -20,7 +20,7 @@ export type State = {
 export type Spec = {
     -- The kind's id.
     id: string,
-    -- The game's point's spawn (@common/colorpt/point's).
+    -- The game's point's spawn (@exelib/colorpt/point's).
     point: (holder: Object, x: number, y: number, spec: ColorPoint, slot: number) -> Object?,
 }
 

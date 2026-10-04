@@ -5,7 +5,7 @@
 -- there, and waits 120 ticks. Each game makes its own (`controller.make`) with its statue's spawn; a chip's
 -- `dimming` hook is the made controller's `hook(variant)`.
 
-local dimming_chips = require("@common/dimming")
+local dimming_chips = require("@exelib/dimming")
 
 local controller = {}
 
@@ -14,7 +14,7 @@ export type State = { variant: AnubisVariant }
 export type Spec = {
     -- The kind's id.
     id: string,
-    -- The game's statue's spawn (@common/anubis/statue's).
+    -- The game's statue's spawn (@exelib/anubis/statue's).
     statue: (owner: Object, variant: AnubisVariant, x: number, y: number, damage: number) -> Object?,
 }
 
