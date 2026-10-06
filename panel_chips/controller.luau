@@ -5,14 +5,14 @@
 -- ComingRd and GoingRd. Each game makes its own (`panel_chips.make`: its
 -- kind and its panel changer's). The usual dimming phases
 -- (@exelib/dimming), with an effect (`sub_80E2B2C`) that hands the chip's
--- panel change to a panel changer (@exelib/panel-changer) on the user's
+-- panel change to a panel changer (@exelib/panel_changer) on the user's
 -- panel, and waits until it is done.
 --
 -- A chip's `dimming` hook is the made controller's `hook(change)`, with its
 -- change.
 
 local dimming_chips = require("../dimming")
-local panel_changer = require("@exelib/panel-changer")
+local panel_changer = require("@exelib/panel_changer")
 
 local panel_chips = {}
 
