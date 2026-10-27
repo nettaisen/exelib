@@ -1,9 +1,9 @@
 --!strict
 -- Places (docs/design/extraction-recipes.md §3.2): where each of a game's four ROMs has a block. A place is the
 -- address, in each ROM, of the game's own pointer to the block (a routine's literal, a load list's entry), in the
--- order of the game's ROMs (its manifest's [extract] `roms`: its two US ROMs, then their Japanese ones), so every
--- ROM is read the way its own code reaches the block, whatever moved in it. A block no pointer of the game's reaches
--- has its own address stated.
+-- order of the game's ROMs (its recipe's `roms`: its two US ROMs, then their Japanese ones), so every ROM is read the
+-- way its own code reaches the block, whatever moved in it. A block no pointer of the game's reaches has its own
+-- address stated.
 
 local place = {}
 
