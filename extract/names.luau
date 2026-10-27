@@ -23,8 +23,12 @@ local function said(v: any): string
     return string.format("%q", tostring(v))
 end
 
--- Fail if two keys of `entries` (key to number, in key order) have one number: `what: a and b are both 0x1A`.
-function names.unique(what: string, entries: { [string]: any }, number: ((any) -> any)?)
+-- What a check says of two keys with one number: the earlier key (in key order), the later and the number.
+export type Said = (earlier: string, later: string, v: any) -> string
+
+-- Fail if two keys of `entries` (key to number, in key order; `number` gives an entry's) have one number, said by
+-- `say` (a game's compat crate's wording), else as exe6-compat says it: `what: a and b are both 0x1A`.
+function names.unique(what: string, entries: { [string]: any }, number: ((any) -> any)?, say: Said?)
     local seen: { [any]: string } = {}
     for _, key in names.sorted(entries) do
         local v = entries[key]
@@ -33,7 +37,7 @@ function names.unique(what: string, entries: { [string]: any }, number: ((any) -
         end
         local other = seen[v]
         if other ~= nil then
-            error(string.format("%s: %s and %s are both %s", what, other, key, said(v)), 0)
+            error(if say then say(other, key, v) else string.format("%s: %s and %s are both %s", what, other, key, said(v)), 0)
         end
         seen[v] = key
     end

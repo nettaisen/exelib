@@ -1,7 +1,9 @@
 --!strict
--- Colors as the hardware shows them. A palette is read as stored (`gba.palette`); whether bit 15 counts is the
--- game's code's (EXE6's HUD reads palettes as stored and its custom screen drops bit 15, EXE5's and EXE4's drop it
--- everywhere), and a pack keeps what the game shows.
+-- Colors as the hardware shows them. A palette is read as stored (`gba.palette`); whether bit 15 is dropped is the
+-- game's code's: EXE6's HUD reads palettes as stored and its custom screen drops bit 15; EXE5's HUD, custom screen and
+-- chip pictures drop it, as EXE4's HUD, custom screen and panels' cycling palettes do; the three games' field and
+-- backgrounds keep it, exelib's makers reading them as stored (docs/design/extraction-recipes.md §3.4). The hardware
+-- ignores the bit: what it changes is a pack's bytes, which stay as the games' packs have always had them.
 
 local colors = {}
 
