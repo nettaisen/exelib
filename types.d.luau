@@ -1008,8 +1008,17 @@ export type FanVariant = {
     absorbed: AbsorbedLook?,
 }
 
+-- Who placed a side's wind (@exelib/wind/registry): Wind and Fan's fan, or a navi's own (EXE4's WindSoul's), which a
+-- fan's can't replace.
+export type WindSource = "obstacle" | "navi"
+-- A side's wind slot (@exelib/wind/registry), in its game's rules' state: the object blowing for the side, if any
+-- (kept after it is gone, until another takes the slot or it is cleared), and who placed it.
+export type WindSlot = { object: Object?, source: WindSource }
+-- A game's accessor of the sides' wind slots: side `side`'s.
+export type WindSlots = (side: number) -> WindSlot
+
 -- A game's Wind and Fan fan (@exelib/wind/fan): its kind's id, look, sounds and effects, its collision types, the
--- game's gust, and EXE5's differences.
+-- game's gust, its sides' wind slots, and EXE5's differences.
 export type FanLook = {
     id: string,
     sprite: SpriteAsset,
@@ -1027,6 +1036,8 @@ export type FanLook = {
     -- The game's gust (`sub_80CD488`).
     spawn_gust: (x: number, y: number, alliance: number, flip: number, how: GustHow, damage: number, holder: Object?,
         slot: number) -> Object?,
+    -- The sides' wind slots, in the game's rules' state (@exelib/wind/registry), the fan its side's while it blows.
+    wind: WindSlots,
     -- EXE6's: a chip's removal can make it blink out or be absorbed (`sub_800F8CE`, `sub_800F90E`); EXE5's leaving
     -- (0x080CE90E) has neither.
     absorbs: boolean,

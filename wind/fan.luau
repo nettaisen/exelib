@@ -8,6 +8,7 @@
 -- An obstacle: its update runs the obstacle framework's steps (the `obstacle` service) around its own actions.
 
 local regions = require("@exelib/regions")
+local registry = require("./registry")
 
 local fan = {}
 
@@ -95,7 +96,7 @@ function fan.make(look: FanLook): Fan
     local function rise(me: Object)
         if me.phase == 0 then
             battle.play_sound(look.blow_sound)
-            battle.set_wind(me, me.alliance, "obstacle")
+            registry.set(look.wind, me, me.alliance, "obstacle")
             me.phase = 4
             return
         end
@@ -179,7 +180,7 @@ function fan.make(look: FanLook): Fan
         end
         obstacle.release_tracking(me)
         obstacle.unregister(me)
-        battle.clear_wind(me)
+        registry.clear(look.wind, me)
         me.collision:set_region(nil)
         me:unreserve_panel(me.future_panel_x, me.future_panel_y)
         leave(me)
