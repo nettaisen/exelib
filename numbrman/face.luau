@@ -34,11 +34,9 @@ function face.make(spec: NumberManFaceSpec): NumberManFace
     local function update(me: Object)
         local owner = me.related1 :: Object
         me.pos = owner.pos
-        me.visible = owner.visible
-        local look, worn = me.sprite, owner.sprite
-        look.color_shader = worn.color_shader
-        look.palette = worn.palette
-        look.alpha = worn.alpha
+        me:copy_visibility(owner)
+        local look = me.sprite
+        look:copy_from(owner.sprite, "color_shader", "palette", "alpha")
         local s = me.state :: State
         if me.action == WAIT then
             -- EXE5's 0x080C41F4, EXE4's 0x080CCD98: every navi in, it stops running while paused.
