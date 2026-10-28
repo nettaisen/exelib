@@ -12,6 +12,7 @@
 local common = require("@exelib/poltergeist")
 local dimming_chips = require("@exelib/dimming")
 local looks = require("@exelib/looks")
+local overlays = require("@exelib/overlays")
 
 local poltrgst = {}
 
@@ -83,7 +84,7 @@ function poltrgst.make(spec: Spec): Poltrgst
         end
         local user = me.related1 :: Object
         if spec.wears_overlay then
-            me:remove_parts_of(user)
+            overlays.remove_parts_of(me, user)
         end
         me:set_lifecycle("destroy")
         dimming.show_user(user)
@@ -112,7 +113,7 @@ function poltrgst.make(spec: Spec): Poltrgst
         -- `sub_801002C` (EXE4's 0x0800BFFE): the user's navi palette.
         sprite.palette = user.sprite.palette
         if spec.wears_overlay and user.actor_type == "player" then
-            me:add_overlay_of(user)
+            overlays.add_overlay_of(me, user)
         end
         sprite:set_flip(bit32.bxor(me.alliance, me.flip))
         dimming.hide_user_sparing(user)

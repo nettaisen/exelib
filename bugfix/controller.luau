@@ -87,7 +87,7 @@ function controller.clear_bugs(user: Object)
     stats.hp_drain = 0
     stats.battle_start_bug = 0
     stats.hand_shrink_turn = 0
-    battle.clear_emotion_window_glitch()
+    battle.set_hud("emotion_window_glitching", false)
 end
 
 function controller.make(look: Look): Controller

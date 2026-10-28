@@ -9,6 +9,8 @@
 -- whose controller's state has `busy`.
 
 local looks = require("@exelib/looks")
+local overlays = require("@exelib/overlays")
+local visibility = require("@exelib/visibility")
 
 local stand_in = {}
 
@@ -51,12 +53,12 @@ end
 export type Wear = (me: Object, user: Object) -> ()
 
 function stand_in.parts(me: Object, user: Object)
-    me:add_parts_of(user, false, true)
+    overlays.add_parts_of(me, user, false, true)
 end
 
 function stand_in.overlay(me: Object, user: Object)
     if user.actor_type == "player" then
-        me:add_overlay_of(user)
+        overlays.add_overlay_of(me, user)
     end
 end
 
@@ -87,7 +89,7 @@ end
 -- Shown, unless the viewer is blind to its side (`sub_800EB6C`).
 function stand_in.show(me: Object)
     me.visible = true
-    me:hide_from_blind()
+    visibility.hide_from_blind(me)
 end
 
 -- Done (`sub_80BB10C` and its copies): its parts off, hidden, freed at its
@@ -96,7 +98,7 @@ end
 -- the chips reach.)
 function stand_in.leave(me: Object)
     local user = me.related1 :: Object
-    me:remove_parts_of(user)
+    overlays.remove_parts_of(me, user)
     me.visible = false
     me:set_lifecycle("destroy")
     dimming.show_user(user)

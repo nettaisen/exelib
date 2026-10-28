@@ -9,6 +9,7 @@
 -- vanished, and its spawn taking its owner's side alone.
 
 local slot = require("@exelib/slot")
+local visibility = require("@exelib/visibility")
 
 local shield = {}
 
@@ -39,7 +40,7 @@ local UP, FADING = 0, 4
 local function follow(me: Object)
     local owner = me.related1 :: Object
     me.pos = owner.pos + me.vel
-    me:copy_visibility(owner)
+    visibility.copy(me, owner)
     if not slot.occupied(owner, (me.state :: State).slot) then
         me.action = FADING
         me.phase = 0
@@ -88,7 +89,7 @@ function shield.make(spec: {
             error(string.format("reflector shield action %#x reads past its table", a))
         end
         me.visible = true
-        me:hide_from_blind()
+        visibility.hide_from_blind(me)
         if hides_with_owner then
             local owner = me.related1 :: Object
             if owner:navi_state("vanished") then

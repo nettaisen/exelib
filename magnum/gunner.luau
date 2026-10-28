@@ -7,6 +7,7 @@
 -- enemy's area, and 2, as 0 but backward every 5 ticks, no chip has.) The games' differ in their pool, what the
 -- stand-in wears, their sounds, the firing animation, the sight's effect row and how the sight steps.
 
+local overlays = require("@exelib/overlays")
 local regions = require("@exelib/regions")
 local stand_in = require("@exelib/dimming/stand_in")
 
@@ -240,7 +241,7 @@ function gunner.make(look: Look): Gunner
             local t = me.timer - 1
             me.timer = bit32.band(t, 0xFFFF)
             if t == 0 then
-                me:remove_parts_of(me.related1 :: Object)
+                overlays.remove_parts_of(me, me.related1 :: Object)
                 me:set_lifecycle("destroy")
             end
         else
