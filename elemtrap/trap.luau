@@ -46,14 +46,14 @@ local FIRST_ELEMENT, LAST_ELEMENT = 1, 4
 local WATCH, SPRING = 0, 4
 
 
--- `sub_80CE0A4`: sparkles on the enemy navi's panels, first to last.
+-- `sub_80CE0A4`: sparkles on the enemy navi's panels, first to last, each console's turned to its own side.
 local function sparkle(me: Object, look: ElemTrapLook)
     local marked = regions.other_navi[me.alliance].field :: PanelCondition
     local list = panels.filtered(marked.require, marked.forbid)
     for i = #list, 1, -1 do
         local p = list[i]
         local x, y = field.center(panels.x(p), panels.y(p))
-        battle.effect(Vec3.new(x, y + look.sparkle_dy, look.sparkle_z), look.sparkle, battle.local_side())
+        battle.effect(Vec3.new(x, y + look.sparkle_dy, look.sparkle_z), look.sparkle, { 0, 1 })
         battle.play_sound(look.sparkle_sound)
     end
 end

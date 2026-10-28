@@ -221,8 +221,8 @@ function visual.make(spec: Spec): Visual
         end
     end
 
-    -- `sub_80E0B08`: the look; LifeAur's aura hides part 6 but for the local MegaMan; the rising sound; the first
-    -- update at once.
+    -- `sub_80E0B08`: the look; LifeAur's aura hides part 6 but on its MegaMan's own console; the rising sound; the
+    -- first update at once.
     local function init(me: Object)
         local b = (me.state :: State).barrier
         local look = b.look
@@ -234,15 +234,16 @@ function visual.make(spec: Spec): Visual
         sprite:set_animation(look.anim)
         sprite:step()
         sprite.palette = look.palette
-        local hidden = look.hidden_parts
         if b.hidden_unless_local_megaman then
             local owner = owner_of(me)
-            local local_megaman = owner.actor_type == "player" and owner.ai_index == 0 and owner.alliance == battle.local_side()
-            if not local_megaman then
-                hidden = PART_6
+            local megaman = owner.actor_type == "player" and owner.ai_index == 0
+            local function hidden_on(side: number): number
+                return if megaman and owner.alliance == side then look.hidden_parts else PART_6
             end
+            sprite:set_by_console("hidden_parts", hidden_on(0), hidden_on(1))
+        else
+            sprite.hidden_parts = look.hidden_parts
         end
-        sprite.hidden_parts = hidden
         -- (sub_8002EAC: its parts keep their own facing; drawn only.)
         battle.play_sound(b.sound)
         me:set_lifecycle("update")
