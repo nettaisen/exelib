@@ -18,6 +18,8 @@
 --
 -- Each game makes its kind (`face.make`).
 
+local looks = require("@exelib/looks")
+
 local face = {}
 
 type State = {
@@ -36,7 +38,7 @@ function face.make(spec: NumberManFaceSpec): NumberManFace
         me.pos = owner.pos
         me:copy_visibility(owner)
         local look = me.sprite
-        look:copy_from(owner.sprite, "color_shader", "palette", "alpha")
+        looks.copy(look, owner.sprite, "color_shader", "palette", "alpha")
         local s = me.state :: State
         if me.action == WAIT then
             -- EXE5's 0x080C41F4, EXE4's 0x080CCD98: every navi in, it stops running while paused.

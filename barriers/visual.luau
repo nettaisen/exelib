@@ -13,6 +13,7 @@
 -- not, and its spawn taking its navi's side alone.
 
 local element = require("@exelib/element")
+local looks = require("@exelib/looks")
 
 local visual = {}
 
@@ -240,7 +241,7 @@ function visual.make(spec: Spec): Visual
             local function hidden_on(side: number): number
                 return if megaman and owner.alliance == side then look.hidden_parts else PART_6
             end
-            sprite:set_by_console("hidden_parts", hidden_on(0), hidden_on(1))
+            looks.by_console(sprite, "hidden_parts", hidden_on(0), hidden_on(1))
         else
             sprite.hidden_parts = look.hidden_parts
         end
