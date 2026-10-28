@@ -75,7 +75,7 @@ end
 -- bug face goes, on every console (its flicker draws the console's RNG1).
 function controller.clear_bugs(user: Object)
     battle.clear_bugs(user.alliance)
-    battle.clear_emotion_window_glitch()
+    battle.set_hud("emotion_window_glitching", false)
 end
 
 function controller.make(look: Look): Controller

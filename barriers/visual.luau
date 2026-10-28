@@ -14,6 +14,7 @@
 
 local element = require("@exelib/element")
 local looks = require("@exelib/looks")
+local visibility = require("@exelib/visibility")
 
 local visual = {}
 
@@ -77,11 +78,11 @@ end
 
 -- Seen unless the viewer is blind to its side, shown with its navi, and (`field_check`) its navi on the field;
 -- `hide_only`: only the hiding half (the update's second pass).
-local function visibility(me: Object, owner: Object, hide_only: boolean, field_check: boolean)
+local function show(me: Object, owner: Object, hide_only: boolean, field_check: boolean)
     if not hide_only then
         me.visible = true
     end
-    me:hide_from_blind()
+    visibility.hide_from_blind(me)
     if not (me.state :: State).shown then
         me.visible = false
     end
@@ -190,7 +191,7 @@ function visual.make(spec: Spec): Visual
     -- pixels up the field and lower; its action; visibility's hiding half again.
     local function tick(me: Object)
         local owner = owner_of(me)
-        visibility(me, owner, false, field_check)
+        show(me, owner, false, field_check)
         if spec.stops_running_paused_in_fight and battle.fighting() then
             me.run_while_paused = false
         end
@@ -218,7 +219,7 @@ function visual.make(spec: Spec): Visual
             error(string.format("a barrier's visual's action %#x reads past off_80E0C68", a))
         end
         if me.active and field_check then
-            visibility(me, owner, true, field_check)
+            show(me, owner, true, field_check)
         end
     end
 

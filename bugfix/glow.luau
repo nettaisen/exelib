@@ -12,6 +12,9 @@
 -- field and lower, a player navi's overlay by its NaviStats (0x0800F0EC, `sub_8011420` with r2 1: its soul's put-on,
 -- NumberSoul's layer).
 
+local overlays = require("@exelib/overlays")
+local visibility = require("@exelib/visibility")
+
 local glow = {}
 
 -- What it does first, its spawner's (`BugFixGlowStart`): its first action, which sets action 4 when it is done.
@@ -32,8 +35,8 @@ export type Look = {
     id: string,
     -- Pixels down the field and up its copy sits from the navi (EXE6's 1, EXE5's -1).
     offset: number,
-    -- What the copy wears of the navi: EXE6's its parts, stepping on (`add_parts_of`'s `keep_stepping`); EXE5's a
-    -- player navi's overlay (`add_overlay_of`).
+    -- What the copy wears of the navi: EXE6's its parts, stepping on (`overlays.add_parts_of`'s `keep_stepping`); EXE5's
+    -- a player navi's overlay (`overlays.add_overlay_of`).
     wear: (me: Object, navi: Object) -> (),
 }
 
@@ -68,7 +71,7 @@ end
 local function leave(me: Object)
     me.visible = false
     local navi = navi_of(me, "sub_8011044")
-    me:remove_parts_of(navi)
+    overlays.remove_parts_of(me, navi)
     dimming.show_user(navi)
     local holder = (me.state :: State).holder
     if holder then
@@ -108,7 +111,7 @@ function glow.make(look: Look): Glow
     -- the sprite, while dimmed too.
     local function tick(me: Object)
         me.visible = true
-        me:hide_from_blind()
+        visibility.hide_from_blind(me)
         act(me)
         me:update_sprite_while_dimmed()
     end

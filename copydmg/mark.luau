@@ -24,6 +24,7 @@
 -- (finish).
 
 local regions = require("@exelib/regions")
+local visibility = require("@exelib/visibility")
 
 local mark = {}
 
@@ -121,7 +122,7 @@ function mark.make(look: CopyDamageMarkLook): CopyDamageMark
         local target = me.related1 :: Object
         local at_attach_point = look.over_navi == "attach_point"
         if at_attach_point then
-            me:copy_visibility(target)
+            visibility.copy(me, target)
         end
         local side = carry_side(me)
         local rec = battle.damage_carry(side)

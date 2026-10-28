@@ -461,7 +461,7 @@ end
 function compile.run(side: number, game: NaviCustGame, expansions: number?, parts: { PlacedProgram }): boolean
     if expansions == nil then
         if game.glitch then
-            battle.set_emotion_window_glitch(side, stats_bugged(battle.navi(side)))
+            battle.set_hud("emotion_window_glitch", stats_bugged(battle.navi(side)), side)
         end
         return false
     end
@@ -505,7 +505,7 @@ function compile.run(side: number, game: NaviCustGame, expansions: number?, part
         end
     end
     if game.glitch then
-        battle.set_emotion_window_glitch(side, bugged)
+        battle.set_hud("emotion_window_glitch", bugged, side)
     end
 
     -- 5. The HP (EXE6's `sub_803CE44`, EXE5's 0x0803C13C): the maximum again, and the round starts with it.

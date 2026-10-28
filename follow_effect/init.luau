@@ -13,6 +13,8 @@
 -- and their story navis' look 4), by an object no netbattle has (EXE6's look 8, attack object #0x67), or by nothing
 -- (EXE6's looks 0 to 3): they aren't here.
 
+local visibility = require("@exelib/visibility")
+
 local follow_effect = {}
 
 export type Spec = {
@@ -46,7 +48,7 @@ function follow_effect.make(spec: Spec): FollowEffect
     local function tick(me: Object)
         spec.update(me)
         if spec.copies_visibility then
-            me:copy_visibility(me.related1 :: Object)
+            visibility.copy(me, me.related1 :: Object)
         end
     end
 

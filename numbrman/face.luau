@@ -19,6 +19,7 @@
 -- Each game makes its kind (`face.make`).
 
 local looks = require("@exelib/looks")
+local visibility = require("@exelib/visibility")
 
 local face = {}
 
@@ -36,7 +37,7 @@ function face.make(spec: NumberManFaceSpec): NumberManFace
     local function update(me: Object)
         local owner = me.related1 :: Object
         me.pos = owner.pos
-        me:copy_visibility(owner)
+        visibility.copy(me, owner)
         local look = me.sprite
         looks.copy(look, owner.sprite, "color_shader", "palette", "alpha")
         local s = me.state :: State
