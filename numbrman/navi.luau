@@ -9,6 +9,8 @@
 --
 -- Each game makes its kind (`numbrman.make`) and spawns him its own way; each chip states his palette.
 
+local navi_left = require("@exelib/navi_chips/left")
+
 local numbrman = {}
 
 type State = {
@@ -121,7 +123,7 @@ function numbrman.make(spec: NumberManSpec): NumberMan
         if countdown(me, 4) then
             local s = me.state :: State
             if s.controller then
-                navi_chip.navi_left(s.controller :: Object)
+                navi_left(s.controller :: Object)
             end
             local face = s.face
             if face then

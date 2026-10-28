@@ -14,6 +14,8 @@
 -- Each game makes his kind (`bassanly.make`: his sprite, cloak, sounds,
 -- animations, arm or effect, burst and dark ball).
 
+local navi_left = require("@exelib/navi_chips/left")
+
 -- A game's BassAnly.
 export type Spec = {
     id: string,
@@ -208,7 +210,7 @@ function bassanly.make(spec: Spec): { kind: Kind, summon: (user: Object, control
         end
         local controller = (me.state :: State).controller
         if controller then
-            navi_chip.navi_left(controller)
+            navi_left(controller)
         end
         me:free()
     end

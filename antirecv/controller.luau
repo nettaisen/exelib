@@ -17,6 +17,7 @@
 local dimming_chips = require("../dimming")
 local panel_changer = require("@exelib/panel_changer")
 local rising_bubble = require("@exelib/rising_bubble")
+local navi_status = require("@exelib/navi_status")
 
 export type State = {
     -- The panel changer runs (the original's Param2, which the changer
@@ -58,7 +59,7 @@ local function effect(me: Object, spec: Spec, POISON_OWN_PANEL: PanelChange)
         end
         healer:subtract_hp(me.damage)
         if spec.takes_mood then
-            battle.lose_mood(healer.alliance, me.stamina)
+            navi_status.lose_mood(healer.alliance, me.stamina)
         end
         local x, y = field.center(me.panel_x, me.panel_y)
         rising_bubble.spawn(spec.bubble, Vec3.new(x + BUBBLE_DX, y, 0), BUBBLE_PALETTE)

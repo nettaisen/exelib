@@ -21,6 +21,7 @@
 
 local follow_effect = require("../follow_effect")
 local regions = require("../regions")
+local navi_left = require("@exelib/navi_chips/left")
 
 -- What a chip summons him with: his palette (the chip's first parameter
 -- picks it).
@@ -603,7 +604,7 @@ function deltaray.make(spec: Spec): {
     local function gone(me: Object)
         local controller = st(me).controller
         if controller then
-            navi_chip.navi_left(controller)
+            navi_left(controller)
         end
         me:free()
     end

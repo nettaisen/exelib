@@ -7,6 +7,8 @@
 -- `navi` hook, and the navi reports back with `navi_chips.leave`. Each game
 -- passes its navis' sprites.
 
+local navi_left = require("./left")
+
 local navi_chips = {}
 
 -- The panel flags a navi needs to stay where he appeared (as one word).
@@ -115,7 +117,7 @@ end
 -- He goes: the controller (if it waits for him) moves on.
 function navi_chips.leave(me: Object, controller: Object?)
     if controller then
-        navi_chip.navi_left(controller)
+        navi_left(controller)
     end
     me:set_lifecycle("destroy")
 end
@@ -124,7 +126,7 @@ end
 -- Colonel, 0x080BA504, and ToadMan, 0x080BC902).
 function navi_chips.leave_keeping_action(me: Object, controller: Object?)
     if controller then
-        navi_chip.navi_left(controller)
+        navi_left(controller)
     end
     me.lifecycle = "destroy"
 end

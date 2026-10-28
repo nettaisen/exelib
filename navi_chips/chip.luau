@@ -7,7 +7,7 @@
 -- navi chip's navi again, and what else the chip's spec says (for bn6battle-verify's gen-content to check against the
 -- ROM's records).
 --
--- The course: the user warps out (31 ticks), the navi until it leaves (`navi_chip.navi_left`), 31 ticks, the user
+-- The course: the user warps out (31 ticks), the navi until it leaves (@exelib/navi_chips/left), 31 ticks, the user
 -- warps back in (31 ticks), then the undim (`PLAIN`); a chip whose user stays on the field warps it neither way
 -- (BigHook, the original's navi 0x17: `USER_STAYS`), one whose navi brings the user back itself doesn't warp it back
 -- in (Roll's, navi 0: `USER_RETURNED`); either ends a tick after the last wait (`sub_80E18F8`'s first). A chip whose

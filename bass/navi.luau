@@ -13,6 +13,7 @@
 -- leaves in.
 
 local panels = require("../panels")
+local navi_left = require("@exelib/navi_chips/left")
 
 local bass = {}
 
@@ -293,7 +294,7 @@ function bass.make(spec: Spec): Bass
         end
         local controller = (me.state :: State).controller
         if controller then
-            navi_chip.navi_left(controller)
+            navi_left(controller)
         end
         me:free()
     end

@@ -9,6 +9,8 @@
 -- special chip is in use (its player's AI+0xBB), EXE5's with each side keeping its own gauge (battle flag 0x40,
 -- 0x080E6746), EXE4's under event flag 0x1187 (0x080E7E38), which no netbattle sets.
 
+local chip_hand = require("@exelib/chip_hand")
+
 
 local point = {}
 
@@ -121,8 +123,8 @@ function point.make(look: Look): Point
         local navi = battle.player(side) :: Object
         if not look.special(side, navi) then
             local cursor = battle.hand_cursor(side)
-            if battle.hand_chip_damages(side, cursor) then
-                battle.add_hand_attack_bonus(side, cursor, s.bonus)
+            if chip_hand.damages(side, cursor) then
+                chip_hand.add_bonus(side, cursor, "attack_bonus", s.bonus)
             end
         else
             battle.add_special_bonus(side, 0, s.bonus)

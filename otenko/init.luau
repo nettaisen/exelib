@@ -17,6 +17,7 @@
 
 local dimming_chips = require("@exelib/dimming")
 local regions = require("@exelib/regions")
+local chip_hand = require("@exelib/chip_hand")
 
 local otenko = {}
 
@@ -127,7 +128,7 @@ function otenko.make(look: Look): Otenko
             return
         end
         local i = battle.hand_cursor(side)
-        local turn = battle.hand_turn(side, i)
+        local turn = battle.hand_entry(side, i, "turn")
         local same = i == s.entry and turn == s.turn
         s.entry, s.turn = i, turn
         if not same then
@@ -135,7 +136,7 @@ function otenko.make(look: Look): Otenko
         elseif s.count >= MOST then
             return
         end
-        battle.add_hand_attack_bonus(side, i, 1)
+        chip_hand.add_bonus(side, i, "attack_bonus", 1)
         s.count += 1
     end
 

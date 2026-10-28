@@ -8,6 +8,8 @@
 -- chip's own kind, whose state has `controller` (`stand_in.STATE`), and
 -- whose controller's state has `busy`.
 
+local looks = require("@exelib/looks")
+
 local stand_in = {}
 
 -- The state fields every stand-in kind has: the controller waiting on it
@@ -68,7 +70,7 @@ function stand_in.init(me: Object, wear: Wear?): Object
         error("a dimming chip's stand-in has no user (its init reads through a null pointer)")
     end
     local sprite = me.sprite
-    sprite:load_like(user)
+    looks.load_like(sprite, user)
     sprite.shadow = "ground"
     me.anim, me.anim_loaded = 0, 0xFF
     me.visible = true

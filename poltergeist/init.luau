@@ -18,7 +18,8 @@ local poltergeist = {}
 
 -- The obstacles it takes: registered field objects but those not `throwable`.
 local function takes(o: Object): boolean
-    return obstacle.throwable(o)
+    local identity = o.identity
+    return identity == nil or identity.throwable ~= false
 end
 
 -- The field has an obstacle it takes (EXE5's 0x080E8CA0, EXE4's 0x0800B3E8).

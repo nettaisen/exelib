@@ -5,6 +5,8 @@
 -- opponent's armed AntiRecv turns into damage (chips/antirecv/controller);
 -- count the recovery in the side's statistics, and back to idle.
 
+local navi_status = require("@exelib/navi_status")
+
 local heal = {}
 
 -- The side statistic counting recoveries (`sub_800AB46`).
@@ -21,7 +23,7 @@ function heal.action(spec: { id: string?, hp: number, mood: number?, mood_after_
     local function update(me: Object, _s: any)
         local sprang = me:heal(spec.hp, true)
         if spec.mood and (not sprang or spec.mood_after_trap) then
-            battle.gain_mood(me.alliance, spec.mood)
+            navi_status.gain_mood(me.alliance, spec.mood)
         end
         battle.bump_side_stat(me.alliance, RECOVERIES, 1)
         me:exit_attack()

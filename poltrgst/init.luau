@@ -11,6 +11,7 @@
 
 local common = require("@exelib/poltergeist")
 local dimming_chips = require("@exelib/dimming")
+local looks = require("@exelib/looks")
 
 local poltrgst = {}
 
@@ -102,7 +103,7 @@ function poltrgst.make(spec: Spec): Poltrgst
             return false
         end
         local sprite = me.sprite
-        sprite:load_like(user)
+        looks.load_like(sprite, user)
         sprite.shadow = "ground"
         me.anim, me.anim_loaded = spec.anim, 0xFF
         me.visible = true

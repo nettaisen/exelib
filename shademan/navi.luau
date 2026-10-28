@@ -11,6 +11,8 @@
 --
 -- Each game makes his kind (`shademan.make`) and spawns him its own way; each chip states his palette.
 
+local navi_left = require("@exelib/navi_chips/left")
+
 local shademan = {}
 
 type State = {
@@ -191,7 +193,7 @@ function shademan.make(spec: ShadeManSpec): ShadeMan
                 end
                 local controller = (me.state :: State).controller
                 if controller then
-                    navi_chip.navi_left(controller)
+                    navi_left(controller)
                 end
                 me:free()
             end

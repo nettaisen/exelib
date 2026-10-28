@@ -12,6 +12,8 @@
 -- field and lower, a player navi's overlay by its NaviStats (0x0800F0EC, `sub_8011420` with r2 1: its soul's put-on,
 -- NumberSoul's layer).
 
+local looks = require("@exelib/looks")
+
 local glow = {}
 
 -- What it does first, its spawner's (`BugFixGlowStart`): its first action, which sets action 4 when it is done.
@@ -118,7 +120,7 @@ function glow.make(look: Look): Glow
     local function init(me: Object)
         local navi = navi_of(me, "sub_80C4848")
         local sprite = me.sprite
-        sprite:load_look_of(navi)
+        looks.load_like(sprite, navi)
         sprite.shadow = "ground"
         me.visible = true
         local p = navi.pos

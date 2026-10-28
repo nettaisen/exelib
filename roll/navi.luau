@@ -20,6 +20,7 @@
 local panels = require("../panels")
 local regions = require("../regions")
 local slot = require("../slot")
+local navi_left = require("@exelib/navi_chips/left")
 
 -- What a chip summons her with (what the original reads by the chips' first parameter, their level): her whip's
 -- rounds of three hits (1; 3 for the parameter 5, which no chip has) and her palette (EXE6's Roll3's, EXE5's RollDS's
@@ -565,7 +566,7 @@ function roll.make(spec: Spec): Roll
     local function finish(me: Object)
         local controller = (me.state :: State).controller
         if controller then
-            navi_chip.navi_left(controller)
+            navi_left(controller)
         end
         me:free()
     end

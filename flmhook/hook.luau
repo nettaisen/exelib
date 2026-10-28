@@ -11,6 +11,8 @@
 -- element); each chip states what its hook swings (`hook.flames`). See
 -- docs/engine/chips.md §3.6.35.
 
+local navi_left = require("@exelib/navi_chips/left")
+
 local hook = {}
 
 -- What a chip's hook swings (`FlameHookFlames`).
@@ -135,7 +137,7 @@ function hook.make(spec: Spec): {
                 -- outside RAM).
                 local controller = (me.state :: State).controller
                 if controller then
-                    navi_chip.navi_left(controller)
+                    navi_left(controller)
                 end
                 me:free()
             end

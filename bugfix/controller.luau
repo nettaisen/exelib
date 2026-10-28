@@ -71,10 +71,22 @@ function controller.flashes(flash: Sound, hide: (me: Object) -> ()): (me: Object
     end
 end
 
--- EXE6's and EXE5's fix: `sub_80E49C4`, the side's bugs (`battle.clear_bugs`); `sub_801E658`, the emotion portrait's
--- bug face goes, on every console (its flicker draws the console's RNG1).
+-- EXE6's and EXE5's fix: `sub_80E49C4`, the side's bugs (the stats processing, the panel trail's level, the buster's
+-- blanks, the on-hit status, the custom damage, the emotion swings, the custom and HP drains, the battle-start bug and
+-- the hand-shrink turn zeroed); `sub_801E658`, the emotion portrait's bug face goes, on every console (its flicker
+-- draws the console's RNG1).
 function controller.clear_bugs(user: Object)
-    battle.clear_bugs(user.alliance)
+    local stats = battle.navi(user.alliance)
+    stats.step_bug = 0
+    stats.panel_trail_level = 0
+    stats.buster_blanks = 0
+    stats.hit_status = 0
+    stats.custom_damage = 0
+    stats.emotion_bug = 0
+    stats.custom_drain = 0
+    stats.hp_drain = 0
+    stats.battle_start_bug = 0
+    stats.hand_shrink_turn = 0
     battle.clear_emotion_window_glitch()
 end
 

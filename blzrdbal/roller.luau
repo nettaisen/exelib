@@ -3,8 +3,8 @@
 -- #0xB7, `sub_80DC260`; EXE5's #0xB7, 0x080DD234; docs/engine/
 -- dimming-chip-effects.md §10): an invisible collision 20 pixels ahead of
 -- the snowball (./ball) that reaches every attack, object and body; of
--- what it touches, the first field object it may swallow
--- (`obstacle.swallowable`) is removed, and the ball grows. It goes with the
+-- what it touches, the first field object it may swallow (a field object
+-- that isn't kept from being scrap) is removed, and the ball grows. It goes with the
 -- ball, at the field's end, or when the battle is over. Each game makes its
 -- own kind (`roller.make_kind`: what it is and reaches, its table's rows:
 -- EXE6's 0x58 and 0x49, EXE5's 0x48 and 0x49).
@@ -60,6 +60,15 @@ local function leave(me: Object)
     me:set_lifecycle("destroy")
 end
 
+-- `sub_80DC3B2`'s test: a field object by its identity, but those
+-- `sub_800F486` excludes (`scrap = false`). (The original tests the NameID
+-- word, whose high half is an actor's next chip: no actor's is a field
+-- object's.)
+local function swallowable(o: Object): boolean
+    local identity = o.identity
+    return identity ~= nil and identity.class == "field_object" and identity.scrap ~= false
+end
+
 -- `sub_80DC310`: swallow the first field object among what it touched;
 -- then on ahead of the ball, hitting again in a new column; gone where the
 -- panel isn't solid or off the field.
@@ -73,7 +82,7 @@ local function roll(me: Object)
             if i > LOOKS_AT then
                 break
             end
-            if obstacle.swallowable(o) then
+            if swallowable(o) then
                 found = o
                 break
             end

@@ -24,7 +24,7 @@
 --
 -- Each chip makes its own controller, with its own navi (`spawn`: what differs between a navi's chips, its palette and
 -- the like, is the chip's), and its `dimming` hook is that controller's `hook`; the navi tells the controller it is
--- done through `navi_chip.navi_left` (the kind's `navi_left`) or `controller.done`.
+-- done through its kind's `navi_left` (@exelib/navi_chips/left) or `controller.done`.
 
 local dimming_chips = require("@exelib/dimming")
 

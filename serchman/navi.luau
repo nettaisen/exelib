@@ -11,6 +11,7 @@
 -- his height his side; his scope reads his side's navi's presses.
 
 local navi_chips = require("../navi_chips/navi")
+local navi_left = require("@exelib/navi_chips/left")
 
 export type State = {
     -- The controller waiting for him (the flag it gave him, +0x64).
@@ -250,7 +251,7 @@ function navi.make(spec: Spec): SearchMan
                 -- 0x080C1422: the controller moves on, and he is freed.
                 local controller = (me.state :: State).controller
                 if controller then
-                    navi_chip.navi_left(controller)
+                    navi_left(controller)
                 end
                 me:free()
             end
