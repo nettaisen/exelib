@@ -12,9 +12,7 @@
 -- defines; how it animates is the user's too (`attachment.attach(kind,
 -- owner, look, slot, { anim = ... })`).
 
-local looks = require("@exelib/looks")
 local slot = require("./slot")
-local visibility = require("@exelib/visibility")
 
 local attachment = {}
 
@@ -24,11 +22,6 @@ export type State = {
     anim: number,
     while_dimmed: boolean,
     palette_add: number,
-    -- Offset from the owner's position (its attach point), 16.16.
-    offset_x: number,
-    offset_z: number,
-    -- Pixels raised by (subtracted from y and z).
-    lift: number,
 }
 
 -- An attachment's look (see AttachmentLook in types.d.luau).
@@ -39,31 +32,10 @@ end
 -- (How it animates is an `AttachmentOptions`: its animation, whether it
 -- animates while dimmed too, and what is added to its palette, drawn only.)
 
--- `sub_80B8DA6`: follow the owner's position and visibility; animate,
--- except while paused (or dimmed, unless it animates then too); end once
--- the slot is cleared.
-local function follow(me: Object)
-    local owner = me.related1 :: Object
-    local s = me.state :: State
-    local p = owner.pos
-    local lift = s.lift * 0x10000
-    me.pos = Vec3.new(p.x + s.offset_x, p.y - lift, p.z + s.offset_z - lift)
-    visibility.copy(me, owner)
-    -- It wears the owner's color shader, white flash, alpha and flip.
-    looks.copy(me.sprite, owner.sprite, "color_shader", "white", "alpha", "hflip", "vflip")
-    if not slot.occupied(owner, s.slot) then
-        me.visible = false
-        me:set_lifecycle("destroy")
-        return
-    end
-    if not s.while_dimmed and battle.dimmed() then
-        return
-    end
-    if battle.paused() then
-        return
-    end
-    me:update_sprite()
-end
+-- `sub_80B8DA6`, each tick from its init's: at the owner's position less the lift; the owner's visibility, color
+-- shader, white flash, alpha and flip; animating, except while paused (or dimmed, unless it animates then too);
+-- ended once the slot is cleared (the engine's follow: `Object:follow`).
+local WORN = { "color_shader", "white", "alpha", "hflip", "vflip" }
 
 -- What a game's attachments are raised by for who holds them, over their look's (`lifted(owner, side)`; nil: the
 -- look's).
@@ -80,7 +52,8 @@ local function init(me: Object, lifted: Lifted?)
     sprite.palette = k.palette + s.palette_add
     me.no_sprite_update = false
     local identity = owner.identity
-    s.lift = (lifted and lifted(owner, me.alliance)) or k.lift or 0
+    -- (Pixels raised by: subtracted from Y and Z.)
+    local lift = ((lifted and lifted(owner, me.alliance)) or k.lift or 0) * 0x10000
     local anim = s.anim
     me.anim = anim
     me.anim_loaded = anim
@@ -101,10 +74,13 @@ local function init(me: Object, lifted: Lifted?)
     elseif k.attach_point then
         x, z = owner:attach_point(k.attach_point)
     end
-    s.offset_x = x * 0x10000
-    s.offset_z = z * 0x10000
     me:set_lifecycle("update")
-    follow(me)
+    slot.follow(me, owner, s.slot, {
+        offset = Vec3.new(x * 0x10000, -lift, z * 0x10000 - lift),
+        looks = WORN,
+        visibility = true,
+        while_dimmed = s.while_dimmed,
+    })
 end
 
 -- A game's attachment kind, keyed `id`, raised by its rule (`lifted`; none: by the look's alone).
@@ -118,16 +94,10 @@ function attachment.make_kind(id: string, lifted: Lifted?): Kind
             anim = "u8",
             while_dimmed = "bool",
             palette_add = "u8",
-            offset_x = "i32",
-            offset_z = "i32",
-            lift = "i8",
         },
         update = function(me: Object)
-            local l = me.lifecycle
-            if l == "init" then
+            if me.lifecycle == "init" then
                 init(me, lifted)
-            elseif l == "update" then
-                follow(me)
             else
                 me:free()
             end

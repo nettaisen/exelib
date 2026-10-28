@@ -51,6 +51,18 @@ function slot.fill(owner: Object, which: Slot, o: Object?)
     end
 end
 
+-- `me` follows `owner` (`Object:follow`, as `spec` says) until the owner clears the slot `which` it keeps `me` in.
+function slot.follow(me: Object, owner: Object, which: Slot, spec: FollowSpec)
+    if which == "overlay" then
+        spec.held = "overlay"
+    elseif which == "held" or which == "held2" then
+        spec.held_in_state = which
+    else
+        spec.held = "related1"
+    end
+    me:follow(owner, spec)
+end
+
 -- The declared type of a slot field in a kind's state.
 slot.TYPE = { "overlay", "related", "held", "held2" }
 

@@ -221,6 +221,12 @@ function projectile.make_kind(look: Look): Kind
                 return
             end
             me:update_sprite()
+            -- In flight, its row's step taken, the engine flies it (`Object:fly`, the ticks `tick` would fly) until it
+            -- hits, the battle is over or its step would leave the field: then `tick` runs again.
+            local s = me.state :: State
+            if me.lifecycle == "update" and s.row == 0 then
+                me:fly(s.variant.climbs == true)
+            end
         end,
     }
 end
