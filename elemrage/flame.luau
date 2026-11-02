@@ -184,6 +184,8 @@ function flame.make_kind(look: Look): ElemFlame
             elseif l == "update" then
                 tick(me)
             else
+                -- EXE5's 0x080138F2, EXE4's 0x08010560: its collision, then itself, freed.
+                me.collision:free()
                 me:free()
                 return
             end

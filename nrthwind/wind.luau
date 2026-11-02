@@ -139,8 +139,9 @@ function wind.make(spec: {
             elseif l == "update" then
                 wind_tick(me)
             else
-                -- EXE6's `sub_80CFC96`.
+                -- EXE6's `sub_80CFC96` (EXE4's 0x080D8C58): its collision taken off the field and freed, then itself.
                 me.collision:remove()
+                me.collision:free()
                 me:free()
             end
         end,
