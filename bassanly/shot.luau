@@ -21,6 +21,7 @@
 -- (`shot.make_kind`: its sprite and animation, its sound, its collision
 -- types and its level's ticks). See docs/engine/chips.md §3.6.35.
 
+local played = require("../played")
 local regions = require("../regions")
 
 local shot = {}
@@ -85,6 +86,8 @@ local FIRST_TICKS = 0x10
 
 -- Its afterimages: every 6 ticks, 12 ticks each, tinted.
 local TRAIL_EVERY, TRAIL_TICKS, TRAIL_SHADER = 6, 0xC, 0xA94A
+-- Its flight comes round every 9 of its sprite's steps, and its burst lasts 6 (every game's).
+local FLYING_STEPS, BURST_STEPS = 9, 6
 
 -- A game's shot kind.
 function shot.make_kind(look: Look): Kind
@@ -333,7 +336,11 @@ function shot.make_kind(look: Look): Kind
 
     -- `sub_80DD370`: gone once the burst has played.
     local function bursting(me: Object)
-        if bit32.band(me.sprite.frame_flags, 0x80) ~= 0 then
+        -- (Until its sprite has stepped since it burst, its flight is still loaded.)
+        local done = if me.sprite.animation == ANIM + 1
+            then played.ended(me.sprite, BURST_STEPS)
+            else played.ended(me.sprite, FLYING_STEPS, FLYING_STEPS)
+        if done then
             me:destroy()
         end
     end

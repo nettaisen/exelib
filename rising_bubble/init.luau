@@ -8,6 +8,8 @@
 -- too, a thrown BugBomb or BlkBomb that lands in a hole leaves one as a
 -- puff of smoke, and the plus chips' sparkle is one (@exelib/instant/plus).
 
+local played = require("../played")
+
 local rising_bubble = {}
 
 export type State = {
@@ -16,6 +18,8 @@ export type State = {
 }
 
 local ANIM = 1
+-- Its rise (animation 1) lasts 16 of its sprite's steps (every game's).
+local RISE_STEPS = 16
 -- Up two pixels a tick.
 local RISE = 0x2_0000
 
@@ -25,7 +29,7 @@ local function rise(me: Object)
     me.sprite:step()
     local p = me.pos
     me.pos = Vec3.new(p.x, p.y, p.z + me.vel.z)
-    if bit32.btest(me.sprite.frame_flags, 0x80) then
+    if played.ended(me.sprite, RISE_STEPS) then
         me:set_lifecycle("destroy")
     end
 end

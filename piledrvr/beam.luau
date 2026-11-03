@@ -5,6 +5,7 @@
 -- animation by that distance, drawn 60 pixels ahead), it plays its opening animation through; then it hits that
 -- one's panel ten times, 16 ticks apart, and goes. Its sound every 16 ticks; it runs while dimmed.
 
+local played = require("../played")
 local regions = require("../regions")
 
 export type State = {
@@ -31,6 +32,8 @@ local DRAWN_AHEAD, HEIGHT = 0x3C, 0x1C_0000
 -- Its hits: ten, 16 ticks apart (the timer to -1), the first at once.
 local HITS, BETWEEN = 0x0A, 0x0F
 local HIT_MOD = 3
+-- Its opening (animation twice its distance) lasts this many of its sprite's steps, by its distance (every game's).
+local OPENING_STEPS = { [0] = 2, 4, 6, 6 }
 
 -- Action 0: its opening animation to its last frame; then the next and the hits. (On its first tick the sprite still
 -- holds what its init loaded, the animation 0xFF the sheet doesn't have, where the original reads no last frame.)
@@ -38,7 +41,7 @@ local function open(me: Object)
     if me.anim_loaded ~= me.anim then
         return
     end
-    if bit32.btest(me.sprite.frame_flags, 0x80) then
+    if played.ended(me.sprite, OPENING_STEPS[(me.state :: State).distance]) then
         me.anim = int.u8(me.anim + 1)
         me:set_action(4)
     end

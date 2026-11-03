@@ -7,6 +7,7 @@
 -- types and spark, and whether a flame with Param1's bit 7 also sends the two beside (EXE5's; EXE4's keeps the bit and
 -- sends none).
 
+local played = require("../played")
 local regions = require("../regions")
 
 local flame = {}
@@ -16,6 +17,8 @@ type Look = ElemFlameLook
 
 -- A flame that leaves no panel type, as its state holds it (Param4's high nibble 0).
 local NONE = "none"
+-- Its flame (animation 0) comes round every 6 of its sprite's steps (every game's).
+local FLAME_STEPS = 6
 
 -- A game's flame of `look`.
 function flame.make_kind(look: Look): ElemFlame
@@ -24,7 +27,7 @@ function flame.make_kind(look: Look): ElemFlame
     -- Action 0 (EXE5's 0x080D9B50, EXE4's 0x080CE44C): when its animation ends: its idle animation, its hit on; the
     -- first time, the next flame ahead (and, spreading, the two beside it), its count one less.
     local function burst(me: Object)
-        if not bit32.btest(me.sprite.frame_flags, 0x80) then
+        if not played.ended(me.sprite, FLAME_STEPS, FLAME_STEPS) then
             return
         end
         local s = me.state :: State

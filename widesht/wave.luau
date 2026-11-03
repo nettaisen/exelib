@@ -11,6 +11,7 @@
 -- its kind): WideSht's ends on its first hit; SuprSpr's goes through,
 -- hitting each panel once. See docs/engine/shot-chips.md §10.1.
 
+local played = require("../played")
 local regions = require("../regions")
 
 local wave = {}
@@ -39,6 +40,8 @@ local HOLD_TICKS = 0xF
 -- sprite (EXE6's "10-00", animation 1) with this color shader, for 20 ticks.
 local TRAIL_FIRST, TRAIL_INTERVAL = 0xA, 5
 local TRAIL_ANIM, TRAIL_SHADER, TRAIL_TICKS = 1, 0xC3FF, 0x14
+-- Its rise (animation 0) lasts 9 of its sprite's steps (every game's).
+local RISE_STEPS = 9
 -- What a holding variant writes over its spawner's attack (the step and
 -- its entry flag, the element and the variant byte, which nothing reads,
 -- as one word): at its spawn, its first update, and its end.
@@ -67,7 +70,7 @@ end
 local function move(me: Object, v: WaveVariant)
     local init = me.phase_init
     if init == 0 then
-        if bit32.band(me.sprite.frame_flags, 0x80) == 0 then
+        if not played.ended(me.sprite, RISE_STEPS) then
             return
         end
         me.anim = ANIM_SLIDE

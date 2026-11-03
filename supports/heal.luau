@@ -4,6 +4,8 @@
 -- ticks; landed, it tells her (her `healing` flag), leaves a sparkle, heals her navi 300 HP and gives it the game's
 -- 100-HP barrier with the barrier's visual (`raise_barrier`). See docs/engine/chips.md §2.10.
 
+local played = require("../played")
+
 export type State = {
     -- The panel it lands on (the original's third and fourth parameters).
     target_x: number,
@@ -16,6 +18,9 @@ local FLIGHT_TICKS = 0x14
 -- The arc's gravity (Z velocity, 16.16 a tick: 0xFFFF7778).
 local GRAVITY = -0x8888
 local HEAL = 300
+-- Its throw (animation 0) lasts 5 of its sprite's steps; its spin (animation 1, looping) comes round every 18, and
+-- each time it starts again.
+local THROWN_STEPS, SPIN_STEPS = 5, 18
 
 -- A game's heal, of `look`.
 function heal.make(look: TangoHealLook): TangoHeal
@@ -38,7 +43,7 @@ function heal.make(look: TangoHealLook): TangoHeal
 
     -- `sub_80DE088` (EXE5's 0x080DA734): the arc; landed, the heal.
     local function tick(me: Object)
-        if bit32.band(me.sprite.frame_flags, 0x80) ~= 0 then
+        if played.ended(me.sprite, if me.sprite.animation == 0 then THROWN_STEPS else SPIN_STEPS) then
             me.anim, me.anim_loaded = 1, 0
         end
         local t = me.timer - 1

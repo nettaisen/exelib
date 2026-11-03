@@ -27,6 +27,7 @@
 -- (`actions`: no frozen, bubbled or blink-away ones).
 
 local panel_bursts = require("../panel_bursts")
+local played = require("../played")
 local regions = require("../regions")
 
 export type State = { variant: CountdownVariant }
@@ -47,6 +48,8 @@ local BLINK_TICKS = 8
 -- hit spark, hit modifier 3; with bursts there every 2 ticks.
 local BLAST_HIT_MOD = 3
 local BURST_INTERVAL = 2
+-- Its rise (each variant's appearing animation) lasts 16 of its sprite's steps (every game's).
+local APPEAR_STEPS = 16
 -- Its actions (`off_80CD9F4`).
 local APPEAR, DESTROYED, COUNTDOWN, BLINK_AWAY = 0, 2, 8, 9
 
@@ -112,7 +115,7 @@ function countdown.make_kind(id: string, look: CountdownLook): Kind
     -- `sub_80CDA1C`: once the rising animation is over, stand if the panel
     -- allows (the countdown starts), else go at once.
     local function appear(me: Object)
-        if not bit32.btest(me.sprite.frame_flags, 0x80) then
+        if not played.ended(me.sprite, APPEAR_STEPS) then
             return
         end
         local v = variant(me)

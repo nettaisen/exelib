@@ -14,6 +14,8 @@
 -- (In EXE5's operation battle, never set in a netbattle, each segment also marks the panel ahead, 0x080E9FA4's effect
 -- object #0x83, which isn't ported.)
 
+local played = require("../played")
+
 local wave = {}
 
 local SOLID = 0x10
@@ -39,9 +41,10 @@ local function finish(me: Object)
     me:set_lifecycle("destroy")
 end
 
--- At its animation's end: out of sight, off its panels.
+-- At its animation's end (each time it comes round): out of sight, off its panels.
 local function hide(me: Object): boolean
-    if not bit32.btest(me.sprite.frame_flags, 0x80) then
+    local steps = (me.state :: State).variant.steps
+    if not played.ended(me.sprite, steps, steps) then
         return false
     end
     me.pos = Vec3.new(GONE_X * 0x10000, me.pos.y, me.pos.z)

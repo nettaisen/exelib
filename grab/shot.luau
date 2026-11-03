@@ -10,6 +10,7 @@
 -- docs/engine/chips.md §3.6.8.
 
 local panels = require("../panels")
+local played = require("../played")
 local regions = require("../regions")
 
 local shot = {}
@@ -22,6 +23,8 @@ export type Look = {
     sprite: SpriteAsset,
     fall_sound: Sound,
     land_sound: Sound,
+    -- How many of its sprite's steps its landing (animation 1) plays out over.
+    landing_steps: number,
     target: CollisionType,
     self_type: CollisionType,
     -- What of the other side's area it never takes: the last of its full
@@ -34,6 +37,8 @@ local HEIGHT, FALL_SPEED = 0x100_0000, 0x8_0000
 -- A stolen panel stays the thief's this long
 -- (`object_setPanelAllianceTimerLong`).
 local STOLEN_TICKS = 0x708
+-- Its fall (animation 0) comes round every 8 of its sprite's steps (every game's).
+local FALL_STEPS = 8
 
 -- The panels it takes: the other side's, with nothing on them
 -- (`byte_80C6514`, by its side): the owner bit (0x20) and everything that
@@ -94,7 +99,12 @@ local function tick(me: Object, look: Look)
         me.action = 8
     elseif a == 8 then
         -- sub_80C6536: gone once the landing plays out (the action stays).
-        if bit32.btest(me.sprite.frame_flags, 0x80) then
+        -- (Until its sprite has stepped since it landed, it is still falling.)
+        if
+            if me.sprite.animation == 1
+                then played.ended(me.sprite, look.landing_steps)
+                else played.ended(me.sprite, FALL_STEPS, FALL_STEPS)
+        then
             me.lifecycle = "destroy"
         end
     else

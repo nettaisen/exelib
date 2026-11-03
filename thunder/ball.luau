@@ -19,6 +19,7 @@
 -- `ball.make_kind(id, look)` (EXE6's, EXE5's; EXE4's, attack 0x2A at 0x080D2000,
 -- is never big and finds its target its own way).
 
+local played = require("../played")
 local regions = require("../regions")
 
 local ball = {}
@@ -201,9 +202,17 @@ local function init(me: Object, look: ThunderBallLook)
     tick(me, look)
 end
 
--- `sub_80C93F0`: burst, then gone once the animation ends.
-local function burst(me: Object)
-    if bit32.btest(me.sprite.frame_flags, 0x80) then
+-- `sub_80C93F0`: burst, then gone once the animation ends. (A ball ended by a hit or the battle's end keeps its
+-- flight: it goes as that comes round.)
+local function burst(me: Object, look: ThunderBallLook)
+    local s = me.state :: State
+    local big = (s.fast or s.big) and look.big_sprite ~= nil
+    local anim = if big then look.big_anim :: number else look.small_anim
+    local steps = if big then look.big_steps :: { flight: number, burst: number } else look.small_steps
+    local done = if me.sprite.animation == anim + 1
+        then played.ended(me.sprite, steps.burst)
+        else played.ended(me.sprite, steps.flight, steps.flight)
+    if done then
         me:destroy()
     end
 end
@@ -230,7 +239,7 @@ function ball.make_kind(id: string, look: ThunderBallLook): Kind
             elseif l == "update" then
                 tick(me, look)
             else
-                burst(me)
+                burst(me, look)
             end
             if me.active then
                 me:update_sprite()

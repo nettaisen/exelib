@@ -18,6 +18,7 @@
 -- controller does as it ends.
 
 local dimming_chips = require("@exelib/dimming")
+local played = require("@exelib/played")
 
 local blakwing = {}
 
@@ -94,6 +95,9 @@ local function set_perch(s: FlockState, i: number, o: Object)
     end
 end
 
+-- A perch shows over 12 of its sprite's steps (animation 0), sits on one (1), and leaves over 6 (2) (every game's).
+local SHOW_STEPS, PERCHED_STEPS, LEAVE_STEPS = 12, 1, 6
+
 -- A game's BlakWing: the chip's `dimming` hook.
 function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Object?
     -- 0x080E6A48: shows (animation 0), then perched (1) until told to go, then leaves (2) and is gone.
@@ -101,7 +105,7 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
         local s = me.state :: PerchState
         local p = me.phase
         if p == 0 then
-            if bit32.btest(me.sprite.frame_flags, 0x80) then
+            if played.ended(me.sprite, SHOW_STEPS) then
                 me.anim = 1
                 me.phase = 4
             end
@@ -111,7 +115,8 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
                 me.phase = 8
             end
         elseif p == 8 then
-            if bit32.btest(me.sprite.frame_flags, 0x80) then
+            -- (Until its sprite has stepped since it was told to go, it is still perched.)
+            if played.ended(me.sprite, if me.sprite.animation == 2 then LEAVE_STEPS else PERCHED_STEPS) then
                 me.visible = false
                 -- (0x080E6AAA: the state byte alone; its phase stays.)
                 me.lifecycle = "destroy"

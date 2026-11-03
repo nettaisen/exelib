@@ -8,6 +8,7 @@
 -- sprites, splash, sounds and collision types, and whether the splash takes the throw's Atk+ bonus (EXE4's).
 
 local panels = require("../panels")
+local played = require("../played")
 local regions = require("../regions")
 
 local geyser = {}
@@ -36,6 +37,9 @@ local SPLASH_DAMAGE = 10
 local WATER_AT, WATER_TICKS = 2, 3
 -- The geyser stands this long between its rise and its fall.
 local STAND_TICKS = 15
+-- Its rise (animation 0) lasts 11 of its sprite's steps, its stand (1) comes round every 6, and its fall (2) lasts
+-- 9 (every game's).
+local RISE_STEPS, STAND_STEPS, FALL_STEPS = 11, 6, 9
 -- The panels around it (EXE5's 0x080CDCC8, EXE4's 0x080D5C20): dx toward the facing side, dy.
 local AROUND = {
     [0] = { -1, 0 },
@@ -184,7 +188,7 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
         if t == WATER_AT then
             water(me, me.panel_x, me.panel_y)
         end
-        if bit32.btest(me.sprite.frame_flags, 0x80) then
+        if played.ended(me.sprite, RISE_STEPS) then
             me.anim = 1
             me.timer = STAND_TICKS
             me.action = 8
@@ -224,8 +228,13 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
         elseif a == 8 then
             stand(me)
         elseif a == 12 then
-            -- EXE5's 0x080CDBD4: gone once its fall ends.
-            if bit32.btest(me.sprite.frame_flags, 0x80) then
+            -- EXE5's 0x080CDBD4: gone once its fall ends. (Until its sprite has stepped since it began to fall, it is
+            -- still standing.)
+            if
+                if me.sprite.animation == 2
+                    then played.ended(me.sprite, FALL_STEPS)
+                    else played.ended(me.sprite, STAND_STEPS, STAND_STEPS)
+            then
                 leave(me)
             end
         else

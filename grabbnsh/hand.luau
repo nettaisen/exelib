@@ -8,6 +8,7 @@
 -- EXE4's (#0x46, 0x080D5FF8) drops from 256 pixels and hits with hit
 -- modifier 0x0B: its look's `height` and `hit_mod`.
 
+local played = require("../played")
 local regions = require("../regions")
 
 local hand = {}
@@ -27,6 +28,8 @@ export type Look = {
     sprite: SpriteAsset,
     fall_sound: Sound,
     land_sound: Sound,
+    -- How many of its sprite's steps its grab (animation 1) plays out over.
+    grab_steps: number,
     target: CollisionType,
     self_type: CollisionType,
     height: number?,
@@ -37,6 +40,8 @@ local HEIGHT, FALL_SPEED = 0xC0_0000, 0x8_0000
 -- Its hit's modifier (`dword_80CCD20`: 0x4B, no spark, element 0).
 local HIT_MOD = 0x4B
 local GRAB_ANIM = 1
+-- Its fall (animation 0) comes round every 8 of its sprite's steps (every game's).
+local FALL_STEPS = 8
 
 -- `sub_80CCCE0`: fall 8 pixels a tick; on landing, hit the panel.
 local function fall(me: Object, look: Look)
@@ -78,8 +83,13 @@ local function grab(me: Object)
 end
 
 -- `sub_80CCD30`: gone once the animation is over (freed next update).
-local function done(me: Object)
-    if bit32.btest(me.sprite.frame_flags, 0x80) then
+local function done(me: Object, look: Look)
+    -- (Until its sprite has stepped since it grabbed, it is still falling.)
+    if
+        if me.sprite.animation == GRAB_ANIM
+            then played.ended(me.sprite, look.grab_steps)
+            else played.ended(me.sprite, FALL_STEPS, FALL_STEPS)
+    then
         me.lifecycle = "destroy"
     end
 end
@@ -92,7 +102,7 @@ local function tick(me: Object, look: Look)
     elseif a == 4 then
         grab(me)
     elseif a == 8 then
-        done(me)
+        done(me, look)
     else
         error(string.format("GrabBnsh's hand: action %#x reads past off_80CCCD4", a))
     end

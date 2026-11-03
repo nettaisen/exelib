@@ -6,6 +6,8 @@
 -- it, takes the chip (the opponent's hand moves on) and, a little over a second later, flies off. Then the controller
 -- moves on. See docs/engine/chips.md §2.10.
 
+local played = require("../played")
+
 local beat = {}
 
 -- Where he starts: 240 pixels from the opponent's navi toward its own
@@ -16,6 +18,8 @@ local SPEED_X = 0xC_0000
 local SPEED_Z = 0x4_0000
 -- His bounce: the X velocity loses this a tick (`byte_80C3628`).
 local BOUNCE_BRAKE = 0x4_0000
+-- The snatch (animation 2) lasts 10 of his sprite's steps.
+local SNATCH_STEPS = 10
 
 -- `object_getAllianceDirection`: +1 for the left side, -1 for the right.
 local function direction(side: number): number
@@ -82,7 +86,7 @@ function beat.make(look: BeatLook): SupportActor
             me.phase, me.phase_init = 0xC, 0
         elseif p == 0xC then
             -- sub_80C3630
-            if bit32.band(me.sprite.frame_flags, 0x80) == 0 then
+            if not played.ended(me.sprite, SNATCH_STEPS) then
                 return
             end
             me.timer = 0x4B

@@ -8,6 +8,7 @@
 -- it (0x0800BBCC), EXE4's anywhere but the other side's back column (0x080D5F0C).
 
 local panels = require("@exelib/panels")
+local played = require("@exelib/played")
 local regions = require("@exelib/regions")
 
 local gel = {}
@@ -63,6 +64,8 @@ end
 -- A taken panel stays its side's this long (`object_setPanelAllianceTimerLong`).
 local STOLEN_TICKS = 0x708
 local STAY_TICKS = 60
+-- Its fall (animation 0) lasts 2 of its sprite's steps, its splash (1) 8 (every game's).
+local FALL_STEPS, SPLASH_STEPS = 2, 8
 
 -- Its controller's list: it is gone.
 local function gone(me: Object)
@@ -144,8 +147,9 @@ function gel.make(look: Look): Gel
             me.anim = 1
             me.action = 8
         elseif a == 8 then
-            -- EXE5's 0x080CE1C8: then it sits for a second.
-            if bit32.btest(me.sprite.frame_flags, 0x80) then
+            -- EXE5's 0x080CE1C8: then it sits for a second. (Until its sprite has stepped since it landed, its fall
+            -- is still loaded.)
+            if played.ended(me.sprite, if me.sprite.animation == 1 then SPLASH_STEPS else FALL_STEPS) then
                 me.anim = 2
                 me.timer = STAY_TICKS
                 me.action = 12

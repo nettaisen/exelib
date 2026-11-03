@@ -8,6 +8,7 @@
 -- (`ice_cube.make`): its sprite, sounds, effects, debris and spark, what pushes it (its final hit modifier's bits:
 -- EXE6's 0x3C, EXE4's 0xFC) and the ice block an obstacle encased in ice becomes.
 
+local played = require("@exelib/played")
 local rock_debris = require("@exelib/rock/debris")
 
 local ice_cube = {}
@@ -51,6 +52,8 @@ export type IceCube = {
 
 local SPEED = 0xA_0000
 local FORMED = 2
+-- Look 0's forming (animation 0) lasts 10 of its sprite's steps (every game's).
+local FORMING_STEPS = 10
 -- What bursts it: bodies and neutral objects.
 local BURSTS_ON = 0x0C80_0000
 local HIT_MOD = 3
@@ -73,7 +76,7 @@ function ice_cube.make(look: Look): IceCube
     local function sit(me: Object)
         local s = me.state :: State
         if s.look == 0 then
-            if not bit32.btest(me.sprite.frame_flags, 0x80) then
+            if not played.ended(me.sprite, FORMING_STEPS) then
                 return
             end
             me.anim = FORMED

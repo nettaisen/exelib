@@ -8,6 +8,7 @@
 -- bite that hits for one tick; a second later he digs away. Then the controller moves on. See docs/engine/chips.md
 -- §2.10.
 
+local played = require("../played")
 local regions = require("../regions")
 
 export type State = {
@@ -61,6 +62,10 @@ local function enemy_direction(me: Object): number
     return 1 - 2 * me.alliance
 end
 
+-- His appearance (animation 0) lasts 24 of his sprite's steps, the bite (animation 2) 20; once he has eaten, his
+-- bite sound plays each time his dig (animation 3) comes round, every 8.
+local APPEAR_STEPS, BITE_STEPS, DIG_STEPS = 24, 20, 8
+
 -- A game's Rush, of `look`.
 function rush.make(look: RushLook): SupportActor
     -- Action 0 (`sub_80C32D8`): his animation 0 plays out, then his bark
@@ -68,7 +73,7 @@ function rush.make(look: RushLook): SupportActor
     local function appear(me: Object)
         if me.phase == 0 then
             -- sub_80C32F4
-            if bit32.band(me.sprite.frame_flags, 0x80) ~= 0 then
+            if played.ended(me.sprite, APPEAR_STEPS) then
                 me.anim = 1
                 me.timer = 0x3C
                 me.phase, me.phase_init = 4, 0
@@ -151,7 +156,7 @@ function rush.make(look: RushLook): SupportActor
             me.phase, me.phase_init = 0xC, 0
         elseif p == 0xC then
             -- sub_80C33CA: the bite.
-            if bit32.band(me.sprite.frame_flags, 0x80) == 0 then
+            if not played.ended(me.sprite, BITE_STEPS) then
                 return
             end
             eat(me)
@@ -161,7 +166,7 @@ function rush.make(look: RushLook): SupportActor
             me.phase, me.phase_init = 0x10, 0
         elseif p == 0x10 then
             -- sub_80C3408: the bite hits for a tick; he digs away after 60.
-            if bit32.band(me.sprite.frame_flags, 0x40) ~= 0 then
+            if played.ended(me.sprite, DIG_STEPS, DIG_STEPS) then
                 battle.play_sound(look.bite_sound)
             end
             me.collision:set_region(nil)

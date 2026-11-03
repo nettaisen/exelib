@@ -41,6 +41,9 @@ export type SlashGame = {
     -- The recovery clears the navi's moving flag and lets go of the overlay's too (EXE6's `sub_80EBBE2`, EXE5's;
     -- none: true); EXE4's (0x080EB832) lets go of the blade alone.
     recovery_clears_moving: boolean?,
+    -- How many of its sprite's steps the navi's warp out (animation 4) lasts: what a step sword with nowhere to step
+    -- waits out before it steps back. Each game states it (its navis' own).
+    warp_out_steps: ((me: Object) -> number)?,
 }
 
 -- A game's buster parts (@exelib/buster): the muzzle flash a shot leaves, the buster arm, an enemy navi's arm, the
@@ -1429,12 +1432,16 @@ export type Barrier = {
     threshold: number,
     timer: number,
     weak: string?,
+    -- Its visual: its sheet and animation (the next, its going down), palette, attach point and hidden parts; how
+    -- many of its sprite's steps its animation comes round in (it loops), and its going down lasts.
     look: {
         sprite: SpriteAsset,
         anim: number,
         palette: number,
         attach_point: number,
         hidden_parts: number,
+        up_steps: number,
+        down_steps: number,
     },
     hidden_unless_local_megaman: boolean?,
     sound: Sound,
@@ -1466,8 +1473,8 @@ export type Instrument = {
 -- original's `byte_80D7F4C`): what it is and hits, its hit modifier and
 -- region, its look, the panel centers it passes before it ends and its
 -- speed (16.16 a tick, forward), the status and bug its hits carry
--- (none by default). `animates`: it restarts its animation after the last
--- frame and steps it; `highlight`: it lights the panels its region
+-- (none by default). `animates`: its sprite steps, and its animation
+-- restarts once it has played, after this many steps; `highlight`: it lights the panels its region
 -- covers; `ground_shadow`: its shadow stays on the ground; `steps`: its
 -- sprite also steps after each update (the charged shot's own wave).
 export type SwordWaveVariant = {
@@ -1482,7 +1489,7 @@ export type SwordWaveVariant = {
     status: Status?,
     bug: number?,
     bug_arg: number?,
-    animates: boolean?,
+    animates: number?,
     highlight: boolean?,
     ground_shadow: boolean?,
     steps: boolean?,
@@ -1561,8 +1568,12 @@ export type ThunderBall = {
 export type ThunderBallLook = {
     sprite: SpriteAsset,
     small_anim: number,
+    -- How many of its sprite's steps a small ball's flight comes round in (looping), and its burst (the next
+    -- animation) lasts; the same for a big one.
+    small_steps: { flight: number, burst: number },
     big_sprite: SpriteAsset?,
     big_anim: number?,
+    big_steps: { flight: number, burst: number }?,
     is: CollisionType,
     target: CollisionType,
     hit_mod: number,
@@ -2068,9 +2079,9 @@ export type Cannonball = { kind: Kind, thrower: () -> Thrower }
 -- 0x080D5AA4 reads the spawn's +0x64; none: EXE5's, which stores it and never reads it), and its water's height: the
 -- register the geyser's update leaves for the water's spawn, the battle state's address (the battle-over test's r3:
 -- EXE5's 0x02034A90, EXE4's 0x02035810), at which the water's hits land and their sparks show, far above the field.
--- The Guard chips' shock wave's variant (@exelib/guard/wave, a row of the game's table): its animation, its ticks on a
--- panel, and what it does to the panels it passes.
-export type GuardWaveVariant = { anim: number, ticks: number, panel: ("cracked" | "broken" | "poison")? }
+-- The Guard chips' shock wave's variant (@exelib/guard/wave, a row of the game's table): its animation and the
+-- steps of its sprite it comes round in, its ticks on a panel, and what it does to the panels it passes.
+export type GuardWaveVariant = { anim: number, steps: number, ticks: number, panel: ("cracked" | "broken" | "poison")? }
 
 -- A game's Guard shock wave (@exelib/guard/wave): its key, sheet and sound; what a plain one is, what a marking one
 -- is, and what they hit; whether a segment keeps its sender (its flip and the sender as its owner); whether its first

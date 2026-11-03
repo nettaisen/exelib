@@ -14,6 +14,7 @@
 
 local panels = require("../panels")
 local navi_left = require("@exelib/navi_chips/left")
+local played = require("../played")
 
 local bass = {}
 
@@ -32,13 +33,16 @@ export type Spec = {
     sprite: SpriteAsset,
     -- His cape's offset to his animation.
     cape_anim_offset: number,
-    -- His arm going up (its end starts the volleys) and the volleys' animation.
+    -- His arm going up (its end, after `raise_steps` of his sprite's steps, starts the volleys) and the volleys'
+    -- animation.
     raise_anim: number,
+    raise_steps: number,
     volley_anim: number,
-    -- How he ends: "timed" (EXE6's `sub_80C3B06`) or, with the animation his last volley takes, when it ends
-    -- (EXE5's 0x080C2AD6).
+    -- How he ends: "timed" (EXE6's `sub_80C3B06`) or, with the animation his last volley takes, when it ends after
+    -- `last_steps` of his sprite's steps (EXE5's 0x080C2AD6).
     ending: "timed" | "animation",
     last_anim: number?,
+    last_steps: number?,
     -- A shot on (x, y) with his damage word (the game's panel strike), and its flash at his hand, jittered by the mask
     -- `flash_jitter` (EXE6's and EXE5's 0xF when none; EXE4's 0x080CB0EA 0x1F).
     shoot: (me: Object, x: number, y: number, damage: number) -> (),
@@ -60,6 +64,8 @@ local COLUMN_FILTER = { [0] = { 0x20, 0 }, { 0, 0x20 } }
 local ENEMY_NAVI = { [0] = { 0x0400_0000, 0 }, { 0x0800_0000, 0 } }
 local ANY_PANEL = 0x1_0000
 local SHOT_COOLDOWN = 0x16
+-- His stance (animation 0) comes round every 38 of his sprite's steps (every game's).
+local STANCE_STEPS = 38
 
 local function damage_word(me: Object): number
     return bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
@@ -171,7 +177,11 @@ function bass.make(spec: Spec): Bass
             me.phase_init = 1
             me.anim = spec.raise_anim
         end
-        if bit32.band(me.sprite.frame_flags, 0x80) == 0 then
+        -- (On the tick his arm is asked for, his stance is still loaded: its coming round would end it.)
+        local raised = if me.sprite.animation == spec.raise_anim
+            then played.ended(me.sprite, spec.raise_steps)
+            else played.ended(me.sprite, STANCE_STEPS, STANCE_STEPS)
+        if not raised then
             return
         end
         me.anim = spec.volley_anim
@@ -215,7 +225,7 @@ function bass.make(spec: Spec): Bass
     -- animation's end. Then he goes.
     local function lower(me: Object)
         if spec.ending == "animation" then
-            if bit32.band(me.sprite.frame_flags, 0x80) ~= 0 then
+            if played.ended(me.sprite, spec.last_steps :: number) then
                 me:set_lifecycle("destroy")
             end
             return

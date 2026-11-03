@@ -18,6 +18,7 @@
 --
 -- An obstacle: its update runs the obstacle framework's steps (the `obstacle` service) around its own actions.
 
+local played = require("@exelib/played")
 local regions = require("@exelib/regions")
 local rising_bubble = require("@exelib/rising_bubble")
 
@@ -102,6 +103,8 @@ local STRIKE_REGION: { [number]: Region } = {
 }
 local STRIKE_HIT_MOD = 3
 local STRIKE_ANIM = 1
+-- Its appearance (animation 0) lasts 29 of its sprite's steps, its strike 36 (every game's).
+local APPEAR_STEPS, STRIKE_STEPS = 29, 36
 
 -- Its actions (`off_80D4D60`; EXE5's table has no frozen or bubbled rows: standing and striking back are its 6 and
 -- 7, the same actions).
@@ -261,7 +264,8 @@ function statue.make(look: Look): Statue
 
     -- `sub_80D4EBC`: after the strike's animation, the dust.
     local function after_strike(me: Object)
-        if not bit32.btest(me.sprite.frame_flags, 0x80) then
+        -- (Until its sprite has stepped since it struck, its appearance is still loaded.)
+        if not played.ended(me.sprite, if me.sprite.animation == STRIKE_ANIM then STRIKE_STEPS else APPEAR_STEPS) then
             return
         end
         puff(me)

@@ -23,6 +23,7 @@
 
 local debris = require("@self/debris")
 local element = require("@exelib/element")
+local played = require("@exelib/played")
 local regions = require("@exelib/regions")
 
 local rock = {}
@@ -89,8 +90,8 @@ local HIT_MOD = 3
 local FALL_HEIGHT, GRAVITY = 0xA0_0000, 0x4000
 -- The animation it rises in.
 local RISING = 0
--- A frame's flag: its animation's last.
-local LAST_FRAME = 0x80
+-- Its rise (animation 0) lasts 10 of its sprite's steps (every game's).
+local RISE_STEPS = 10
 
 -- Its actions (EXE6's `off_80CFA48`; EXE5's table has no frozen or bubbled rows and stands in its 6, the same
 -- actions).
@@ -151,7 +152,7 @@ function rock.make(look: Look): Rock
             fall(me)
             return
         end
-        if entrance == "rise" and not bit32.btest(me.sprite.frame_flags, LAST_FRAME) then
+        if entrance == "rise" and not played.ended(me.sprite, RISE_STEPS) then
             return
         end
         if not field.check(me.panel_x, me.panel_y, SOLID, occupied) then

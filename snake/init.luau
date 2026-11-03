@@ -7,6 +7,7 @@
 --
 -- A game makes its snake kind with `snake.make_kind(id, look)`.
 
+local played = require("../played")
 local regions = require("./regions")
 
 local snake = {}
@@ -23,6 +24,8 @@ export type State = SnakeState
 local RISE, RISE_TO, SPEED = 0x2_0000, 10, 0x10_0000
 local STRIKE_Z = 0x8_0000
 local ANIM_LEAP = 1
+-- Its rise (animation 0) lasts 30 of its sprite's steps, its leap 9 (every game's).
+local RISE_STEPS, LEAP_STEPS = 30, 9
 
 -- ---- The nest's scan (`sub_80D2CBE`, `sub_80D2D40`: both games' the same code) ---------------------------------
 
@@ -199,7 +202,8 @@ local function leap(me: Object, look: Look)
         me.anim = ANIM_LEAP
         me.phase, me.phase_init = 4, 0
     elseif phase == 4 then
-        if bit32.btest(me.sprite.frame_flags, 0x80) then
+        -- (Until its sprite has stepped since it leapt, its rise is still loaded.)
+        if played.ended(me.sprite, if me.sprite.animation == ANIM_LEAP then LEAP_STEPS else RISE_STEPS) then
             battle.play_sound(look.leap_sound)
             me.phase, me.phase_init = 8, 0
         end

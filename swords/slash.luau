@@ -17,6 +17,7 @@
 -- step it doesn't swing.
 
 local parts = require("./parts")
+local played = require("../played")
 
 local slash = {}
 
@@ -28,6 +29,10 @@ export type State = {
     -- target (ShadowSoul's charged swords); EXE6's player actions never.
     turned: number,
 }
+
+-- The navi's swing (animation 5) lasts 22 of its sprite's steps (every navi's and form's in every game); its warp
+-- out (animation 4, played when there is nowhere to step) is the navi's own (`SlashGame.warp_out_steps`).
+local SWING_ANIM, WARP_OUT_ANIM, SWING_STEPS = 5, 4, 22
 
 -- One state for every sword's slash.
 slash.STATE = { timer = "u16", turned = "u32" }
@@ -76,6 +81,13 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
     -- The sprite of its afterimages of the navi (none: a copy).
     local function navi_afterimage(me: Object): SpriteAsset?
         return if rules.navi_afterimage then rules.navi_afterimage(me) else nil
+    end
+    local function warp_out_steps(me: Object): number
+        local f = rules.warp_out_steps
+        if f == nil then
+            error("a step sword with nowhere to step, in a game whose SlashGame states no warp_out_steps")
+        end
+        return f(me)
     end
     local refreshes_overlay = rules.refreshes_form_overlay ~= false
     local clears_moving = rules.recovery_clears_moving ~= false
@@ -158,7 +170,7 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
         end
         if x == nil or y == nil then
             s.turned = 0
-            me:set_animation(4)
+            me:set_animation(WARP_OUT_ANIM)
             set_step(me, STEP_BACK)
             return
         end
@@ -232,7 +244,7 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
     -- on the 10th, and the swing lasts 22.
     local function swing(me: Object, s: State)
         if me.step_init == 0 then
-            me:set_animation(5)
+            me:set_animation(SWING_ANIM)
             if refreshes_overlay then
                 me:refresh_form_overlay()
             end
@@ -247,7 +259,7 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
         if s.timer == 0x10 and stepping(me) then
             battle.afterimage(me, me.pos, {
                 sprite = navi_afterimage(me),
-                anim = 5,
+                anim = SWING_ANIM,
                 flip = flip(me),
                 color_shader = AFTERIMAGE_SHADER,
                 lifetime = 0x1E,
@@ -285,7 +297,11 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
     -- animation ends (a Beast form stays).
     local function step_back(me: Object, s: State)
         if not stays(me) then
-            if not bit32.btest(me.sprite.frame_flags, 0x80) then
+            -- (After a swing the navi is still in it; with nowhere to step, in its warp out.)
+            local back = if me.sprite.animation == WARP_OUT_ANIM
+                then played.ended(me.sprite, warp_out_steps(me))
+                else played.ended(me.sprite, SWING_STEPS)
+            if not back then
                 return
             end
             if s.turned == 1 then
