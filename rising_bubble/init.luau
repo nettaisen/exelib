@@ -8,7 +8,7 @@
 -- too, a thrown BugBomb or BlkBomb that lands in a hole leaves one as a
 -- puff of smoke, and the plus chips' sparkle is one (@exelib/instant/plus).
 
-local played = require("../played")
+local played = require("@exelib/played")
 
 local rising_bubble = {}
 

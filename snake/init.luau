@@ -7,7 +7,7 @@
 --
 -- A game makes its snake kind with `snake.make_kind(id, look)`.
 
-local played = require("../played")
+local played = require("@exelib/played")
 local regions = require("./regions")
 
 local snake = {}
