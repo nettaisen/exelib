@@ -18,7 +18,6 @@
 --
 -- An obstacle: its update runs the obstacle framework's steps (the `obstacle` service) around its own actions.
 
-local played = require("@exelib/played")
 local regions = require("@exelib/regions")
 local rising_bubble = require("@exelib/rising_bubble")
 
@@ -265,7 +264,7 @@ function statue.make(look: Look): Statue
     -- `sub_80D4EBC`: after the strike's animation, the dust.
     local function after_strike(me: Object)
         -- (Until its sprite has stepped since it struck, its appearance is still loaded.)
-        if not played.ended(me.sprite, if me.sprite.animation == STRIKE_ANIM then STRIKE_STEPS else APPEAR_STEPS) then
+        if me.sprite.steps < (if me.sprite.animation == STRIKE_ANIM then STRIKE_STEPS else APPEAR_STEPS) then
             return
         end
         puff(me)

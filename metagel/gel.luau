@@ -8,7 +8,6 @@
 -- it (0x0800BBCC), EXE4's anywhere but the other side's back column (0x080D5F0C).
 
 local panels = require("@exelib/panels")
-local played = require("@exelib/played")
 local regions = require("@exelib/regions")
 
 local gel = {}
@@ -149,7 +148,7 @@ function gel.make(look: Look): Gel
         elseif a == 8 then
             -- EXE5's 0x080CE1C8: then it sits for a second. (Until its sprite has stepped since it landed, its fall
             -- is still loaded.)
-            if played.ended(me.sprite, if me.sprite.animation == 1 then SPLASH_STEPS else FALL_STEPS) then
+            if me.sprite.steps >= (if me.sprite.animation == 1 then SPLASH_STEPS else FALL_STEPS) then
                 me.anim = 2
                 me.timer = STAY_TICKS
                 me.action = 12

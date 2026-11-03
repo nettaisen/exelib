@@ -19,7 +19,6 @@
 -- `ball.make_kind(id, look)` (EXE6's, EXE5's; EXE4's, attack 0x2A at 0x080D2000,
 -- is never big and finds its target its own way).
 
-local played = require("../played")
 local regions = require("../regions")
 
 local ball = {}
@@ -210,8 +209,8 @@ local function burst(me: Object, look: ThunderBallLook)
     local anim = if big then look.big_anim :: number else look.small_anim
     local steps = if big then look.big_steps :: { flight: number, burst: number } else look.small_steps
     local done = if me.sprite.animation == anim + 1
-        then played.ended(me.sprite, steps.burst)
-        else played.ended(me.sprite, steps.flight, steps.flight)
+        then me.sprite.steps >= steps.burst
+        else (me.sprite.steps > 0 and me.sprite.steps % steps.flight == 0)
     if done then
         me:destroy()
     end

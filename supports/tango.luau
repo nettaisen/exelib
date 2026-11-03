@@ -6,7 +6,6 @@
 -- her navi's panel; once it has landed she waits 10 ticks, bows, and rises away. Then the controller moves on. See
 -- docs/engine/chips.md §2.10.
 
-local played = require("../played")
 
 export type State = {
     -- Her heal is out (object +0x0C: the heal clears it when it lands).
@@ -99,7 +98,7 @@ function tango.make(look: TangoLook): SupportActor
             next_phase(me, 0xC)
         elseif p == 0xC then
             -- sub_80C3852: the throw, onto her navi's panel.
-            if not played.ended(me.sprite, THROW_STEPS) then
+            if me.sprite.steps < THROW_STEPS then
                 return
             end
             local navi = battle.player(me.alliance)
@@ -124,7 +123,7 @@ function tango.make(look: TangoLook): SupportActor
             next_phase(me, 0x14)
         elseif p == 0x14 then
             -- sub_80C38BA
-            if not played.ended(me.sprite, BOW_STEPS) then
+            if me.sprite.steps < BOW_STEPS then
                 return
             end
             me.anim = 0

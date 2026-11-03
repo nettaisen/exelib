@@ -15,7 +15,6 @@
 -- animations, arm or effect, burst and dark ball).
 
 local navi_left = require("@exelib/navi_chips/left")
-local played = require("../played")
 
 -- A game's BassAnly.
 export type Spec = {
@@ -86,8 +85,8 @@ function bassanly.make(spec: Spec): { kind: Kind, summon: (user: Object, control
         end
         -- (On the tick his arm is asked for, his stand is still loaded: its coming round would end it.)
         local raised = if me.sprite.animation == spec.anims.raise
-            then played.ended(me.sprite, spec.steps.raise)
-            else played.ended(me.sprite, STAND_STEPS, STAND_STEPS)
+            then me.sprite.steps >= spec.steps.raise
+            else (me.sprite.steps > 0 and me.sprite.steps % STAND_STEPS == 0)
         if not raised then
             return
         end
@@ -131,7 +130,7 @@ function bassanly.make(spec: Spec): { kind: Kind, summon: (user: Object, control
     -- shots, at 105, 85, 65 and 45 left; then 21 ticks.
     local function fire(me: Object)
         local fire_loop = spec.anims.fire_loop
-        if fire_loop and me.anim ~= fire_loop and played.ended(me.sprite, spec.steps.fire :: number) then
+        if fire_loop and me.anim ~= fire_loop and me.sprite.steps >= (spec.steps.fire :: number) then
             me.anim = fire_loop
         end
         local t = me.timer

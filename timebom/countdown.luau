@@ -27,7 +27,6 @@
 -- (`actions`: no frozen, bubbled or blink-away ones).
 
 local panel_bursts = require("../panel_bursts")
-local played = require("../played")
 local regions = require("../regions")
 
 export type State = { variant: CountdownVariant }
@@ -115,7 +114,7 @@ function countdown.make_kind(id: string, look: CountdownLook): Kind
     -- `sub_80CDA1C`: once the rising animation is over, stand if the panel
     -- allows (the countdown starts), else go at once.
     local function appear(me: Object)
-        if not played.ended(me.sprite, APPEAR_STEPS) then
+        if me.sprite.steps < APPEAR_STEPS then
             return
         end
         local v = variant(me)

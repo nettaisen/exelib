@@ -7,7 +7,6 @@
 --
 -- A game makes its snake kind with `snake.make_kind(id, look)`.
 
-local played = require("@exelib/played")
 local regions = require("./regions")
 
 local snake = {}
@@ -203,7 +202,7 @@ local function leap(me: Object, look: Look)
         me.phase, me.phase_init = 4, 0
     elseif phase == 4 then
         -- (Until its sprite has stepped since it leapt, its rise is still loaded.)
-        if played.ended(me.sprite, if me.sprite.animation == ANIM_LEAP then LEAP_STEPS else RISE_STEPS) then
+        if me.sprite.steps >= (if me.sprite.animation == ANIM_LEAP then LEAP_STEPS else RISE_STEPS) then
             battle.play_sound(look.leap_sound)
             me.phase, me.phase_init = 8, 0
         end

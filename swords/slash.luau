@@ -17,7 +17,6 @@
 -- step it doesn't swing.
 
 local parts = require("./parts")
-local played = require("../played")
 
 local slash = {}
 
@@ -299,8 +298,8 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
         if not stays(me) then
             -- (After a swing the navi is still in it; with nowhere to step, in its warp out.)
             local back = if me.sprite.animation == WARP_OUT_ANIM
-                then played.ended(me.sprite, warp_out_steps(me))
-                else played.ended(me.sprite, SWING_STEPS)
+                then me.sprite.steps >= warp_out_steps(me)
+                else me.sprite.steps >= SWING_STEPS
             if not back then
                 return
             end

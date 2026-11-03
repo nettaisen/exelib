@@ -8,7 +8,6 @@
 -- sprites, splash, sounds and collision types, and whether the splash takes the throw's Atk+ bonus (EXE4's).
 
 local panels = require("../panels")
-local played = require("../played")
 local regions = require("../regions")
 
 local geyser = {}
@@ -188,7 +187,7 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
         if t == WATER_AT then
             water(me, me.panel_x, me.panel_y)
         end
-        if played.ended(me.sprite, RISE_STEPS) then
+        if me.sprite.steps >= RISE_STEPS then
             me.anim = 1
             me.timer = STAND_TICKS
             me.action = 8
@@ -232,8 +231,8 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
             -- still standing.)
             if
                 if me.sprite.animation == 2
-                    then played.ended(me.sprite, FALL_STEPS)
-                    else played.ended(me.sprite, STAND_STEPS, STAND_STEPS)
+                    then me.sprite.steps >= FALL_STEPS
+                    else (me.sprite.steps > 0 and me.sprite.steps % STAND_STEPS == 0)
             then
                 leave(me)
             end

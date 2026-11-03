@@ -14,7 +14,6 @@
 
 local element = require("@exelib/element")
 local looks = require("@exelib/looks")
-local played = require("@exelib/played")
 local visibility = require("@exelib/visibility")
 
 local visual = {}
@@ -173,8 +172,8 @@ function visual.make(spec: Spec): Visual
         -- (On the tick it starts down, its sprite still plays the barrier up, which loops.)
         local look = b.look
         local last_frame = if me.sprite.animation == look.anim + 1
-            then played.ended(me.sprite, look.down_steps)
-            else played.ended(me.sprite, look.up_steps, look.up_steps)
+            then me.sprite.steps >= look.down_steps
+            else (me.sprite.steps > 0 and me.sprite.steps % look.up_steps == 0)
         if c.barrier ~= "none" then
             if c.barrier_hp ~= 0 and not (blows and owner:status("bubbled")) then
                 me.anim = me.anim - 1

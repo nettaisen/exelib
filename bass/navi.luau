@@ -14,7 +14,6 @@
 
 local panels = require("../panels")
 local navi_left = require("@exelib/navi_chips/left")
-local played = require("../played")
 
 local bass = {}
 
@@ -179,8 +178,8 @@ function bass.make(spec: Spec): Bass
         end
         -- (On the tick his arm is asked for, his stance is still loaded: its coming round would end it.)
         local raised = if me.sprite.animation == spec.raise_anim
-            then played.ended(me.sprite, spec.raise_steps)
-            else played.ended(me.sprite, STANCE_STEPS, STANCE_STEPS)
+            then me.sprite.steps >= spec.raise_steps
+            else (me.sprite.steps > 0 and me.sprite.steps % STANCE_STEPS == 0)
         if not raised then
             return
         end
@@ -225,7 +224,7 @@ function bass.make(spec: Spec): Bass
     -- animation's end. Then he goes.
     local function lower(me: Object)
         if spec.ending == "animation" then
-            if played.ended(me.sprite, spec.last_steps :: number) then
+            if me.sprite.steps >= (spec.last_steps :: number) then
                 me:set_lifecycle("destroy")
             end
             return

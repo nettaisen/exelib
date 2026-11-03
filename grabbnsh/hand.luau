@@ -8,7 +8,6 @@
 -- EXE4's (#0x46, 0x080D5FF8) drops from 256 pixels and hits with hit
 -- modifier 0x0B: its look's `height` and `hit_mod`.
 
-local played = require("../played")
 local regions = require("../regions")
 
 local hand = {}
@@ -87,8 +86,8 @@ local function done(me: Object, look: Look)
     -- (Until its sprite has stepped since it grabbed, it is still falling.)
     if
         if me.sprite.animation == GRAB_ANIM
-            then played.ended(me.sprite, look.grab_steps)
-            else played.ended(me.sprite, FALL_STEPS, FALL_STEPS)
+            then me.sprite.steps >= look.grab_steps
+            else (me.sprite.steps > 0 and me.sprite.steps % FALL_STEPS == 0)
     then
         me.lifecycle = "destroy"
     end

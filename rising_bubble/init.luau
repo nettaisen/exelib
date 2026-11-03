@@ -8,7 +8,6 @@
 -- too, a thrown BugBomb or BlkBomb that lands in a hole leaves one as a
 -- puff of smoke, and the plus chips' sparkle is one (@exelib/instant/plus).
 
-local played = require("@exelib/played")
 
 local rising_bubble = {}
 
@@ -29,7 +28,7 @@ local function rise(me: Object)
     me.sprite:step()
     local p = me.pos
     me.pos = Vec3.new(p.x, p.y, p.z + me.vel.z)
-    if played.ended(me.sprite, RISE_STEPS) then
+    if me.sprite.steps >= RISE_STEPS then
         me:set_lifecycle("destroy")
     end
 end

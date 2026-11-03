@@ -23,7 +23,6 @@
 
 local debris = require("@self/debris")
 local element = require("@exelib/element")
-local played = require("@exelib/played")
 local regions = require("@exelib/regions")
 
 local rock = {}
@@ -152,7 +151,7 @@ function rock.make(look: Look): Rock
             fall(me)
             return
         end
-        if entrance == "rise" and not played.ended(me.sprite, RISE_STEPS) then
+        if entrance == "rise" and me.sprite.steps < RISE_STEPS then
             return
         end
         if not field.check(me.panel_x, me.panel_y, SOLID, occupied) then

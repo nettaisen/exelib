@@ -10,7 +10,6 @@
 -- docs/engine/chips.md §3.6.8.
 
 local panels = require("../panels")
-local played = require("../played")
 local regions = require("../regions")
 
 local shot = {}
@@ -102,8 +101,8 @@ local function tick(me: Object, look: Look)
         -- (Until its sprite has stepped since it landed, it is still falling.)
         if
             if me.sprite.animation == 1
-                then played.ended(me.sprite, look.landing_steps)
-                else played.ended(me.sprite, FALL_STEPS, FALL_STEPS)
+                then me.sprite.steps >= look.landing_steps
+                else (me.sprite.steps > 0 and me.sprite.steps % FALL_STEPS == 0)
         then
             me.lifecycle = "destroy"
         end

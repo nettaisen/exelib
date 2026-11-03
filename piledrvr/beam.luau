@@ -5,7 +5,6 @@
 -- animation by that distance, drawn 60 pixels ahead), it plays its opening animation through; then it hits that
 -- one's panel ten times, 16 ticks apart, and goes. Its sound every 16 ticks; it runs while dimmed.
 
-local played = require("../played")
 local regions = require("../regions")
 
 export type State = {
@@ -41,7 +40,7 @@ local function open(me: Object)
     if me.anim_loaded ~= me.anim then
         return
     end
-    if played.ended(me.sprite, OPENING_STEPS[(me.state :: State).distance]) then
+    if me.sprite.steps >= (OPENING_STEPS[(me.state :: State).distance]) then
         me.anim = int.u8(me.anim + 1)
         me:set_action(4)
     end

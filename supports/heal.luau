@@ -4,7 +4,6 @@
 -- ticks; landed, it tells her (her `healing` flag), leaves a sparkle, heals her navi 300 HP and gives it the game's
 -- 100-HP barrier with the barrier's visual (`raise_barrier`). See docs/engine/chips.md §2.10.
 
-local played = require("../played")
 
 export type State = {
     -- The panel it lands on (the original's third and fourth parameters).
@@ -43,7 +42,7 @@ function heal.make(look: TangoHealLook): TangoHeal
 
     -- `sub_80DE088` (EXE5's 0x080DA734): the arc; landed, the heal.
     local function tick(me: Object)
-        if played.ended(me.sprite, if me.sprite.animation == 0 then THROWN_STEPS else SPIN_STEPS) then
+        if me.sprite.steps >= (if me.sprite.animation == 0 then THROWN_STEPS else SPIN_STEPS) then
             me.anim, me.anim_loaded = 1, 0
         end
         local t = me.timer - 1

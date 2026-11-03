@@ -21,7 +21,6 @@
 -- (`shot.make_kind`: its sprite and animation, its sound, its collision
 -- types and its level's ticks). See docs/engine/chips.md §3.6.35.
 
-local played = require("../played")
 local regions = require("../regions")
 
 local shot = {}
@@ -338,8 +337,8 @@ function shot.make_kind(look: Look): Kind
     local function bursting(me: Object)
         -- (Until its sprite has stepped since it burst, its flight is still loaded.)
         local done = if me.sprite.animation == ANIM + 1
-            then played.ended(me.sprite, BURST_STEPS)
-            else played.ended(me.sprite, FLYING_STEPS, FLYING_STEPS)
+            then me.sprite.steps >= BURST_STEPS
+            else (me.sprite.steps > 0 and me.sprite.steps % FLYING_STEPS == 0)
         if done then
             me:destroy()
         end

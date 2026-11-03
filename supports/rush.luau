@@ -8,7 +8,6 @@
 -- bite that hits for one tick; a second later he digs away. Then the controller moves on. See docs/engine/chips.md
 -- §2.10.
 
-local played = require("../played")
 local regions = require("../regions")
 
 export type State = {
@@ -73,7 +72,7 @@ function rush.make(look: RushLook): SupportActor
     local function appear(me: Object)
         if me.phase == 0 then
             -- sub_80C32F4
-            if played.ended(me.sprite, APPEAR_STEPS) then
+            if me.sprite.steps >= APPEAR_STEPS then
                 me.anim = 1
                 me.timer = 0x3C
                 me.phase, me.phase_init = 4, 0
@@ -156,7 +155,7 @@ function rush.make(look: RushLook): SupportActor
             me.phase, me.phase_init = 0xC, 0
         elseif p == 0xC then
             -- sub_80C33CA: the bite.
-            if not played.ended(me.sprite, BITE_STEPS) then
+            if me.sprite.steps < BITE_STEPS then
                 return
             end
             eat(me)
@@ -166,7 +165,7 @@ function rush.make(look: RushLook): SupportActor
             me.phase, me.phase_init = 0x10, 0
         elseif p == 0x10 then
             -- sub_80C3408: the bite hits for a tick; he digs away after 60.
-            if played.ended(me.sprite, DIG_STEPS, DIG_STEPS) then
+            if (me.sprite.steps > 0 and me.sprite.steps % DIG_STEPS == 0) then
                 battle.play_sound(look.bite_sound)
             end
             me.collision:set_region(nil)

@@ -7,7 +7,6 @@
 -- types and spark, and whether a flame with Param1's bit 7 also sends the two beside (EXE5's; EXE4's keeps the bit and
 -- sends none).
 
-local played = require("../played")
 local regions = require("../regions")
 
 local flame = {}
@@ -27,7 +26,7 @@ function flame.make_kind(look: Look): ElemFlame
     -- Action 0 (EXE5's 0x080D9B50, EXE4's 0x080CE44C): when its animation ends: its idle animation, its hit on; the
     -- first time, the next flame ahead (and, spreading, the two beside it), its count one less.
     local function burst(me: Object)
-        if not played.ended(me.sprite, FLAME_STEPS, FLAME_STEPS) then
+        if not (me.sprite.steps > 0 and me.sprite.steps % FLAME_STEPS == 0) then
             return
         end
         local s = me.state :: State

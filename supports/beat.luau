@@ -6,7 +6,6 @@
 -- it, takes the chip (the opponent's hand moves on) and, a little over a second later, flies off. Then the controller
 -- moves on. See docs/engine/chips.md §2.10.
 
-local played = require("../played")
 
 local beat = {}
 
@@ -86,7 +85,7 @@ function beat.make(look: BeatLook): SupportActor
             me.phase, me.phase_init = 0xC, 0
         elseif p == 0xC then
             -- sub_80C3630
-            if not played.ended(me.sprite, SNATCH_STEPS) then
+            if me.sprite.steps < SNATCH_STEPS then
                 return
             end
             me.timer = 0x4B

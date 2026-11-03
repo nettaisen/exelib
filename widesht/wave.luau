@@ -11,7 +11,6 @@
 -- its kind): WideSht's ends on its first hit; SuprSpr's goes through,
 -- hitting each panel once. See docs/engine/shot-chips.md §10.1.
 
-local played = require("../played")
 local regions = require("../regions")
 
 local wave = {}
@@ -70,7 +69,7 @@ end
 local function move(me: Object, v: WaveVariant)
     local init = me.phase_init
     if init == 0 then
-        if not played.ended(me.sprite, RISE_STEPS) then
+        if me.sprite.steps < RISE_STEPS then
             return
         end
         me.anim = ANIM_SLIDE
