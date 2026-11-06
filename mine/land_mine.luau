@@ -51,7 +51,7 @@ local HOP_TICKS, HOPS = 2, 0x3C
 local SHUFFLE_SWAPS = 0x14
 -- Where it hops (`byte_80CDF50`, by side): a free solid enemy panel, no
 -- mine on it (a mine's type reaches the objects set down).
-local TARGETS: PanelCondition = { require = { "solid", "enemy_area" }, forbid = { "occupied", "reaches_set_objects" } }
+local TARGETS: PanelCondition = { solid = true, enemy_area = true, occupied = false, reaches_set_objects = false }
 -- Its collision's hit modifier (it is a mine, and reaches what stands on
 -- either side).
 local HIT_MOD = 3
@@ -159,7 +159,7 @@ end
 local function first_panel(me: Object): (number?, number?)
     local cond = TARGETS
     -- (Shuffled from its side's order: docs/engine/side-symmetry.md.)
-    local list = panels.filtered_except(me, cond.require, cond.forbid, me.alliance, bit32.band(me.alliance, 1))
+    local list = panels.filtered_except(me, cond, me.alliance, bit32.band(me.alliance, 1))
     local n = #list
     if n == 0 then
         return nil, nil

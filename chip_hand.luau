@@ -12,7 +12,7 @@ end
 -- The side's hand has a chip at i and it does damage (its record's "has_damage" flag).
 function chip_hand.damages(side: number, i: number): boolean
     local chip = chip_hand.chip(side, i)
-    return chip ~= nil and chip.flags ~= nil and table.find(chip.flags, "has_damage") ~= nil
+    return chip ~= nil and chip.flags ~= nil and chip.flags.has_damage == true
 end
 
 -- A bonus of the entry at i of the side's hand raised by `n`, wrapping as its halfword does: its Atk+ bonus (Otenko,

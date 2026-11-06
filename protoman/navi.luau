@@ -52,10 +52,10 @@ function protoman.make(kind_spec: ProtoManKind): {
     -- His fade-in's starting gray.
     local FADE_GRAY = 0x1F
 
-    -- What he looks for (`off_80C2904`: an enemy navi's body), what a panel
-    -- he lands on must be (solid) and be free of.
-    local ENEMY_NAVI = "enemy_body"
-    local occupied = spec.occupied or "any_body"
+    -- What he looks for (`off_80C2904`: an enemy navi's body), and what a
+    -- panel he lands on must be (solid, and free of any body).
+    local ENEMY_NAVI: PanelCondition = { enemy_body = true }
+    local lands_on: PanelCondition = spec.lands_on or { solid = true, any_body = false }
     local user_panel_free = spec.user_panel_free ~= false
     local slash_at_once = spec.slash_at_once == true
 
@@ -129,7 +129,7 @@ function protoman.make(kind_spec: ProtoManKind): {
         if user and lx == user.panel_x and y == user.panel_y then
             return true
         end
-        return field.check(lx, y, "solid", occupied, me.alliance)
+        return field.check(lx, y, lands_on, me.alliance)
     end
 
     -- Action 4 (`sub_80C2854`): the slashes.
@@ -146,7 +146,7 @@ function protoman.make(kind_spec: ProtoManKind): {
             end
             while true do
                 while y <= 3 do
-                    if field.check(x, y, ENEMY_NAVI, nil, me.alliance) and can_land(me, x, y) then
+                    if field.check(x, y, ENEMY_NAVI, me.alliance) and can_land(me, x, y) then
                         me.future_panel_x, me.future_panel_y = x, y
                         s.fresh = 0
                         me.phase, me.phase_init = 4, 0

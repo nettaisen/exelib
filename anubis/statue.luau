@@ -65,7 +65,7 @@ local HEIGHT, FALL_SPEED = 0xA0_0000, 0x8_0000
 local HIT_MOD = 3
 -- A bubble every 16 ticks, on one of the other side's panels but its own (`byte_80CF364`, by side), in palette 1.
 local BUBBLE_EVERY = 0x10
-local OTHER_SIDE = "enemy_area"
+local OTHER_SIDE: PanelCondition = { enemy_area = true }
 -- The drain (`byte_80CF31C`, by side): the other side's whole area, the silent element 5, 1 damage that can't
 -- counter (0x81), hitting by what it is alone (the look's drain, target row 0), no spark, hit modifier 0.
 local DRAIN_ELEMENT, DRAIN_DAMAGE, DRAIN_COUNTER = 5, 1, 0x81
@@ -77,6 +77,8 @@ statue.ANUBIS_VARIANT = ANUBIS_VARIANT
 function statue.variant(v: AnubisVariant): AnubisVariant
     return new.record(ANUBIS_VARIANT, v)
 end
+
+local SOLID_NOT_OCCUPIED: PanelCondition = { solid = true, occupied = false }
 
 function statue.make(look: Look): Statue
     local absorbed = look.absorbed
@@ -93,7 +95,7 @@ function statue.make(look: Look): Statue
         if field.solid(me.panel_x, me.panel_y) then
             battle.shake_camera(2, 0x1E)
             -- (Where it can stand: a solid panel with nothing on it.)
-            if field.check(me.panel_x, me.panel_y, "solid", "occupied") then
+            if field.check(me.panel_x, me.panel_y, SOLID_NOT_OCCUPIED) then
                 me.collision:set_region(regions.single)
                 battle.play_sound(look.sounds.land)
                 -- (EXE5's action table has no frozen or bubbled rows: its drain is its action 6.)
@@ -115,7 +117,7 @@ function statue.make(look: Look): Statue
         local panels = {}
         for y = 3, 1, -1 do
             for x = 6, 1, -1 do
-                if field.check(x, y, OTHER_SIDE, nil, me.alliance) and not (x == me.panel_x and y == me.panel_y) then
+                if field.check(x, y, OTHER_SIDE, me.alliance) and not (x == me.panel_x and y == me.panel_y) then
                     table.insert(panels, bit32.bor(x, bit32.lshift(y, 4)))
                 end
             end

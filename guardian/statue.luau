@@ -92,15 +92,15 @@ local STAGE_DAMAGE = 200
 local HIT_MOD = 3
 -- The collision types of each side's hits (`sub_80D4FF6`: side 0's attacks, objects, bodies and other bodies,
 -- 0xAA000000; side 1's, 0x55000000), the statue's own side's and the other's.
-local OWN_HITS: { HitName } = { "own_attack", "own_object", "own_body", "own_other_body" }
-local ENEMY_HITS: { HitName } = { "enemy_attack", "enemy_object", "enemy_body", "enemy_other_body" }
+local OWN_HITS: HitNames = { own_attack = true, own_object = true, own_body = true, own_other_body = true }
+local ENEMY_HITS: HitNames = { enemy_attack = true, enemy_object = true, enemy_body = true, enemy_other_body = true }
 -- No side strikes back.
 local NONE = 0xFF
 -- The strike (`byte_80D4EB4`, by the side it strikes for): every panel with the other side's player navi, a burst
 -- on each, the camera shaking, and the statue in its striking animation. Its hit: hit modifier 3, no spark.
 local STRIKE_REGION: { [number]: Region } = {
-    [0] = new.region { field = { require = { "enemy_navi" } }, side = 0 },
-    [1] = new.region { field = { require = { "enemy_navi" } }, side = 1 },
+    [0] = new.region { field = { enemy_navi = true }, side = 0 },
+    [1] = new.region { field = { enemy_navi = true }, side = 1 },
 }
 local STRIKE_HIT_MOD = 3
 local STRIKE_ANIM = 1
@@ -130,6 +130,8 @@ local function leave(me: Object)
     me.visible = false
     me:set_lifecycle("destroy")
 end
+
+local SOLID_NOT_OCCUPIED: PanelCondition = { solid = true, occupied = false }
 
 function statue.make(look: Look): Statue
     local absorbed = look.absorbed
@@ -199,7 +201,7 @@ function statue.make(look: Look): Statue
             return
         end
         -- (Where it can stand: a solid panel with nothing on it.)
-        if not field.check(me.panel_x, me.panel_y, "solid", "occupied") then
+        if not field.check(me.panel_x, me.panel_y, SOLID_NOT_OCCUPIED) then
             destroyed(me)
             return
         end

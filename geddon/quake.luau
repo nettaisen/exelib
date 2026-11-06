@@ -69,6 +69,8 @@ export type Quake = {
 local PERIOD = 8
 local BUBBLE_PALETTE = 1
 
+local SOLID: PanelCondition = { solid = true }
+
 function quake.make(look: Look): Quake
     -- `sub_80E2628`: every 8 ticks the next panel, from the list's end; once
     -- the list is spent, destroy (a byte store: the destroy routine runs at
@@ -104,7 +106,7 @@ function quake.make(look: Look): Quake
         -- (Every row's panels, `byte_80E2588` +4, +8: solid ones. Every row
         -- lists the whole field, `sub_80E269A`; the row builder `sub_80E26D8`,
         -- its own row's, is in no row.)
-        local list = panels.filtered("solid", nil, nil, bit32.band(me.alliance, 1))
+        local list = panels.filtered(SOLID, nil, bit32.band(me.alliance, 1))
         if #list > 0 then
             panels.shuffle(list, #list, #list)
         end

@@ -33,7 +33,7 @@ local AIMING = 0xFF
 local TIMEOUT, AFTER = 0x168, 0x1E
 -- The panels whose column it won't step into when wholly theirs
 -- (`byte_80D676C`, by side): the user's side's.
-local OWN_PANELS = "own_area"
+local OWN_PANELS: PanelCondition = { own_area = true }
 
 -- `sub_800D5F0`: how many panels of column `x` aren't `side`'s.
 local function foreign_panels(x: number, side: number): number
@@ -91,7 +91,7 @@ local function horizontal(me: Object, s: State, place: (Object) -> (), own_colum
     if own_column then
         local own = 0
         for y = 1, 3 do
-            if field.check(me.panel_x, y, OWN_PANELS, nil, me.alliance) then
+            if field.check(me.panel_x, y, OWN_PANELS, me.alliance) then
                 own += 1
             end
         end
@@ -105,7 +105,7 @@ local function horizontal(me: Object, s: State, place: (Object) -> (), own_colum
         else
             local own = 0
             for y = 1, 3 do
-                if field.check(x, y, OWN_PANELS, nil, me.alliance) then
+                if field.check(x, y, OWN_PANELS, me.alliance) then
                     own += 1
                 end
             end

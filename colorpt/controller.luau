@@ -44,6 +44,8 @@ end
 
 local COLORPT_POINT = schema.record_type("colorpt-point")
 
+local SOLID_NOT_OCCUPIED: PanelCondition = { solid = true, occupied = false }
+
 function controller.make(spec: Spec): { kind: Kind, hook: (p: ColorPoint) -> (user: Object, chip: DimmingChipSpec) -> Object? }
     local front = spec.front or controller.area_front
 
@@ -56,7 +58,7 @@ function controller.make(spec: Spec): { kind: Kind, hook: (p: ColorPoint) -> (us
         local slot = 1
         for y = 1, 3 do
             local x = front(me, y)
-            if x ~= 0 and field.check(x, y, "solid", "occupied") then
+            if x ~= 0 and field.check(x, y, SOLID_NOT_OCCUPIED) then
                 spec.point(me, x, y, s.point, slot)
                 slot += 1
             end

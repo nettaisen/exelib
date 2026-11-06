@@ -42,7 +42,7 @@ local FALL_STEPS = 8
 -- The panels it takes: the other side's, with nothing on them
 -- (`byte_80C6514`, by its side): bodies, neutral objects, blockers,
 -- reservations.
-local TAKES = { require = "enemy_area", forbid = "occupied" }
+local TAKES: PanelCondition = { enemy_area = true, occupied = false }
 
 -- `sub_80C64A0`: fall; on landing, hit the panel and take it.
 local function fall(me: Object, look: Look)
@@ -72,7 +72,7 @@ local function fall(me: Object, look: Look)
     end
     local victim = bit32.bxor(me.alliance, 1)
     local spared = if look.spares == "back_column" then x == victim * 5 + 1 else not panels.can_take(x, y, victim)
-    if field.check(x, y, TAKES.require, TAKES.forbid, me.alliance) and not spared then
+    if field.check(x, y, TAKES, me.alliance) and not spared then
         -- (The original takes the side from its first parameter, which its
         -- spawn sets to its side.)
         field.set_alliance(x, y, me.alliance)

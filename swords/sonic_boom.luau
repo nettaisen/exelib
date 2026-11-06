@@ -25,14 +25,14 @@ type Look = SonicBoomLook
 -- Its speed (16.16 pixels a tick) as its throwers set it.
 sonic_boom.SPEED = 0x8_0000
 -- The hits that stop it (or that it goes through).
-local HITS: { HitName } = {
-    "own_object",
-    "enemy_object",
-    "own_body",
-    "enemy_body",
-    "own_other_body",
-    "enemy_other_body",
-    "neutral",
+local HITS: HitNames = {
+    own_object = true,
+    enemy_object = true,
+    own_body = true,
+    enemy_body = true,
+    own_other_body = true,
+    enemy_other_body = true,
+    neutral = true,
 }
 
 local function finish(me: Object)

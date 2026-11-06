@@ -22,7 +22,7 @@ export type State = {
 
 -- The panel flag that says something of the other side's stands there (`byte_80E4618`, by the controller's side):
 -- its player navi.
-local OCCUPIED = "enemy_navi"
+local OCCUPIED: PanelCondition = { enemy_navi = true }
 local BETWEEN, WAIT, WARN_UNTIL = 0x0A, 0x5A, 0x14
 local HIT_MOD = 3
 -- What the gauge loses in the operation battle: all of it.
@@ -36,7 +36,7 @@ function controller.make(look: JealousyLook): (user: Object, spec: DimmingChipSp
         local n = 0
         for x = 6, 1, -1 do
             for y = 3, 1, -1 do
-                if field.check(x, y, OCCUPIED, nil, me.alliance) then
+                if field.check(x, y, OCCUPIED, me.alliance) then
                     -- `sub_80C53A6`: a hit that runs while dimmed.
                     local box = battle.hitbox(me, {
                         panel_x = x,

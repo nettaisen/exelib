@@ -267,9 +267,9 @@ export type ProtoManKind = {
     -- EXE4's (nil: EXE6's and EXE5's). His spawner (0x080C721A) keeps neither his user, nor its facing, nor the element,
     -- and his height is his side, which his init keeps.
     summoned_alone: boolean?,
-    -- What a panel he lands on must be free of, of his side (any body), and whether his user's panel counts as free
-    -- anyway (true).
-    occupied: PanelFlags?,
+    -- What a panel he lands on must be, of his side (solid, and free of any body), and whether his user's panel counts
+    -- as free anyway (true).
+    lands_on: PanelCondition?,
     user_panel_free: boolean?,
     -- His slash (0x080C713E, 0x080C71AA): the sword, the hit and its effect as it starts (EXE6's and EXE5's hit 10
     -- ticks in), the sword away as it ends (theirs at his blink out and as he goes).
@@ -363,7 +363,7 @@ export type GustLook = {
     sprite: SpriteAsset,
     is: CollisionType,
     hits: CollisionType,
-    stopped_by: (HitName | { HitName })?,
+    stopped_by: HitNames?,
     weak_when_unseen: boolean,
     panels: PanelCondition,
 }
@@ -662,7 +662,7 @@ export type SeekingWhirlLook = {
     sound: Sound,
     attack: CollisionType,
     hits: CollisionType,
-    hidden: { StatusFlag },
+    hidden: { [StatusFlag]: boolean },
 }
 
 export type AirSpinSpec = {
@@ -778,7 +778,7 @@ export type BugCurseLook = {
     curse_id: string,
     sprite: SpriteAsset,
     sound: Sound,
-    untouched: { StatusFlag },
+    untouched: { [StatusFlag]: boolean },
     bugs: { number },
     operation_battle: (() -> boolean)?,
     operation_bugs: { number }?,
@@ -827,7 +827,7 @@ export type BoyBombLook = {
     broken: Effect,
     break_sound: Sound,
     removed: Effect?,
-    stand_forbid: { [number]: PanelFlags },
+    stands_on: { [number]: PanelCondition },
     push: ObstaclePush,
     actions: { [number]: (Object) -> () },
     reserves_panel: boolean?,
@@ -1844,7 +1844,7 @@ export type RushLook = {
     -- it mustn't be (EXE4's rows test the type's number); `pixel_nudge` false: he comes up under the opponent without
     -- EXE6's pixel down and up (EXE4's).
     stand: RushStand?,
-    not_on: { PanelType }?,
+    not_on: { [PanelType]: boolean }?,
     pixel_nudge: boolean?,
 }
 

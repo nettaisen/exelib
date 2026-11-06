@@ -25,20 +25,17 @@ local rush = {}
 -- middle), where the game's look says nothing else: on the field and his
 -- side's.
 local STAND: RushStand = {
-    [0] = { require = { "on_field", "own_area" } },
-    [1] = { require = { "on_field", "own_area" } },
+    [0] = { on_field = true, own_area = true },
+    [1] = { on_field = true, own_area = true },
 }
 
--- Names with a side's area turned to the other side's.
-local function turned(flags: PanelFlags?): PanelFlags?
-    if flags == nil then
-        return nil
+-- A condition with a side's area turned to the other side's.
+local function turned(cond: PanelCondition): PanelCondition
+    local out: PanelCondition = {}
+    for n, on in cond do
+        out[if n == "own_area" then "enemy_area" elseif n == "enemy_area" then "own_area" else n] = on
     end
-    local list: { string } = if type(flags) == "string" then { flags } else table.clone(flags :: { string })
-    for i, n in list do
-        list[i] = if n == "own_area" then "enemy_area" elseif n == "enemy_area" then "own_area" else n
-    end
-    return list
+    return out
 end
 
 -- `sub_80C3460` (EXE5's 0x080C244C): on his navi's panel if it will do
@@ -48,19 +45,18 @@ end
 -- side's, of that side: EXE5's and EXE6's rows are mirror images, EXE4's
 -- misread ones aren't, side 1's asking a side-1 panel and side 0's any:
 -- docs/engine/side-symmetry.md.)
-local function place(me: Object, stand: RushStand, not_on: { PanelType }?)
+local function place(me: Object, stand: RushStand, not_on: { [PanelType]: boolean }?)
     local navi = battle.player(me.alliance)
     local canonical = field.canonical_side()
-    local row = stand[canonical]
-    local require, forbid = row.require, row.forbid
+    local cond = stand[canonical]
     if field.side_sign(me.alliance) < 0 then
-        require, forbid = turned(require), turned(forbid)
+        cond = turned(cond)
     end
     local x, y = me.alliance * 5 + 1, 2
     if
         navi
-        and field.check(navi.panel_x, navi.panel_y, require, forbid, canonical)
-        and not (not_on and table.find(not_on, (field.panel(navi.panel_x, navi.panel_y) :: Panel).kind))
+        and field.check(navi.panel_x, navi.panel_y, cond, canonical)
+        and not (not_on and not_on[(field.panel(navi.panel_x, navi.panel_y) :: Panel).kind])
     then
         x, y = navi.panel_x, navi.panel_y
     end

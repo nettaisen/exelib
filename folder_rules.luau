@@ -35,7 +35,7 @@ local function mb(c: Chip): number
 end
 
 local function is_dark(c: Chip): boolean
-    return has(c.flags, "dark")
+    return c.flags ~= nil and c.flags.dark == true
 end
 
 -- What a folder holds against the limits: its Mega, Giga and dark chips (a dark chip is counted as dark alone), and

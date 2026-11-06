@@ -18,6 +18,8 @@ export type State = { instrument: Instrument }
 
 local WAIT = 0x3C
 
+local SOLID_NOT_OCCUPIED: PanelCondition = { solid = true, occupied = false }
+
 -- A game's controller (kind `id`) setting instruments of
 -- `instrument_kind`: its chips' hook of an instrument. `side_only`: its
 -- spawn copies the user's side alone, not its facing (EXE4's, 0x080E73B8).
@@ -31,7 +33,7 @@ function instruments.make(
         if me.phase_init == 0 then
             local x, y = me.panel_x + me.facing, me.panel_y
             -- (`byte_80E5E98`: the panel in front must be solid and free, both sides.)
-            if field.check(x, y, "solid", "occupied") then
+            if field.check(x, y, SOLID_NOT_OCCUPIED) then
                 local damage = bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
                 instrument.spawn_kind(instrument_kind, me, x, y, (me.state :: State).instrument, damage)
             end

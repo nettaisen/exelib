@@ -24,7 +24,7 @@ local GUST_INTERVAL = 0xC
 local HIT_MOD = 0
 -- Where the gust blows from (`byte_80CD2A4`, by side): the fan's side's
 -- own panels.
-local OWN_PANELS = "own_area"
+local OWN_PANELS: PanelCondition = { own_area = true }
 
 local FAN_VARIANT = schema.record_type("fan-variant")
 fan.FAN_VARIANT = FAN_VARIANT
@@ -33,6 +33,8 @@ fan.FAN_VARIANT = FAN_VARIANT
 function fan.variant(v: FanVariant): FanVariant
     return new.record(FAN_VARIANT, v)
 end
+
+local NEUTRAL: PanelFlags = { neutral = true }
 
 function fan.make(look: FanLook): Fan
     -- `sub_80CD26C`: Wind's gust starts on the enemy's first column of `row`:
@@ -48,7 +50,7 @@ function fan.make(look: FanLook): Fan
         local x = 6 - 5 * back
         local found = 0
         while field.valid(x, row) do
-            if field.check(x, row, OWN_PANELS, nil, me.alliance) then
+            if field.check(x, row, OWN_PANELS, me.alliance) then
                 found = x
                 break
             end
@@ -56,7 +58,7 @@ function fan.make(look: FanLook): Fan
         end
         x = found + me.facing
         -- (Another obstacle on the panel, a neutral object: no gust.)
-        if field.any(x, row, "neutral") then
+        if field.any(x, row, NEUTRAL) then
             return 0
         end
         return x
@@ -68,9 +70,9 @@ function fan.make(look: FanLook): Fan
     local function pull_column(me: Object, row: number): number
         local x = bit32.bxor(bit32.bxor(me.alliance, me.flip), 1) * 5 + 1
         if look.far_column_only then
-            return if field.any(x, row, "neutral") then 0 else x
+            return if field.any(x, row, NEUTRAL) then 0 else x
         end
-        while field.any(x, row, "neutral") do
+        while field.any(x, row, NEUTRAL) do
             x -= me.facing
             if x == 0 or x == 7 then
                 return 0

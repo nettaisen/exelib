@@ -64,6 +64,8 @@ local function damage_word(me: Object): number
     return int.u32(me.attack_damage + me.hit_param * 0x10000 + me.extra)
 end
 
+local ON_FIELD_NOT_ANY_BODY: PanelCondition = { on_field = true, any_body = false }
+
 -- A chip's slash, its blade an attachment of `attachment` (a game's kind),
 -- with what `game` asks of the user's form (`SlashGame`: EXE6's Beast forms)
 -- and its step (its `steps`; none: EXE6's, by the chip's `step`).
@@ -159,7 +161,7 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
             s.turned = 0
             -- sub_8015B00: two panels ahead.
             x, y = me.panel_x + 2 * me.facing, me.panel_y
-            if not field.check(x, y, "on_field", "any_body") then
+            if not field.check(x, y, ON_FIELD_NOT_ANY_BODY) then
                 x, y = nil, nil
             end
         end

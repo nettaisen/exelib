@@ -37,7 +37,7 @@ local ANIM = 0
 local START, SPEED = 0x100_0000, 0x10_0000
 local WAIT, FALL = 0x1E, 0x10
 -- It bursts where the panel is solid or holds a body.
-local BURSTS_ON: { PanelFlag } = { "any_body", "solid" }
+local BURSTS_ON: PanelFlags = { any_body = true, solid = true }
 -- The camera shake's ticks.
 local SHAKE_TICKS = 0xF
 

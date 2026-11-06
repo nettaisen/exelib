@@ -68,6 +68,8 @@ local function swallowable(o: Object): boolean
     return identity ~= nil and identity.class == "field_object" and identity.scrap ~= false
 end
 
+local SOLID: PanelFlags = { solid = true }
+
 -- `sub_80DC310`: swallow the first field object among what it touched;
 -- then on ahead of the ball, hitting again in a new column; gone where the
 -- panel isn't solid or off the field.
@@ -77,7 +79,7 @@ local function roll(me: Object)
     local c = me.collision
     if c.hit then
         local found: Object? = nil
-        for i, o in c:hit_by() do
+        for i, o in c:hitters() do
             if i > LOOKS_AT then
                 break
             end
@@ -102,7 +104,7 @@ local function roll(me: Object)
     if me.panel_x ~= x then
         c:set_region(regions.single)
     end
-    if not field.any(me.panel_x, me.panel_y, "solid") or not field.valid(me.panel_x, me.panel_y) then
+    if not field.any(me.panel_x, me.panel_y, SOLID) or not field.valid(me.panel_x, me.panel_y) then
         leave(me)
     end
 end

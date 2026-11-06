@@ -45,14 +45,18 @@ export type Gel = {
 
 local DROP, START_Z = 0x80000, 0x100_0000
 local HIT_MOD = 3
+local STAYS_ON: PanelCondition = { solid = true, enemy_area = true, occupied = false }
+
 -- Where it stays (EXE5's 0x080CE1AC, EXE4's 0x080D5F70, by side; a side but 0 as side 1): a solid panel of the other
 -- side's, with nothing on it.
 local function stays(x: number, y: number, side: number): boolean
-    return field.check(x, y, { "solid", "enemy_area" }, "occupied", if side == 0 then 0 else 1)
+    return field.check(x, y, STAYS_ON, if side == 0 then 0 else 1)
 end
+local ENEMY_AREA_NOT_OCCUPIED: PanelCondition = { enemy_area = true, occupied = false }
+
 -- Where it may take the panel (EXE5's 0x080CE19C, EXE4's 0x080D5F60, by side): the other side's, with nothing on it.
 local function may_take(x: number, y: number, side: number): boolean
-    return field.check(x, y, "enemy_area", "occupied", if side == 0 then 0 else 1)
+    return field.check(x, y, ENEMY_AREA_NOT_OCCUPIED, if side == 0 then 0 else 1)
 end
 -- A taken panel stays its side's this long (`object_setPanelAllianceTimerLong`).
 local STOLEN_TICKS = 0x708

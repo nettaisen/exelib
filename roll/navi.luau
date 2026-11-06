@@ -73,9 +73,9 @@ export type Spec = {
     summoned_alone: boolean?,
     -- Where her ribbon is kept ("held", ExtraVars+0x0C; EXE4's "related", +0x4C).
     ribbon_slot: Slot?,
-    -- What a panel she lands on must be free of, of her side (any body), and whether her user's panel counts as free
+    -- What a panel she lands on must be, of her side (free of any body), and whether her user's panel counts as free
     -- anyway (true).
-    occupied: PanelFlags?,
+    lands_on: PanelCondition?,
     user_panel_free: boolean?,
     -- Her user warping back in (EXE6's and EXE5's: her related1's, `sub_80E1332`).
     recall: ((me: Object) -> ())?,
@@ -124,9 +124,9 @@ local roll = {}
 local FADE_GRAY = 0x1F
 
 -- What she looks for (`off_80C0D90`: an enemy navi's body), and what a
--- panel she lands on must be free of.
-local ENEMY_NAVI = "enemy_body"
-local OCCUPIED = "any_body"
+-- panel she lands on must be (free of any body).
+local ENEMY_NAVI: PanelCondition = { enemy_body = true }
+local LANDS_ON: PanelCondition = { any_body = false }
 
 -- How high she warps (Z's whole part), and how fast (16.16).
 local WARP_HEIGHT = 0xA0
@@ -137,11 +137,11 @@ local WARP_SPEED = 0xF_0000
 -- compares the candidate's row with the best's row distance, as the game
 -- does. 0 if none.
 local function target(me: Object, spec: Spec): (number, number)
-    local found = panels.filtered_except(me, ENEMY_NAVI, nil, me.alliance)
+    local found = panels.filtered_except(me, ENEMY_NAVI, me.alliance)
     if #found == 0 then
         return 0, 0
     end
-    local occupied = spec.occupied or OCCUPIED
+    local lands_on = spec.lands_on or LANDS_ON
     local user_panel_free = spec.user_panel_free ~= false
     local right = bit32.bxor(me.alliance, me.flip) == 0
     local candidates = {}
@@ -151,7 +151,7 @@ local function target(me: Object, spec: Spec): (number, number)
         if ahead then
             local lx = x - me.facing
             local user = if user_panel_free then me.related1 :: Object else nil
-            local free = field.check(lx, y, nil, occupied, me.alliance)
+            local free = field.check(lx, y, lands_on, me.alliance)
             if (user and lx == user.panel_x and y == user.panel_y) or free then
                 table.insert(candidates, { lx, y })
             end

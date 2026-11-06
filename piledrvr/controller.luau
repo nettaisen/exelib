@@ -25,9 +25,9 @@ export type State = {
 export type Spec = { id: string, pile: Kind, second_alone: boolean }
 
 -- A pile's panel: solid, with nothing on it.
-local TAKEN = "occupied"
+local SOLID_NOT_OCCUPIED: PanelCondition = { solid = true, occupied = false }
 -- The other side's bodies, of the side looking.
-local BODIES: { PanelFlag } = { "enemy_body", "enemy_other_body", "neutral" }
+local BODIES: PanelFlags = { enemy_body = true, enemy_other_body = true, neutral = true }
 -- No one in the row (0xFF), and the nearest the first pile may see someone from.
 local NONE, REACH = 0xFF, 4
 
@@ -59,13 +59,13 @@ type Piles = { x: number, y: number, distance: number, x2: number, y2: number, d
 -- left) if that is another panel; each one where a pile can stand. Nil for no piles.
 local function find(me: Object, second_alone: boolean): Piles?
     local x, y = me.panel_x + me.facing, me.panel_y
-    if not field.check(x, y, "solid", TAKEN) then
+    if not field.check(x, y, SOLID_NOT_OCCUPIED) then
         return nil
     end
     local found: Piles = { x = x, y = y, distance = 0, x2 = 0, y2 = 0, distance2 = 0 }
     local far = 6 - 5 * bit32.bxor(me.alliance, me.flip)
     -- (In the first's row, so another panel if another column.)
-    if field.check(far, y, "solid", TAKEN) and far ~= x then
+    if field.check(far, y, SOLID_NOT_OCCUPIED) and far ~= x then
         found.x2, found.y2 = far, y
     end
     found.distance = distance(x, y, me.alliance, me.flip)

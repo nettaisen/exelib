@@ -112,6 +112,8 @@ controller.listed = {
 -- EXE4's targets: the panel the next meteor falls on (+0x60, +0x64), found as the last one falls.
 type Scanned = { x: number, y: number }
 
+local ENEMY_AREA: PanelCondition = { enemy_area = true }
+
 -- 0x080E5D9A: from the panel after the last, down its column and then column by column toward the user's side, the
 -- next panel of the other side's (0x080E5E10's flags: the owner bit 0x20 set for side 0's meteors, clear for side
 -- 1's); off the field, the same from the far column's top (0x080E5E24: column 6 for side 0, 1 for side 1). None: the
@@ -130,7 +132,7 @@ local function scan(me: Object, s: Scanned): boolean
                 if x < 1 or x > 6 then
                     break
                 end
-            elseif field.check(x, y, "enemy_area", nil, of) then
+            elseif field.check(x, y, ENEMY_AREA, of) then
                 s.x, s.y = x, y
                 return true
             else

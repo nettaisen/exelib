@@ -22,7 +22,7 @@ export type State = {
 
 -- What the effect looks for (`off_80CFEB8`, by the user's side): the other
 -- side's bodies.
-local TARGETS = "enemy_body"
+local TARGETS: PanelFlags = { enemy_body = true }
 
 -- The strike (`dword_80CFEC0`): one panel, the fire spark, an attack that
 -- hits navis.

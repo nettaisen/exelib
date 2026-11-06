@@ -37,14 +37,14 @@ local HIT_MOD = 0
 -- The burst: ticks it sits (61).
 local SIT_TICKS = 0x3C
 -- What in its hits ends it at once.
-local CRUSHED: { HitName } = {
-    "own_object",
-    "enemy_object",
-    "own_body",
-    "enemy_body",
-    "own_other_body",
-    "enemy_other_body",
-    "neutral",
+local CRUSHED: HitNames = {
+    own_object = true,
+    enemy_object = true,
+    own_body = true,
+    enemy_body = true,
+    own_other_body = true,
+    enemy_other_body = true,
+    neutral = true,
 }
 
 -- Pick one of `choices` (indices) at random, one RNG draw, or of `all` when there are none.

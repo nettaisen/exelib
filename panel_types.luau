@@ -73,7 +73,7 @@ export type BurnSpec = {
     -- The damage in fire, shifted by the body's weakness to fire.
     damage: number,
     -- The statuses that spare a body (EXE5's 0x88000206, EXE4's 0x206).
-    spared_by: { StatusFlag },
+    spared_by: { [StatusFlag]: boolean },
     -- What it wears off the mood besides (EXE4's 20, its +0x36).
     mood: number?,
     -- A player burns while the battle is dimmed too (EXE4's 0x08013128, which has no dimming test; every other
@@ -96,8 +96,8 @@ function panel_types.burn(spec: BurnSpec): (Object, boolean) -> ()
         if c.element == FIRE or c.region == nil or me.status.float_shoe then
             return
         end
-        for _, s in spec.spared_by do
-            if (me.status :: any)[s] then
+        for s, on in spec.spared_by do
+            if on and (me.status :: any)[s] then
                 return
             end
         end

@@ -84,7 +84,7 @@ local function collect(me: Object, c: PanelChange): { number }
     local cond = c.condition
     local list: { number } = {}
     for _, p in candidates do
-        if field.check(panels.x(p), panels.y(p), cond.require, cond.forbid, me.alliance) then
+        if field.check(panels.x(p), panels.y(p), cond, me.alliance) then
             table.insert(list, p)
         end
     end

@@ -86,6 +86,8 @@ end
 -- `sub_80D2398`.
 local function standing(_me: Object) end
 
+local OWN_AREA: PanelCondition = { own_area = true }
+
 function boulder.make(look: Look): Kind
     local absorbed = look.absorbed
     local by_hp = look.leaves_by_hp == true
@@ -218,7 +220,7 @@ function boulder.make(look: Look): Kind
             o:set_damage_word(look.damage)
             o.element = 0
             -- (Side 1's on a panel of side 1's area.)
-            o.alliance = if field.check(x, y, "own_area", nil, 1) then 1 else 0
+            o.alliance = if field.check(x, y, OWN_AREA, 1) then 1 else 0
             -- (The original reads by the column as it is: a boulder on column 3 is in use and shown, one on column
             -- 4, side 1's front, isn't. nettai reads the other side's than the canonical by the mirrored column, so
             -- a boulder on either side's front column is as the canonical side's: docs/engine/side-symmetry.md.)

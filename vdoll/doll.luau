@@ -32,7 +32,7 @@ export type DollLook = {
     hit_mod: number,
     spark: Spark,
     set_down: { is: CollisionType, hits: CollisionType, hit_mod: number }?,
-    breaking_hits: { HitName }?,
+    breaking_hits: HitNames?,
     landing_panel: PanelType,
     landing_sound: Sound,
     puff: Effect,

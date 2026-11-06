@@ -38,7 +38,7 @@ type State = {
 }
 
 -- What blows it up (EXE5's 0x080C507C, EXE4's 0x080CDB24): the other side's bodies and objects, by its side.
-local ENEMY: { HitName } = { "enemy_body", "enemy_other_body", "neutral" }
+local ENEMY: HitNames = { enemy_body = true, enemy_other_body = true, neutral = true }
 local RISE, GRAVITY = 0x4_0000, -0x3000
 local LOW = 0x19
 local SHOW = 0x3C

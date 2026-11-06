@@ -43,9 +43,9 @@ end
 function bomb.make(look: BoyBombLook): BoyBomb
     -- EXE5's 0x080CD29C: whether it may stand where it is (else it breaks: Param2).
     local function may_stand(me: Object): boolean
-        -- (Where it may stand: solid, without what its side's entry forbids.)
+        -- (Where it may stand: its side's entry.)
         local side = bit32.band(me.alliance, 1)
-        local ok = field.check(me.panel_x, me.panel_y, "solid", look.stand_forbid[side], side)
+        local ok = field.check(me.panel_x, me.panel_y, look.stands_on[side], side)
         if not ok then
             state(me).doomed = true
         end

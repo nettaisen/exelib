@@ -163,8 +163,8 @@ function bugcurse.make(look: BugCurseLook): (user: Object, spec: DimmingChipSpec
     end
 
     local function untouched(o: Object): boolean
-        for _, f in look.untouched do
-            if (o.status :: any)[f] then
+        for f, on in look.untouched do
+            if on and (o.status :: any)[f] then
                 return true
             end
         end

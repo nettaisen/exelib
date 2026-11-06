@@ -46,6 +46,8 @@ local SPEED = 0x3_0000
 -- Its hit modifier, no spark.
 local HIT_MOD = 3
 
+local SOLID: PanelFlags = { solid = true }
+
 -- `sub_80DBA7C`: grow if the roller swallowed something last tick; roll
 -- on, hitting again in a new column; gone where the panel isn't solid or
 -- off the field.
@@ -73,7 +75,7 @@ local function roll(me: Object, look: Look)
     if me.panel_x ~= x then
         c:set_region(regions.single)
     end
-    if not field.any(me.panel_x, me.panel_y, "solid") or not field.valid(me.panel_x, me.panel_y) then
+    if not field.any(me.panel_x, me.panel_y, SOLID) or not field.valid(me.panel_x, me.panel_y) then
         c:set_region(nil)
         me:set_lifecycle("destroy")
     end

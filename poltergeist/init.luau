@@ -46,17 +46,17 @@ export type State = {
 local FIRST_SHAKE, SHAKE_STEP, LINGER = 30, 20, 30
 -- Panels with the other side's navi on them, of the thrower's side (0x0800D680), else the other side's panels
 -- (0x0800D690).
-local NAVIS = "enemy_body"
-local ENEMY_PANELS = "enemy_area"
+local NAVIS: PanelCondition = { enemy_body = true }
+local ENEMY_PANELS: PanelCondition = { enemy_area = true }
 
--- The field's panels that meet (require, forbid) (of side `side`), rows 3 to 1 and columns 6 to 1
+-- The field's panels that meet `cond` (of side `side`), rows 3 to 1 and columns 6 to 1
 -- (`object_getPanelsFiltered`), but `skip`'s own (`object_getPanelsExceptCurrentFiltered`). (Its test asks the flags
 -- word for no more than its bits: the field's panels all have flags.)
-local function panels(require: PanelFlags?, forbid: PanelFlags?, side: number, skip: Object?): { { number } }
+local function panels(cond: PanelCondition?, side: number, skip: Object?): { { number } }
     local out = {}
     for y = 3, 1, -1 do
         for x = 6, 1, -1 do
-            if field.check(x, y, require, forbid, side) then
+            if field.check(x, y, cond, side) then
                 if not (skip and skip.panel_x == x and skip.panel_y == y) then
                     table.insert(out, { x, y })
                 end
@@ -79,22 +79,22 @@ end
 -- other side's but its own; else any.
 local function random_target(me: Object): (number, number)
     local side = me.alliance
-    local navis = panels(NAVIS, nil, side, nil)
+    local navis = panels(NAVIS, side, nil)
     if #navis > 0 then
         return pick(navis)
     end
-    local others = panels(ENEMY_PANELS, nil, side, me)
+    local others = panels(ENEMY_PANELS, side, me)
     if #others > 0 then
         return pick(others)
     end
-    return pick(panels(nil, nil, side, nil))
+    return pick(panels(nil, side, nil))
 end
 
 -- EXE5's 0x080E8E7C (EXE4's 0x080DEF1A): of the panels with the other side's navi but its own, those in front of it as
 -- it faces, the nearest by columns, then (as the original compares) the one whose row is under the best's row
 -- difference, then the upper; (0, 0) when there is none.
 local function nearest_target(me: Object): (number, number)
-    local found = panels(NAVIS, nil, me.alliance, me)
+    local found = panels(NAVIS, me.alliance, me)
     local facing_left = bit32.bxor(me.alliance, me.flip) ~= 0
     local best_x, best_y, best_dx, best_dy = 0, 0, 0xFF, 0xFF
     for _, p in found do

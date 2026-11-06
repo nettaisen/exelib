@@ -41,7 +41,7 @@ export type Spec = {
 local INTERVAL, AFTER = 0x1E, 0x3C
 -- Where the hands go (`byte_80E2E24`, by side): the other side's player
 -- navi's panels.
-local TARGETS = "enemy_navi"
+local TARGETS: PanelCondition = { enemy_navi = true }
 
 -- `sub_80E2D98`: each of the side's own panels the other side holds
 -- (`sub_800D618`) comes back when the dimming is over (its column's return
@@ -72,7 +72,7 @@ local function strike(me: Object, hand_kind: Kind): number
     local n = 0
     for x = 6, 1, -1 do
         for y = 3, 1, -1 do
-            if field.check(x, y, TARGETS, nil, me.alliance) then
+            if field.check(x, y, TARGETS, me.alliance) then
                 hand.spawn(hand_kind, me, x, y, me.element, damage, n == 0)
                 n += 1
             end

@@ -56,9 +56,9 @@ export type Look = {
     -- The damage a stage's rocks do when thrown (EXE6's 200; EXE5's the same, 0x08006910); none: no stage of the
     -- game places one (EXE4's).
     stage_damage: number?,
-    -- What on the panel it appears on breaks it (none: bodies, neutral objects, blockers and reservations,
-    -- `occupied`; EXE4's any body, 0x0F800000).
-    occupied: PanelFlags?,
+    -- What the panel it appears on must be, else it breaks (none: solid, free of bodies, neutral objects, blockers and
+    -- reservations, `occupied`; EXE4's free of any body, 0x0F800000).
+    stands_on: PanelCondition?,
     -- Its action table by the framework's numbers, given its appearing, leaving and standing (EXE4's 0x080D8ABC);
     -- none: EXE6's `off_80CFA48`.
     actions: ((appear: (Object) -> (), destroyed: (Object) -> (), standing: (Object) -> ()) -> { [number]: (Object) -> () })?,
@@ -83,7 +83,7 @@ export type Rock = {
 local LIFETIME = 6000
 -- Where it can stand (`object_checkPanelParameters`): a solid panel with nothing on it (bodies, neutral objects,
 -- blockers, reservations).
-local OCCUPIED = "occupied"
+local STANDS_ON: PanelCondition = { solid = true, occupied = false }
 local HIT_MOD = 3
 -- Falling from 160 pixels up, 0.25 pixels a tick faster each tick.
 local FALL_HEIGHT, GRAVITY = 0xA0_0000, 0x4000
@@ -106,7 +106,7 @@ end
 
 function rock.make(look: Look): Rock
     local absorbed = look.absorbed
-    local occupied = look.occupied or OCCUPIED
+    local stands_on = look.stands_on or STANDS_ON
     local by_hp = look.leaves_by_hp == true
 
     -- Stand on the panel: the standing animation, collision on the panel, and the normal pause behavior.
@@ -157,7 +157,7 @@ function rock.make(look: Look): Rock
         if entrance == "rise" and me.sprite.steps < RISE_STEPS then
             return
         end
-        if not field.check(me.panel_x, me.panel_y, "solid", occupied) then
+        if not field.check(me.panel_x, me.panel_y, stands_on) then
             me:set_action(DESTROYED)
             return
         end

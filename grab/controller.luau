@@ -77,6 +77,8 @@ function grab.column_to_grab(me: Object): number?
     return x
 end
 
+local OWN_AREA: PanelCondition = { own_area = true }
+
 -- `object_getEdgePanelMatchingRow` (`sub_800D4D0`): in the controller's
 -- row, the first panel past the user's side's front (nil if none). EXE6's
 -- and EXE5's PanelGrab panel.
@@ -97,7 +99,7 @@ function grab.edge_panel(me: Object): (number?, number?)
     end
     -- object_getFirstPanelInDirectionFiltered: on back to the user's
     -- side's first panel (`byte_800D52C`).
-    while not field.check(x, y, "own_area", nil, side) do
+    while not field.check(x, y, OWN_AREA, side) do
         x -= front
         if not field.valid(x, y) then
             return nil, nil

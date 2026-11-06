@@ -46,16 +46,16 @@ local TOP, BOTTOM = 0x4_0000, 0x34_0000
 -- hits are the game's: EXE6's an attack that hits navis.)
 local HIT_MOD, STRONG_HIT_MOD = 1, 3
 -- A hit registered by something (`dword_80CA540`).
-local HIT: { HitName } = {
-    "own_attack",
-    "enemy_attack",
-    "own_object",
-    "enemy_object",
-    "own_body",
-    "enemy_body",
-    "own_other_body",
-    "enemy_other_body",
-    "neutral",
+local HIT: HitNames = {
+    own_attack = true,
+    enemy_attack = true,
+    own_object = true,
+    enemy_object = true,
+    own_body = true,
+    enemy_body = true,
+    own_other_body = true,
+    enemy_other_body = true,
+    neutral = true,
 }
 
 -- The legs.
@@ -68,6 +68,8 @@ function boomerang.variant(v: Variant): Variant
     return new.record(BOOMERANG_VARIANT, v)
 end
 
+local OWN_AREA: PanelCondition = { own_area = true }
+
 -- `sub_80CA510`: a grass boomerang turns the other side's panel it is on
 -- to grass, if the panel can grow it (solid).
 local function grow_grass(me: Object, s: State)
@@ -78,7 +80,7 @@ local function grow_grass(me: Object, s: State)
     if not field.solid(x, y) then
         return
     end
-    if field.check(x, y, "own_area", nil, me.alliance) then
+    if field.check(x, y, OWN_AREA, me.alliance) then
         return
     end
     field.set_type(x, y, "grass")

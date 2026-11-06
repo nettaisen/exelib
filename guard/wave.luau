@@ -63,6 +63,8 @@ local function mark(x: number, y: number, v: GuardWaveVariant)
     end
 end
 
+local SOLID: PanelCondition = { solid = true }
+
 -- A game's shock wave: its spawn, a segment of `owner`'s on (x, y), of `variant`, with the damage word, of no element
 -- (EXE6's `sub_80C6CE4`, EXE5's 0x080C752C, EXE4's 0x080CFD2A). (Its position is the spawner's registers until its init
 -- places it.)
@@ -97,7 +99,7 @@ function wave.make(look: GuardWaveLook): GuardWaveSpawn
         local c = me.collision
         c:remove()
         me:hit_spark()
-        if battle.over() or not field.check(me.panel_x, me.panel_y, "solid") then
+        if battle.over() or not field.check(me.panel_x, me.panel_y, SOLID) then
             finish(me)
             return
         end
@@ -119,7 +121,7 @@ function wave.make(look: GuardWaveLook): GuardWaveSpawn
     -- EXE5's 0x080C73C0, EXE4's 0x080CFBD4: on a solid panel, its look and timing; its panel marked; its collision;
     -- the sound.
     local function init(me: Object)
-        if not field.check(me.panel_x, me.panel_y, "solid") then
+        if not field.check(me.panel_x, me.panel_y, SOLID) then
             me:free()
             return
         end

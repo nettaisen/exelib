@@ -101,6 +101,8 @@ function immobilizer.spawn(kind: Kind, owner: Object, x: number, y: number): Obj
     return o
 end
 
+local ENEMY_BODY: PanelFlags = { enemy_body = true }
+
 -- `sub_8015AA6`'s loop: from (x, y) forward to the field's edge, an
 -- immobilizer of `kind` on every panel with an enemy body (`off_8015AF8`,
 -- by the user's side); each running while the battle is dimmed where
@@ -108,7 +110,7 @@ end
 function immobilizer.ahead(kind: Kind, user: Object, x: number, y: number, while_dimmed: boolean?)
     local ahead = user.facing
     while field.valid(x, y) do
-        if field.any(x, y, "enemy_body", user.alliance) then
+        if field.any(x, y, ENEMY_BODY, user.alliance) then
             local o = immobilizer.spawn(kind, user, x, y)
             if o and while_dimmed then
                 o.run_while_dimmed = true

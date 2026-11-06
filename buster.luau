@@ -36,12 +36,7 @@ end
 
 -- Whether `form` has trait `trait`.
 local function has_trait(form: FormDef, trait: FormTrait): boolean
-    for _, t in form.traits or {} do
-        if t == trait then
-            return true
-        end
-    end
-    return false
+    return form.traits ~= nil and form.traits[trait] == true
 end
 
 -- `sub_80EB572`: the buster arm `navi`'s actor and side call for, held by
@@ -97,7 +92,7 @@ end
 local function recovery(RECOVERY: { { number } }, closed: PanelFlags, navi: Object, x: number, y: number): number
     local open = 0
     while true do
-        if not field.check(x, y, nil, closed, navi.alliance) then
+        if not field.check(x, y) or field.any(x, y, closed, navi.alliance) then
             break
         end
         open += 1

@@ -46,7 +46,7 @@ local VANISH_ANIM = 4
 local HIT_MOD = 1
 local HEIGHT = 0xA0_0000
 -- An enemy's body (`byte_8016290`, by side).
-local ENEMY_BODY = "enemy_body"
+local ENEMY_BODY: PanelFlags = { enemy_body = true }
 -- The rows `sub_8016218` looks at, by the navi's row (`byte_8016298`).
 local ROWS: { [number]: { number } } = { [1] = { 1, 2, 3 }, [2] = { 2, 1, 3 }, [3] = { 3, 1, 2 } }
 

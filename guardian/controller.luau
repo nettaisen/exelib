@@ -23,13 +23,15 @@ export type Spec = {
 
 local WAIT = 0x1E
 
+local SOLID_NOT_OCCUPIED: PanelCondition = { solid = true, occupied = false }
+
 function controller.make(spec: Spec): { hook: (user: Object, dspec: DimmingChipSpec) -> Object? }
     -- `sub_80E679C`: the statue, then 30 ticks.
     local function effect(me: Object)
         if me.phase_init == 0 then
             local x, y = me.panel_x + me.facing, me.panel_y
             -- (Where the statue goes: a solid panel with nothing on it.)
-            if field.check(x, y, "solid", "occupied") then
+            if field.check(x, y, SOLID_NOT_OCCUPIED) then
                 local bonus = (me.state :: State).bonus
                 spec.statue(me, x, y, dimming_chips.damage_plus(me, bonus), Vec3.new(y, me.element, bonus))
             end

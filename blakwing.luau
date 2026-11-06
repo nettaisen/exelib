@@ -75,7 +75,7 @@ local HIT_MOD = 1
 
 -- The enemy's area (EXE5's 0x080D63AC, EXE4's 0x080DD214: the panels a side's flock looks for), the column EXE5's
 -- starts from (0x080D63BC, by side and flip) and EXE4's (0x080DD224, by side).
-local AREA = "enemy_area"
+local AREA: PanelCondition = { enemy_area = true }
 local START = { [0] = 4, [1] = 3 }
 local START_BY_COLUMN = { [0] = 4, [1] = 1 }
 local MAX_PERCHES = 3
@@ -249,7 +249,7 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
 
     local function has_area(me: Object, x: number): boolean
         for y = 1, 3 do
-            if field.check(x, y, AREA, nil, me.alliance) then
+            if field.check(x, y, AREA, me.alliance) then
                 return true
             end
         end

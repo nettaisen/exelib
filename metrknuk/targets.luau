@@ -26,9 +26,9 @@ targets.LAST, targets.GRID = schema.u32, schema.array(schema.u8, 40)
 
 -- An enemy's body on a panel of the enemy's area (EXE6's `byte_80E8D6C`), an enemy's body on any panel (EXE4's
 -- 0x080CBABC), and the enemy's area (`byte_80E8D58`; EXE4's 0x080CB9FC), of the thrower's side.
-targets.BODY_IN_AREA = { require = { "enemy_body", "on_field", "enemy_area" } } :: Test
-targets.BODY = { require = "enemy_body" } :: Test
-local ENEMY_AREA = { require = { "on_field", "enemy_area" } } :: Test
+targets.BODY_IN_AREA = { enemy_body = true, on_field = true, enemy_area = true } :: Test
+targets.BODY = { enemy_body = true } :: Test
+local ENEMY_AREA: Test = { on_field = true, enemy_area = true }
 -- `byte_80E8D80`: a body's 3x3, which `sub_80E8CC4` walks from the last.
 local AROUND = { { -1, -1 }, { 0, -1 }, { 1, -1 }, { -1, 0 }, { 0, 0 }, { 1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 } }
 local GRID = 0x28
@@ -46,9 +46,9 @@ end
 -- `sub_80E8C44`: a random panel an enemy stands on, or (EXE6's) of the enemy's area when none does (a `rng_positive`
 -- draw); 0 when there is no panel.
 function targets.first(side: number, spec: Spec): number
-    local list = panels.filtered(spec.body.require, spec.body.forbid, side)
+    local list = panels.filtered(spec.body, side)
     if #list == 0 and spec.area_fallback then
-        list = panels.filtered(ENEMY_AREA.require, ENEMY_AREA.forbid, side)
+        list = panels.filtered(ENEMY_AREA, side)
     end
     if #list == 0 then
         -- (EXE6's keeps a register the panel search left as the row.)
@@ -62,7 +62,7 @@ end
 local function mark_around_bodies(side: number, s: State, spec: Spec): boolean
     clear_grid(s)
     local cond = spec.body
-    local list = panels.filtered(cond.require, cond.forbid, side)
+    local list = panels.filtered(cond, side)
     for _, p in list do
         local px, py = panels.x(p), panels.y(p)
         for i = #AROUND, 1, -1 do
@@ -79,7 +79,7 @@ end
 local function mark_area(side: number, s: State)
     clear_grid(s)
     local cond = ENEMY_AREA
-    for _, p in panels.filtered(cond.require, cond.forbid, side) do
+    for _, p in panels.filtered(cond, side) do
         s.grid[grid_index(panels.x(p), panels.y(p))] = 1
     end
 end
@@ -103,7 +103,7 @@ function targets.next(side: number, s: State, spec: Spec): number
         for x = 7, 1, -1 do
             -- (Its test asks the flags word for no more than its bits: off the field, where the word is 0, they are
             -- the same, as the area's names include `on_field`.)
-            if field.check(x, y, cond.require, cond.forbid, side) and s.grid[grid_index(x, y)] ~= 0 then
+            if field.check(x, y, cond, side) and s.grid[grid_index(x, y)] ~= 0 then
                 list[#list + 1] = panels.pack(x, y)
             end
         end

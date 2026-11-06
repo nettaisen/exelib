@@ -89,8 +89,8 @@ regions.big_square = new.region {
 -- A side's area: side 0's (region 0x81, the panels without flag 0x20) and
 -- side 1's (0x82, with it).
 regions.area = {
-    [0] = new.region { field = { require = { "own_area" } }, side = 0 },
-    [1] = new.region { field = { require = { "own_area" } }, side = 1 },
+    [0] = new.region { field = { own_area = true }, side = 0 },
+    [1] = new.region { field = { own_area = true }, side = 1 },
 }
 
 -- The other side's area: side 0's target (region 0x82) and side 1's (0x81)
@@ -101,20 +101,20 @@ regions.other_area = { [0] = regions.area[1], [1] = regions.area[0] }
 regions.field = new.region { field = {} }
 
 -- Every solid panel (region 0x83: Timpani).
-regions.solid = new.region { field = { require = { "solid" } } }
+regions.solid = new.region { field = { solid = true } }
 
 -- The panels of the other side's player navi: side 0's target (region
 -- 0x85) and side 1's (0x84) (Discord).
 regions.other_navi = {
-    [0] = new.region { field = { require = { "enemy_navi" } }, side = 0 },
-    [1] = new.region { field = { require = { "enemy_navi" } }, side = 1 },
+    [0] = new.region { field = { enemy_navi = true }, side = 0 },
+    [1] = new.region { field = { enemy_navi = true }, side = 1 },
 }
 
 -- The four around the anchor (region 0x0A).
 regions.neighbors = new.region { panels = { { 0, -1 }, { 0, 1 }, { 1, 0 }, { -1, 0 } } }
 
 -- `GetRandomRelativePanelFiltered`: of region `r`'s panels around (x, y),
--- dx stepping by `dir`, one that meets (require, forbid) (`field.check`:
+-- dx stepping by `dir`, one that meets `cond` (`field.check`:
 -- side-relative flags of side `of`), at random (one `rng_positive` draw,
 -- only when there is one); nil if none.
 function regions.random_panel(
@@ -122,14 +122,13 @@ function regions.random_panel(
     y: number,
     r: Region,
     dir: number,
-    require: PanelFlags?,
-    forbid: PanelFlags?,
+    cond: PanelCondition?,
     of: number?
 ): (number?, number?)
     local found: { number } = {}
     for _, p in r.panels or {} do
         local px: number, py: number = x + p[1] * dir, y + p[2]
-        if field.check(px, py, require, forbid, of) then
+        if field.check(px, py, cond, of) then
             local packed: number = px + py * 0x10
             table.insert(found, packed)
         end
@@ -159,7 +158,7 @@ function regions.effects_on_panels(x: number, y: number, effect: Effect, r: Regi
         for py = 3, 1, -1 do
             for px = 6, 1, -1 do
                 -- (Its names of the region's side, where it gives one.)
-                if field.check(px, py, cond.require, cond.forbid, r.side) then
+                if field.check(px, py, cond, r.side) then
                     local cx, cy = field.center(px, py)
                     battle.effect(Vec3.new(cx, cy, 0), effect)
                 end
@@ -245,11 +244,11 @@ regions.region_2c = new.region { panels = { { 5, -2 }, { 4, -2 }, { 3, -2 }, { 2
 regions.region_2d = new.region { panels = { { 0, 0 }, { 0, -2 }, { 0, -1 }, { 0, 1 }, { 0, 2 } } }
 -- Region 0x2E.
 regions.region_2e = new.region { panels = { { 0, -2 }, { 0, -1 }, { 0, 1 }, { 0, 2 } } }
--- Region 0x86: the field's panels with every `require` bit and no `forbid` bit.
-regions.field_no_navi = new.region { field = { forbid = { "own_navi", "enemy_navi" } } }
--- Region 0x87: the field's panels with every `require` bit and no `forbid` bit.
-regions.field_solid_left = new.region { field = { require = { "solid", "own_area" } }, side = 0 }
--- Region 0x88: the field's panels with every `require` bit and no `forbid` bit.
-regions.field_solid_right = new.region { field = { require = { "solid", "own_area" } }, side = 1 }
+-- Region 0x86: the field's panels that meet its condition.
+regions.field_no_navi = new.region { field = { own_navi = false, enemy_navi = false } }
+-- Region 0x87: the field's panels that meet its condition.
+regions.field_solid_left = new.region { field = { solid = true, own_area = true }, side = 0 }
+-- Region 0x88: the field's panels that meet its condition.
+regions.field_solid_right = new.region { field = { solid = true, own_area = true }, side = 1 }
 
 return regions

@@ -47,11 +47,11 @@ local MARK_TICKS, WAIT_TICKS, HIT_TICKS = 0x3C, 0xA, 0x1E
 local HIT_MOD = 1
 -- Where the other side's combatants stand (EXE5's 0x080E629C, EXE4's 0x080E7974, by the controller's side: the
 -- other side's player navi).
-local OTHER_SIDE = "enemy_navi"
+local OTHER_SIDE: PanelCondition = { enemy_navi = true }
 -- Who stands on the hit panel (EXE5's 0x080E7356, EXE4's 0x080E89BA), by side: its table is EXE6's `byte_80E74C4`
 -- (the other side's player navi), but the code indexes it by the side unscaled, so side 1 reads the word one byte in
 -- (an unaligned load: the first word rotated, 0x00002000), which is holy's type flag.
-local OCCUPANT: { [number]: PanelFlags } = { [0] = "enemy_navi", [1] = "holy" }
+local OCCUPANT: { [number]: PanelCondition } = { [0] = { enemy_navi = true }, [1] = { holy = true } }
 -- The sparkles' length (`dword_80E19F0`'s row 2, the curse's first parameter to them).
 local SPARKLES_TICKS = 0x20
 
@@ -60,7 +60,7 @@ local function pick_target(me: Object, s: State)
     if me.alliance > 1 then
         error(string.format("the curse's side %d reads past its table", me.alliance))
     end
-    local list = panels.filtered(OTHER_SIDE, nil, me.alliance)
+    local list = panels.filtered(OTHER_SIDE, me.alliance)
     if #list == 0 then
         return
     end
@@ -78,7 +78,7 @@ local function occupant(x: number, y: number, side: number): Object?
     if field.side_sign(side) > 0 and side ~= canonical then
         error(string.format("the curse's side %d reads past its occupant table", side))
     end
-    if not field.check(x, y, OCCUPANT[canonical], nil, bit32.band(side, 1)) then
+    if not field.check(x, y, OCCUPANT[canonical], bit32.band(side, 1)) then
         return nil
     end
     for s = 0, 1 do

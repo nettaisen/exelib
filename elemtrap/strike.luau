@@ -27,7 +27,7 @@ local WAIT = 0x3C
 
 -- `byte_80E36E4`: the panels struck, by side: any with the enemy's navi,
 -- other bodies or neutral objects.
-local STRUCK: { PanelFlag } = { "enemy_other_body", "neutral", "enemy_navi" }
+local STRUCK: PanelFlags = { enemy_other_body = true, neutral = true, enemy_navi = true }
 
 -- The bursts go over the whole field, one every 2 ticks.
 local BURST_INTERVAL = 2

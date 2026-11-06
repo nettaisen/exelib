@@ -45,7 +45,7 @@ local HIT_MOD = 3
 local START, SPEED = 0x100_0000, 0x10_0000
 local FALL_TICKS = 0x10
 -- What it can land on (`dword_80DB418`): a panel with a body or object on it, or a solid one.
-local LANDS: { PanelFlag } = { "any_body", "solid" }
+local LANDS: PanelFlags = { any_body = true, solid = true }
 -- The landing hits (`dword_80DB564`, `dword_80DB56C`): beside it, then its diagonals, no spark, 100 damage (with
 -- the damage's flag bits) and hit modifier 3.
 local WAVES = { regions.beside, regions.diagonals }

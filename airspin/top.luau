@@ -40,13 +40,20 @@ local SPEED, MAX_PANELS = 0x4_0000, 4
 local CLASS: ObstacleClass = "one_a_side"
 -- Panel flags: where EXE6's can't be set down (other bodies and neutral
 -- objects); what stops its rolling (any body).
-local BODIES: { PanelFlag } = { "own_other_body", "enemy_other_body", "neutral" }
+local SET_DOWN_ON: PanelCondition = { solid = true, own_other_body = false, enemy_other_body = false, neutral = false }
 -- Hits that break it at once: bodies, neutral objects, a break.
-local CRUSHING: { HitName } = { "own_body", "enemy_body", "own_other_body", "enemy_other_body", "neutral", "break" }
+local CRUSHING: HitNames = {
+    own_body = true,
+    enemy_body = true,
+    own_other_body = true,
+    enemy_other_body = true,
+    neutral = true,
+    ["break"] = true,
+}
 -- Hits that make EXE6's spin once more: a pushing hit, or a wind hit
 -- (secondary element 0x20).
 local WIND = 0x20
-local EXTRA_SPIN_HIT = "pushing"
+local EXTRA_SPIN_HIT: HitNames = { pushing = true }
 -- Its hit modifier, and its gust's: the ring around its panel, no spark.
 local HIT_MOD, HIT_MOD_SPIN = 0x03, 1
 -- The marker styles EXE5's draws from (RNG2's bit 2).
@@ -57,10 +64,12 @@ local STAND_MARKER_TICKS = 0x14
 -- The actions.
 local ROLL, STAND, SPIN, BLOW_AWAY, REMOVED = 0x0, 0x4, 0x8, 0xC, 0x10
 
+local SOLID_NOT_ANY_BODY: PanelCondition = { solid = true, any_body = false }
+
 -- `sub_80D8C10` (EXE5's 0x080DA1AA): it can roll onto (x, y): on the field,
 -- solid, nothing standing there.
 local function open(x: number, y: number): boolean
-    return field.check(x, y, "solid", "any_body")
+    return field.check(x, y, SOLID_NOT_ANY_BODY)
 end
 
 -- `sub_80D8BBC`: the next panel forward is where it rolls, and its center
@@ -321,7 +330,7 @@ function top.make(look: AirSpinTopLook): AirSpinTop
         local p = me.pos
         me.pos = Vec3.new(p.x, p.y, 0)
         if look.set_down_check then
-            if not field.check(me.panel_x, me.panel_y, "solid", BODIES) then
+            if not field.check(me.panel_x, me.panel_y, SET_DOWN_ON) then
                 puff(me, 0x10)
                 obstacle.unregister(me)
                 me:free()

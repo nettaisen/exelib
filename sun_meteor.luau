@@ -57,7 +57,7 @@ local START = 0x14_0000
 local FALL_TICKS = 0x10
 
 -- What a landing panel must have one of to burst (a solid or occupied panel: as one word).
-local HOLDS: { PanelFlag } = { "any_body", "solid" }
+local HOLDS: PanelFlags = { any_body = true, solid = true }
 
 local function record(me: Object): SunMeteor
     return (me.state :: State).variant

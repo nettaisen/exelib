@@ -12,7 +12,7 @@ local navi_left = require("./left")
 local navi_chips = {}
 
 -- The panel flags a navi needs to stay where he appeared.
-local CAN_STAND: { PanelFlag } = { "solid", "on_field" }
+local CAN_STAND: PanelCondition = { solid = true, on_field = true }
 
 -- A navi of `kind` for `user`, on the panel the controller picked, with
 -- the chip's element and damage word (each navi's spawner, `sub_80BC0DA`

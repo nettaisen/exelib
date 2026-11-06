@@ -59,9 +59,9 @@ export type Bass = {
 
 -- The columns he shoots at, of his side (`byte_80C3C90`: the other side's panels), and the panels his shots prefer
 -- (`off_80C3BB0`: an enemy navi's body); otherwise any panel on the field.
-local COLUMN_FILTER = "enemy_area"
-local ENEMY_NAVI = "enemy_body"
-local ANY_PANEL = "on_field"
+local COLUMN_FILTER: PanelCondition = { enemy_area = true }
+local ENEMY_NAVI: PanelCondition = { enemy_body = true }
+local ANY_PANEL: PanelCondition = { on_field = true }
 local SHOT_COOLDOWN = 0x16
 -- His stance (animation 0) comes round every 38 of his sprite's steps (every game's).
 local STANCE_STEPS = 38
@@ -87,7 +87,7 @@ local function find_columns(me: Object): number
     local n = 0
     while x ~= last do
         x += me.facing
-        if #panels.in_column(x, COLUMN_FILTER, nil, me.alliance) ~= 0 then
+        if #panels.in_column(x, COLUMN_FILTER, me.alliance) ~= 0 then
             n += 1
             s.columns[n] = x
         end
@@ -96,9 +96,9 @@ local function find_columns(me: Object): number
     return s.columns[1]
 end
 
--- `sub_80C3BC0`: a random panel of his columns, rows 3 to 1, that meets (require, forbid) (of his side) and isn't
+-- `sub_80C3BC0`: a random panel of his columns, rows 3 to 1, that meets `cond` (of his side) and isn't
 -- cooling down (one RNG draw when there is any).
-local function pick(me: Object, require: PanelFlags?, forbid: PanelFlags?): (number?, number?)
+local function pick(me: Object, cond: PanelCondition?): (number?, number?)
     local s = me.state :: State
     local found = {}
     local i = 1
@@ -106,8 +106,8 @@ local function pick(me: Object, require: PanelFlags?, forbid: PanelFlags?): (num
         local x = s.columns[i]
         for y = 3, 1, -1 do
             -- (Its test asks the flags word for no more than its bits; off the field, where the word is 0, the same, as
-            -- each of its `require`s has one.)
-            if field.check(x, y, require, forbid, me.alliance) and s.cooldowns[(y - 1) * 6 + x] == 0 then
+            -- each of its conditions requires a flag.)
+            if field.check(x, y, cond, me.alliance) and s.cooldowns[(y - 1) * 6 + x] == 0 then
                 table.insert(found, bit32.bor(bit32.lshift(y, 4), x))
             end
         end
@@ -151,10 +151,10 @@ function bass.make(spec: Spec): Bass
         end
         local px: number?, py: number? = nil, nil
         if bit32.band(battle.rng_positive(), 7) >= 3 then
-            px, py = pick(me, ENEMY_NAVI, nil)
+            px, py = pick(me, ENEMY_NAVI)
         end
         if not px then
-            px, py = pick(me, ANY_PANEL, nil)
+            px, py = pick(me, ANY_PANEL)
         end
         if not px or not py then
             return

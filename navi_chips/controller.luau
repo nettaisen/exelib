@@ -110,7 +110,7 @@ function controller.in_block(chip: Chip?, navi_block: boolean?): boolean
     if navi_block ~= nil then
         return navi_block
     end
-    return chip ~= nil and table.find(chip.flags or {}, "navi") ~= nil
+    return chip ~= nil and chip.flags ~= nil and chip.flags.navi == true
 end
 
 -- `sub_800BDB2` (`off_800BDC4` by phase), a navi chip controller's action after the dim: on to the next action (the

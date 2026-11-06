@@ -61,10 +61,12 @@ local AIM_TICKS, AFTER_AIM, FIRE_TICKS, AFTER_FIRE = 180, 30, 3, 30
 -- The sight's step (EXE5's 0x080B8DE8, EXE4's 0x080D766C, by its mode: 0's).
 local INTERVAL = 7
 
+local ON_FIELD_ENEMY_AREA: PanelCondition = { on_field = true, enemy_area = true }
+
 -- A column the sight stops on has a panel of the other side's (EXE5's 0x080B8F64, EXE4's 0x080D77E0: by side; a side
 -- but 0 as side 1).
 local function enemy_panel(x: number, y: number, side: number): boolean
-    return field.check(x, y, { "on_field", "enemy_area" }, nil, if side == 0 then 0 else 1)
+    return field.check(x, y, ON_FIELD_ENEMY_AREA, if side == 0 then 0 else 1)
 end
 
 -- Where a sweep starts over (EXE5's 0x080B8F74, EXE4's 0x080D77F0), by side.

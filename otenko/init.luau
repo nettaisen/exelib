@@ -65,6 +65,10 @@ local HIT_MOD = 3
 -- The controller's wait.
 local WAIT = 0x3C
 
+local SOLID_NOT_ANY_BODY: PanelCondition = { solid = true, any_body = false }
+
+local SOLID_NOT_OCCUPIED: PanelCondition = { solid = true, occupied = false }
+
 function otenko.make(look: Look): Otenko
     local absorbed = look.absorbed
 
@@ -72,7 +76,7 @@ function otenko.make(look: Look): Otenko
     local function appear(me: Object)
         if me.phase_init == 0 then
             -- (Where it can stand: a solid panel without a body.)
-            if not field.check(me.panel_x, me.panel_y, "solid", "any_body") then
+            if not field.check(me.panel_x, me.panel_y, SOLID_NOT_ANY_BODY) then
                 me:set_action(2)
                 return
             end
@@ -265,7 +269,7 @@ function otenko.make(look: Look): Otenko
         if me.phase_init == 0 then
             local x, y = me.panel_x + me.facing, me.panel_y
             -- (Where it places the statue, `byte_80E76C4`, both sides': a solid panel with nothing on it.)
-            if field.check(x, y, "solid", "occupied") then
+            if field.check(x, y, SOLID_NOT_OCCUPIED) then
                 local damage = bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
                 spawn(me.related1 :: Object, x, y, damage)
             end

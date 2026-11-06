@@ -42,19 +42,19 @@ export type State = {
 }
 
 -- Hits that end it: bodies, neutral objects, attacks.
-local ENDING: { HitName } = {
-    "own_attack",
-    "enemy_attack",
-    "own_object",
-    "enemy_object",
-    "own_body",
-    "enemy_body",
-    "own_other_body",
-    "enemy_other_body",
-    "neutral",
+local ENDING: HitNames = {
+    own_attack = true,
+    enemy_attack = true,
+    own_object = true,
+    enemy_object = true,
+    own_body = true,
+    enemy_body = true,
+    own_other_body = true,
+    enemy_other_body = true,
+    neutral = true,
 }
 -- The enemy bodies it looks for, of its side.
-local TARGETS = "enemy_body"
+local TARGETS: PanelFlags = { enemy_body = true }
 -- Speeds (16.16 per tick) and ticks a panel: normal and fast.
 local ROW_SPEED, FAST_ROW_SPEED = 0xAAAB, 0x1_0000
 local COLUMN_SPEED, FAST_COLUMN_SPEED = 0x6666, 0x999A

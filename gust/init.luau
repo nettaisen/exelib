@@ -80,7 +80,7 @@ function gust.make_kind(id: string, look: GustLook): Kind
             elseif me.alliance > 2 then
                 error(string.format("gust side %d reads past its panel table (sub_80CD414)", me.alliance))
             else
-                ends = not field.check(x, y, look.panels.require, look.panels.forbid, me.alliance)
+                ends = not field.check(x, y, look.panels, me.alliance)
             end
         end
         if ends then

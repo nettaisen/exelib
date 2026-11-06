@@ -54,9 +54,11 @@ local FORMED = 2
 -- Look 0's forming (animation 0) lasts 10 of its sprite's steps (every game's).
 local FORMING_STEPS = 10
 -- What bursts it: bodies and neutral objects.
-local BURSTS_ON: { HitName } = { "own_body", "enemy_body", "neutral" }
+local BURSTS_ON: HitNames = { own_body = true, enemy_body = true, neutral = true }
 local HIT_MOD = 3
 local AQUA = 2
+
+local SOLID: PanelFlags = { solid = true }
 
 function ice_cube.make(look: Look): IceCube
     -- `sub_80D99A4`: burst: two debris, the effect, the sound; gone.
@@ -92,7 +94,7 @@ function ice_cube.make(look: Look): IceCube
         -- sub_800E258: the panel under it, taken only if solid.
         local ox, oy = me.panel_x, me.panel_y
         me:set_panel_from_coordinates()
-        if field.any(me.panel_x, me.panel_y, "solid") then
+        if field.any(me.panel_x, me.panel_y, SOLID) then
             me:update_collision_panels()
             return
         end

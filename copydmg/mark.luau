@@ -31,7 +31,7 @@ local mark = {}
 -- The attach point the mark sits at, on the marked navi.
 local MARK_POINT = 0x1B
 -- A panel with a player navi on it (either side's player bit).
-local PLAYERS: { PanelFlag } = { "own_navi", "enemy_navi" }
+local PLAYERS: PanelFlags = { own_navi = true, enemy_navi = true }
 -- The probe's element: the sixth slot, which no hit's element names.
 local SIXTH_ELEMENT = 5
 -- EXE5's hit in the own-gauges mode: 50, hit modifier 3.

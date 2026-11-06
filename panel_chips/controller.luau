@@ -70,8 +70,8 @@ end
 
 -- The conditions most changes use: a side's own area, the other side's,
 -- and any panel, none missing.
-panel_chips.OWN_AREA = { require = "own_area", forbid = "missing" } :: PanelCondition
-panel_chips.OTHER_AREA = { require = "enemy_area", forbid = "missing" } :: PanelCondition
-panel_chips.ANY = { forbid = "missing" } :: PanelCondition
+panel_chips.OWN_AREA = { own_area = true, missing = false } :: PanelCondition
+panel_chips.OTHER_AREA = { enemy_area = true, missing = false } :: PanelCondition
+panel_chips.ANY = { missing = false } :: PanelCondition
 
 return panel_chips

@@ -29,10 +29,10 @@ local RISE_STEPS, LEAP_STEPS = 30, 9
 -- ---- The nest's scan (`sub_80D2CBE`, `sub_80D2D40`: both games' the same code) ---------------------------------
 
 -- A hole on each side's area (`byte_80D2D30`): the side's own panel, not solid, with nothing on it or reserved.
-local HOLE = { require = "own_area", forbid = { "occupied", "solid" } }
+local HOLE = { own_area = true, occupied = false, solid = false }
 -- The panels a snake aims at (`byte_80D2E28`, any of them): the other side's bodies and other bodies, or a neutral
 -- object.
-local TARGET: { PanelFlag } = { "enemy_body", "enemy_other_body", "neutral" }
+local TARGET: PanelFlags = { enemy_body = true, enemy_other_body = true, neutral = true }
 
 -- A nest's scan: where it is (Param3, Param4: bytes, the column stepping off the field when the scan ends).
 export type Scan = SnakeScan
@@ -101,7 +101,7 @@ function snake.next_hole(me: Object, s: Scan, best_row_slip: boolean?): (number?
         if found then
             break
         end
-        if field.check(s.scan_x, s.scan_y, cond.require, cond.forbid, me.alliance) then
+        if field.check(s.scan_x, s.scan_y, cond, me.alliance) then
             found, hx, hy = true, s.scan_x, s.scan_y
         end
         s.scan_y += 1

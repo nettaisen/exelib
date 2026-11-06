@@ -38,7 +38,7 @@ end
 -- `sub_80B8DA6`, each tick from its init's: at the owner's position less the lift; the owner's visibility, color
 -- shader, white flash, alpha and flip; animating, except while paused (or dimmed, unless it animates then too);
 -- ended once the slot is cleared (the engine's follow: `Object:follow`).
-local WORN = { "color_shader", "white", "alpha", "hflip", "vflip" }
+local WORN = { color_shader = true, white = true, alpha = true, hflip = true, vflip = true }
 
 -- What a game's attachments are raised by for who holds them, over their look's (`lifted(owner, side)`; nil: the
 -- look's).

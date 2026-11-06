@@ -71,24 +71,28 @@ local TURN_Y, TURN_X = 0x7_8000, 0xC_8000
 -- What homing 2 looks for, by side (EXE6's `off_80DD6BC`): an enemy navi's
 -- body; and where, along the slant (`byte_80DD6E8` going down,
 -- `byte_80DD6ED` going up).
-local ENEMY_NAVI = "enemy_body"
+local ENEMY_NAVI: PanelCondition = { enemy_body = true }
 local LOOK_DOWN = { { 1, -1 }, { 2, -2 } }
 local LOOK_UP = { { 1, 1 }, { 2, 2 } }
 
 -- What a hit must include to take its region off: one word for either side, 0x1E800000 (side 1's objects, both
 -- sides' bodies, side 0's other bodies, neutral objects), by side.
-local HIT_MASK = {
-    [0] = { "enemy_object", "own_body", "enemy_body", "own_other_body", "neutral" },
-    [1] = { "own_object", "own_body", "enemy_body", "enemy_other_body", "neutral" },
+local HIT_MASK: { [number]: HitNames } = {
+    [0] = { enemy_object = true, own_body = true, enemy_body = true, own_other_body = true, neutral = true },
+    [1] = { own_object = true, own_body = true, enemy_body = true, enemy_other_body = true, neutral = true },
 }
+
+local ON_FIELD: PanelFlags = { on_field = true }
+
+local OWN_AREA: PanelCondition = { own_area = true }
 
 -- Its own side's panel, as `sub_80DD5E2` asks it: the panel's flags word has its side's area bit alone (side 1's set,
 -- side 0's clear), so off the field, where the word is 0, any panel is side 0's.
 local function own_side_panel(x: number, y: number, side: number): boolean
-    if not field.any(x, y, "on_field") then
+    if not field.any(x, y, ON_FIELD) then
         return side == 0
     end
-    return side <= 1 and field.check(x, y, "own_area", nil, side)
+    return side <= 1 and field.check(x, y, OWN_AREA, side)
 end
 
 -- Its hit's modifier.
@@ -216,7 +220,7 @@ function shot.make_kind(look: Look): Kind
                 local dir = 1 - 2 * me.alliance
                 local found = 0
                 for _, o in looks do
-                    if field.check(x + o[1] * dir, y + o[2], ENEMY_NAVI, nil, me.alliance) then
+                    if field.check(x + o[1] * dir, y + o[2], ENEMY_NAVI, me.alliance) then
                         found += 1
                     end
                 end
@@ -231,7 +235,7 @@ function shot.make_kind(look: Look): Kind
         end
         -- "diagonal": toward the enemy navi on a diagonal, once level with or
         -- past its column; not on side 1's panels.
-        if field.check(x, y, "own_area", nil, 1) then
+        if field.check(x, y, OWN_AREA, 1) then
             return
         end
         local ex, ey = x, y
