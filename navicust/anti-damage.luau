@@ -36,7 +36,7 @@ end
 function anti_damage.stance(id: string): Action
     return new.action {
         id = id,
-        state = { timer = "u16" },
+        state = { timer = schema.u16 },
         -- `sub_80EFE7C`.
         update = function(me: Object, s: State)
             if me:request("anti_damage_triggered") or me:request("anti_sword_triggered") then

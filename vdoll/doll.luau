@@ -398,11 +398,11 @@ function doll.make(look: DollLook): Doll
         id = look.id,
         pool = "attack",
         state = {
-            target_x = "u8",
-            target_y = "u8",
-            hit = "bool",
-            damage_taken = "u32",
-            flying = "bool",
+            target_x = schema.u8,
+            target_y = schema.u8,
+            hit = schema.bool,
+            damage_taken = schema.u32,
+            flying = schema.bool,
         },
         -- EXE6's `sub_80D46B8`, EXE5's 0x080D5618.
         update = function(me: Object)

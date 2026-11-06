@@ -28,9 +28,12 @@ local OWN_PANELS: { [number]: { number } } = { [0] = { 0, 0x20 }, [1] = { 0x20, 
 -- Another obstacle on the panel: no gust.
 local NEUTRAL_OBJECT = 0x0080_0000
 
+local FAN_VARIANT = schema.record_type("fan-variant")
+fan.FAN_VARIANT = FAN_VARIANT
+
 -- A fan's variant.
 function fan.variant(v: FanVariant): FanVariant
-    return new.record("fan-variant", v)
+    return new.record(FAN_VARIANT, v)
 end
 
 function fan.make(look: FanLook): Fan
@@ -257,7 +260,7 @@ function fan.make(look: FanLook): Fan
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { variant = "record:fan-variant", row_counter = "u32" },
+        state = { variant = FAN_VARIANT, row_counter = schema.u32 },
         -- `sub_80CCFDC`.
         update = function(me: Object)
             local l = me.lifecycle

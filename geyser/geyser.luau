@@ -78,7 +78,7 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
     local water_kind = new.kind {
         id = look.water_id,
         pool = "attack",
-        state = { order = "u8[8]", count = "u16" },
+        state = { order = schema.array(schema.u8, 8), count = schema.u16 },
         update = function(me: Object)
             local s = me.state :: WaterState
             if me.phase_init == 0 then
@@ -270,14 +270,14 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
         me:set_lifecycle("update")
     end
 
-    local schema: StateSchema = { target_x = "u8", target_y = "u8" }
+    local state: StateSchema = { target_x = schema.u8, target_y = schema.u8 }
     if look.splash_bonus then
-        schema.bonus = "u16"
+        state.bonus = schema.u16
     end
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = schema,
+        state = state,
         -- EXE5's 0x080CD992.
         update = function(me: Object)
             local l = me.lifecycle

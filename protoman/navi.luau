@@ -36,9 +36,11 @@ export type State = {
 
 local protoman = {}
 
+local PROTOMAN_LOOK = schema.record_type("protoman-look")
+
 -- A game's ProtoMan's look.
 function protoman.look(look: ProtoManLook): ProtoManLook
-    return new.record("protoman-look", look)
+    return new.record(PROTOMAN_LOOK, look)
 end
 
 -- A game's ProtoMan: his kind, and the chips' navi hook of a look.
@@ -348,7 +350,7 @@ function protoman.make(kind_spec: ProtoManKind): {
     local kind = new.kind {
         id = spec.id,
         pool = "actor",
-        state = { gray = "u8", controller = "object", fresh = "u8", flip = "u8", look = "record:protoman-look" },
+        state = { gray = schema.u8, controller = schema.object, fresh = schema.u8, flip = schema.u8, look = PROTOMAN_LOOK },
         -- `sub_80C26F0`.
         update = function(me: Object)
             local l = me.lifecycle

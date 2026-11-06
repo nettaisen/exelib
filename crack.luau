@@ -167,7 +167,7 @@ function crack.action(c: Crack, panels: { { number } }, id: string?): Action
 
     return new.action {
         id = id,
-        state = { timer = "u16" },
+        state = { timer = schema.u16 },
         args = { panels = panels },
         -- EXE5's 0x080EC79C, EXE4's 0x080ECA14.
         update = function(me: Object, s: State)

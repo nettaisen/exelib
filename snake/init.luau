@@ -260,7 +260,7 @@ function snake.make_kind(id: string, look: Look): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { target_x = "u32", target_y = "u32", nest = "object", slot = "u8" },
+        state = { target_x = schema.u32, target_y = schema.u32, nest = schema.object, slot = schema.u8 },
         -- `sub_80D2EBC`.
         update = function(me: Object)
             local l = me.lifecycle

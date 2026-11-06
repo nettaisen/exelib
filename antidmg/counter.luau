@@ -21,7 +21,7 @@ export type State = {
     timer: number,
 }
 
-local STATE = { timer = "u16" }
+local STATE = { timer = schema.u16 }
 
 -- A game's counter: its key, its shuriken's kind (or its own throw: EXE4's
 -- dives BodyGrd's shuriken, 0x080D90A4), its own target (none: by the

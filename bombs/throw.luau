@@ -19,7 +19,7 @@ export type State = {
 
 -- One state for every throw: a throw continues the last one's attack
 -- variables, as the original's one action does.
-throw.STATE = { timer = "u16" }
+throw.STATE = { timer = schema.u16 }
 
 -- The phases, on the attack's step.
 local THROW, RECOVER = 0x0, 0x4

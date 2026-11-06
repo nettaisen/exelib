@@ -297,7 +297,7 @@ function black_bomb.make_kind(id: string, look: Look): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { angle = "u8", set_off = "bool", placed = "bool", target_x = "u8", target_y = "u8" },
+        state = { angle = schema.u8, set_off = schema.bool, placed = schema.bool, target_x = schema.u8, target_y = schema.u8 },
         -- `sub_80CD4EC`.
         update = function(me: Object)
             local l = me.lifecycle

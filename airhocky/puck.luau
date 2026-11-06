@@ -38,8 +38,10 @@ export type State = {
     to_y: number,
 }
 
+local HOCKEY_PUCK_VARIANT = schema.record_type("hockey-puck-variant")
+
 function puck.variant(v: Variant): Variant
-    return new.record("hockey-puck-variant", v)
+    return new.record(HOCKEY_PUCK_VARIANT, v)
 end
 
 -- The trail: every fourth tick, an afterimage of the puck for 8 ticks, tinted.
@@ -281,14 +283,14 @@ function puck.make_kind(id: string, look: Look): Kind
         id = id,
         pool = "attack",
         state = {
-            variant = "record:hockey-puck-variant",
-            down = "bool",
-            steps = "u8",
-            across = "bool",
-            from_x = "i32",
-            from_y = "i32",
-            to_x = "i32",
-            to_y = "i32",
+            variant = HOCKEY_PUCK_VARIANT,
+            down = schema.bool,
+            steps = schema.u8,
+            across = schema.bool,
+            from_x = schema.i32,
+            from_y = schema.i32,
+            to_x = schema.i32,
+            to_y = schema.i32,
         },
         -- `sub_80C9824`.
         update = function(me: Object)

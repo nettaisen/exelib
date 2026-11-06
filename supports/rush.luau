@@ -250,7 +250,7 @@ function rush.make(look: RushLook): SupportActor
     local kind = new.kind {
         id = look.id,
         pool = "actor",
-        state = if look.spared then { eaten = "chip" } else nil,
+        state = if look.spared then { eaten = schema.chip } else nil,
         update = update,
     }
 

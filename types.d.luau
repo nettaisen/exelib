@@ -1948,8 +1948,8 @@ export type NaviCustBugSpecial =
     | { kind: "strip" }
     | { kind: "uninstall", spark: Spark, sound: Sound }
 
--- A Beast Out lock-on mode (EXE6's rules/lockon: a record of type "lockon",
--- `new.record("lockon", { id = ..., ... })`, which only its rules read): how
+-- A Beast Out lock-on mode (EXE6's rules/lockon: a record of its record type
+-- "lockon", `new.record(LOCKON, { id = ..., ... })`, only its rules read): how
 -- the rush picks the panel to attack a target from. `stay`: the navi's own
 -- panel. `row`: along the target's row counting from the navi's own column
 -- (`same_row_offsets` when they share a row), then the rows `row_shifts`

@@ -166,7 +166,7 @@ function numbrman.make(spec: NumberManSpec): NumberMan
     local kind = new.kind {
         id = spec.id,
         pool = "actor",
-        state = { controller = "object", palette = "u8", face = "object", busy = "bool" },
+        state = { controller = schema.object, palette = schema.u8, face = schema.object, busy = schema.bool },
         -- EXE5's 0x080BB34C, EXE4's 0x080B87AC.
         update = function(me: Object)
             local l = me.lifecycle

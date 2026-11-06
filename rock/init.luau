@@ -96,9 +96,12 @@ local RISE_STEPS = 10
 -- actions).
 local APPEAR, DESTROYED, STANDING = 0, 2, 8
 
+local ROCK_VARIANT = schema.record_type("rock-variant")
+rock.ROCK_VARIANT = ROCK_VARIANT
+
 -- A rock's variant (a row of the game's table).
 function rock.variant(v: RockVariant): RockVariant
-    return new.record("rock-variant", v)
+    return new.record(ROCK_VARIANT, v)
 end
 
 function rock.make(look: Look): Rock
@@ -294,7 +297,7 @@ function rock.make(look: Look): Rock
     kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { variant = "record:rock-variant", entrance = { "rise", "instant", "fall", "placed" } },
+        state = { variant = ROCK_VARIANT, entrance = { "rise", "instant", "fall", "placed" } },
         -- `sub_80CF954`.
         update = function(me: Object)
             local l = me.lifecycle

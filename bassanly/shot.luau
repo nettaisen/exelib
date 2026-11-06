@@ -348,12 +348,12 @@ function shot.make_kind(look: Look): Kind
         id = look.id,
         pool = "attack",
         state = {
-            hit_panel = "u32",
-            trails = "bool",
-            trail_ticks = "u32",
-            slant = "i8",
+            hit_panel = schema.u32,
+            trails = schema.bool,
+            trail_ticks = schema.u32,
+            slant = schema.i8,
             homing = { "none", "diagonal", "seeking" },
-            turn = "u8",
+            turn = schema.u8,
         },
         -- `sub_80DD34C`.
         update = function(me: Object)

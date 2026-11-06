@@ -16,7 +16,7 @@ export type State = {
 }
 
 -- One state for every flick.
-flick.STATE = { timer = "u16" }
+flick.STATE = { timer = schema.u16 }
 
 -- The phases, on the attack's step.
 local FLICK, RECOVER = 0x0, 0x4

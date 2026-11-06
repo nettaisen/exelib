@@ -226,7 +226,7 @@ function bassanly.make(spec: Spec): { kind: Kind, summon: (user: Object, control
     local kind = new.kind {
         id = spec.id,
         pool = "actor",
-        state = { controller = "object", held = "object" },
+        state = { controller = schema.object, held = schema.object },
         -- `sub_80C3CE8`.
         update = function(me: Object)
             local l = me.lifecycle

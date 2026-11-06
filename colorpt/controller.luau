@@ -45,6 +45,8 @@ function controller.area_front(me: Object, y: number): number
     return x
 end
 
+local COLORPT_POINT = schema.record_type("colorpt-point")
+
 function controller.make(spec: Spec): { kind: Kind, hook: (p: ColorPoint) -> (user: Object, chip: DimmingChipSpec) -> Object? }
     local front = spec.front or controller.area_front
 
@@ -83,13 +85,13 @@ function controller.make(spec: Spec): { kind: Kind, hook: (p: ColorPoint) -> (us
     local kind = new.kind {
         id = spec.id,
         pool = "effect",
-        state = { point = "record:colorpt-point", out = "bool[3]" },
+        state = { point = COLORPT_POINT, out = schema.array(schema.bool, 3) },
         update = dimming_chips.phases { name = "ColorPt", effect = effect },
     }
 
     -- `sub_80E64E8`: a ColorPt chip's `dimming` hook, for its points.
     local function hook(p: ColorPoint): (user: Object, chip: DimmingChipSpec) -> Object?
-        local rec = new.record("colorpt-point", p)
+        local rec = new.record(COLORPT_POINT, p)
         return function(user: Object, chip: DimmingChipSpec): Object?
             local o = dimming_chips.spawn(kind, user, chip, spec.side_only)
             if o then

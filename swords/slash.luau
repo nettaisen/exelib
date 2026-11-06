@@ -34,7 +34,7 @@ export type State = {
 local SWING_ANIM, WARP_OUT_ANIM, SWING_STEPS = 5, 4, 22
 
 -- One state for every sword's slash.
-slash.STATE = { timer = "u16", turned = "u32" }
+slash.STATE = { timer = schema.u16, turned = schema.u32 }
 
 -- The phases, on the attack's step.
 local START, SET_UP, SWING, STEP_BACK, RECOVER = 0x0, 0x4, 0x8, 0xC, 0x10

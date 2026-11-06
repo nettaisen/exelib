@@ -170,12 +170,12 @@ function shademan.make(spec: ShadeManSpec): ShadeMan
         id = spec.id,
         pool = "actor",
         state = {
-            controller = "object",
-            palette = "u8",
-            steps = "u8[2]",
-            ticks = "u8[2]",
-            commanded = "bool",
-            hit = { palette = "u8", hit_mod = "u8", status = "status", bug = "u8", bug_arg = "u8" } :: StateSchema,
+            controller = schema.object,
+            palette = schema.u8,
+            steps = schema.array(schema.u8, 2),
+            ticks = schema.array(schema.u8, 2),
+            commanded = schema.bool,
+            hit = { palette = schema.u8, hit_mod = schema.u8, status = schema.status, bug = schema.u8, bug_arg = schema.u8 } :: StateSchema,
         },
         -- EXE5's 0x080BD0E8, EXE4's 0x080BAD70.
         update = function(me: Object)

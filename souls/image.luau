@@ -11,9 +11,12 @@
 
 local image = {}
 
+local SOUL_IMAGE = schema.record_type("soul-image")
+image.SOUL_IMAGE = SOUL_IMAGE
+
 -- A soul's navi's image's look, for the soul's form's `image`.
 function image.look(look: SoulImage): SoulImage
-    return new.record("soul-image", look)
+    return new.record(SOUL_IMAGE, look)
 end
 
 -- The look of a navi that wears a body overlay's part (an identity of its own wears it): put on as the image comes, its
@@ -195,7 +198,7 @@ function image.make(spec: Spec): Image
     local kind = new.kind {
         id = spec.id,
         pool = spec.pool,
-        state = { soul = "form", held = "object" },
+        state = { soul = schema.form, held = schema.object },
         -- EXE5's 0x080C0394, EXE4's 0x080E361C
         update = function(me: Object)
             local l = me.lifecycle

@@ -25,7 +25,7 @@ export type State = {
 type Blow = TornadoBlow
 
 -- One state for the action's blows.
-local STATE = { timer = "u16" }
+local STATE = { timer = schema.u16 }
 
 -- The phases, on the attack's step.
 local BLOW, PUT_AWAY = 0x0, 0x4

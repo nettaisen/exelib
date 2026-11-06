@@ -19,7 +19,7 @@ export type State = {
 }
 
 -- One state for the four vulcans.
-vulcan.STATE = { timer = "u16" }
+vulcan.STATE = { timer = schema.u16 }
 
 -- The phases, on the attack's step.
 local RAISE, FIRE, LOWER = 0x0, 0x4, 0x8

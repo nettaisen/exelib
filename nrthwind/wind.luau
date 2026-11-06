@@ -120,7 +120,7 @@ function wind.make(spec: {
     local wind_kind = new.kind {
         id = spec.id .. "/wind",
         pool = "attack",
-        state = { holder = "object" },
+        state = { holder = schema.object },
         update = function(me: Object)
             local l = me.lifecycle
             if l == "init" then

@@ -117,7 +117,7 @@ function controller.make(look: Look): Controller
     local kind = new.kind {
         id = look.id,
         pool = "effect",
-        state = { busy = "bool" },
+        state = { busy = schema.bool },
         update = dimming_chips.phases { name = "BugFix", effect = effect },
     }
 

@@ -36,6 +36,9 @@ function shot.place_on_floor(me: Object)
     me.pos = Vec3.new(me.pos.x, me.pos.y, 0)
 end
 
+local CIRCGUN_VARIANT = schema.record_type("circgun-variant")
+shot.CIRCGUN_VARIANT = CIRCGUN_VARIANT
+
 -- A shot kind (`id`) of `look_`.
 function shot.make_kind(id: string, look_: CircGunLook): Kind
     -- Done: the gun's flag cleared (as the original, wherever the gun was);
@@ -124,7 +127,7 @@ function shot.make_kind(id: string, look_: CircGunLook): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { gun = "object", slot = "u8", variant = "record:circgun-variant", ticks = "u8" },
+        state = { gun = schema.object, slot = schema.u8, variant = CIRCGUN_VARIANT, ticks = schema.u8 },
         -- `sub_80D67EC`.
         update = function(me: Object)
             local l = me.lifecycle

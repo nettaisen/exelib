@@ -41,7 +41,7 @@ function controller.make(id: string, effect: (me: Object) -> ()): Kind
     return new.kind {
         id = id,
         pool = "effect",
-        state = { chip = "chip", bonus = "u16", balls = "u8", busy = "bool" },
+        state = { chip = schema.chip, bonus = schema.u16, balls = schema.u8, busy = schema.bool },
         -- `sub_80E7F38`: `object_timefreezeBegin` at its init; by its action
         -- `object_dimScreen`, `sub_800BDB2` (AntiNavi), `sub_800BA8A` (the
         -- navi telop), the effect and `object_undimScreen`; and

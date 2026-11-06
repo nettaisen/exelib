@@ -15,7 +15,7 @@ export type State = {
 }
 
 -- One state for the three.
-tankcan.STATE = { timer = "u16" }
+tankcan.STATE = { timer = schema.u16 }
 
 -- The phases, on the attack's step.
 local AIM, FIRE, LOWER = 0x0, 0x4, 0x8

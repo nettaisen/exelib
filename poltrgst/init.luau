@@ -125,7 +125,7 @@ function poltrgst.make(spec: Spec): Poltrgst
     local stand_in = new.kind {
         id = spec.stand_in_id,
         pool = "actor",
-        state = { busy = "bool", controller = "object", nearest = "bool" },
+        state = { busy = schema.bool, controller = schema.object, nearest = schema.bool },
         -- EXE5's 0x080C38E8, EXE4's 0x080CC624.
         update = function(me: Object)
             local l = me.lifecycle
@@ -182,7 +182,7 @@ function poltrgst.make(spec: Spec): Poltrgst
     local controller = new.kind {
         id = spec.controller_id,
         pool = "effect",
-        state = { bonus = "u16", busy = "bool", nearest = "bool" },
+        state = { bonus = schema.u16, busy = schema.bool, nearest = schema.bool },
         -- EXE5's 0x080E8C1C, EXE4's 0x080EA05C.
         update = dimming_chips.phases { name = "Poltrgst", effect = effect },
     }

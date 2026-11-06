@@ -95,7 +95,7 @@ function magnet.make(look: MagnetLook): MagnetSpawn
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { paralyzes = "bool", dx = "i32", dy = "i32" },
+        state = { paralyzes = schema.bool, dx = schema.i32, dy = schema.i32 },
         update = function(me: Object)
             local l = me.lifecycle
             if l == "init" then

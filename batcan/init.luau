@@ -47,7 +47,7 @@ export type State = {
 }
 
 -- One state for the four (their shots left are the attack's word at AIAttackVars+0x12, the navi's `attack_count`).
-local STATE = { timer = "u16" }
+local STATE = { timer = schema.u16 }
 
 -- The phases, on the attack's step.
 local COUNT, FIRE, RECOVER = 0x0, 0x4, 0x8
@@ -113,7 +113,7 @@ function batcan.make(look: Look): BatCan
     local shot = new.kind {
         id = look.shot_id,
         pool = "attack",
-        state = { hit_mod = "u8" },
+        state = { hit_mod = schema.u8 },
         -- `sub_80C50B8`.
         update = function(me: Object)
             local l = me.lifecycle

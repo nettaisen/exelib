@@ -21,7 +21,7 @@ export type State = {
 
 -- One state for every cannon: a cannon continues the last one's attack
 -- variables, as the original's one action does.
-cannon.STATE = { timer = "u16" }
+cannon.STATE = { timer = schema.u16 }
 
 -- The phases, on the attack's step.
 local FIRE, LOWER = 0x0, 0x4

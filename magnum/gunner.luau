@@ -253,10 +253,10 @@ function gunner.make(look: Look): Gunner
         id = look.id,
         pool = look.pool,
         state = {
-            controller = "object",
-            x = "i32",
-            interval = "i32",
-            dir = "i32",
+            controller = schema.object,
+            x = schema.i32,
+            interval = schema.i32,
+            dir = schema.i32,
         },
         update = function(me: Object)
             local s = me.state :: State

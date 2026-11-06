@@ -116,7 +116,7 @@ local function make(spec: Spec)
     local kind = new.kind {
         id = spec.id,
         pool = "effect",
-        state = { first_busy = "bool", second_busy = "bool", bonus = "u16" },
+        state = { first_busy = schema.bool, second_busy = schema.bool, bonus = schema.u16 },
         update = dimming_chips.phases { name = "the pile driver", effect = effect },
     }
 

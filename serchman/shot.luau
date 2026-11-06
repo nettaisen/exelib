@@ -72,7 +72,7 @@ function shot.make(spec: Spec): Shot
     local kind = new.kind {
         id = spec.id,
         pool = "attack",
-        state = { powered = "bool", hit_mod = "u8" },
+        state = { powered = schema.bool, hit_mod = schema.u8 },
         -- 0x080D0D78.
         update = function(me: Object)
             local l = me.lifecycle

@@ -113,7 +113,7 @@ function rapid_buster.make(look: RapidBusterLook): { setup: (navi: Object) -> Ac
 
     made.action = new.action {
         id = look.id,
-        state = { timer = "u16", pattern = "u8" },
+        state = { timer = schema.u16, pattern = schema.u8 },
         -- `sub_80F00F2`.
         update = function(me: Object, s: State)
             local step = me.step

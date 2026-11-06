@@ -234,15 +234,15 @@ function zsaver.make(look: ZSaverLook): Action
     end
 
     local state: StateSchema = {
-        timer = "u16",
-        slashes = "u32",
-        window = "bool",
-        shut = "bool",
-        done = "bool",
-        slot = "u8",
-        ticks = "u8",
-        keys = "u8[3]",
-        turned = "u32",
+        timer = schema.u16,
+        slashes = schema.u32,
+        window = schema.bool,
+        shut = schema.bool,
+        done = schema.bool,
+        slot = schema.u8,
+        ticks = schema.u8,
+        keys = schema.array(schema.u8, 3),
+        turned = schema.u32,
     }
 
     return new.action {

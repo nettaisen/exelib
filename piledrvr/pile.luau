@@ -142,7 +142,7 @@ function pile.make_kind(look: Look): Kind
     return new.kind {
         id = look.id,
         pool = "attack",
-        state = { controller = "object", slot = "u8", distance = "u8" },
+        state = { controller = schema.object, slot = schema.u8, distance = schema.u8 },
         update = function(me: Object)
             local l = me.lifecycle
             if l == "init" then

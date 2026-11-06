@@ -52,7 +52,7 @@ function rising_bubble.make_kind(id: string, sprite: SpriteAsset): Kind
     return new.kind {
         id = id,
         pool = "effect",
-        state = { palette = "u8" },
+        state = { palette = schema.u8 },
         -- `sub_80E1CF8`.
         update = function(me: Object)
             local l = me.lifecycle

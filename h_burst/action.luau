@@ -20,7 +20,7 @@ export type State = {
 }
 
 -- One state for every H-Burst action.
-action.STATE = { timer = "u16" }
+action.STATE = { timer = schema.u16 }
 
 -- The phases, on the attack's step.
 local AIM, RECOVER = 0x0, 0x4

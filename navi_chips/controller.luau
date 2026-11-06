@@ -292,7 +292,7 @@ function controller.make(spec: Spec): Controller
     local kind = new.kind {
         id = spec.id,
         pool = "effect",
-        state = { chip = "chip", bonus = "u16", busy = "bool" },
+        state = { chip = schema.chip, bonus = schema.u16, busy = schema.bool },
         update = function(me: Object)
             local l = me.lifecycle
             if l == "init" then

@@ -238,7 +238,7 @@ function bomb.make(look: BoyBombLook): BoyBomb
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { doomed = "bool", hit = "bool", last_hp = "u16" },
+        state = { doomed = schema.bool, hit = schema.bool, last_hp = schema.u16 },
         -- EXE5's 0x080CCDF4.
         update = function(me: Object)
             local l = me.lifecycle

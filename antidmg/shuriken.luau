@@ -158,12 +158,12 @@ function shuriken.make_kind(look: Look): Kind
         id = look.id,
         pool = "attack",
         state = {
-            from_x = "i32",
-            from_y = "i32",
-            from_z = "i32",
-            to_x = "i32",
-            to_y = "i32",
-            hit_mod = "u8",
+            from_x = schema.i32,
+            from_y = schema.i32,
+            from_z = schema.i32,
+            to_x = schema.i32,
+            to_y = schema.i32,
+            hit_mod = schema.u8,
         },
         -- `sub_80DD764`.
         update = function(me: Object)

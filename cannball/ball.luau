@@ -96,7 +96,7 @@ function ball.make(look: CannonballLook, aim: Trajectory): Cannonball
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { target_x = "u8", target_y = "u8" },
+        state = { target_x = schema.u8, target_y = schema.u8 },
         -- EXE5's 0x080CB5C8.
         update = function(me: Object)
             local l = me.lifecycle

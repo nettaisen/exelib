@@ -20,7 +20,7 @@ export type State = {
     timer: number,
 }
 
-local STATE = { timer = "u16" }
+local STATE = { timer = schema.u16 }
 
 export type Spec = {
     id: string,

@@ -158,7 +158,7 @@ function trap.make_kind(id: string, look: ElemTrapLook): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { chip = "chip", bonus = "u16", armed = "bool", sprung_by = "u8" },
+        state = { chip = schema.chip, bonus = schema.u16, armed = schema.bool, sprung_by = schema.u8 },
         -- `sub_80CDF84`.
         update = function(me: Object)
             local l = me.lifecycle

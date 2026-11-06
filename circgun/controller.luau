@@ -9,6 +9,7 @@
 
 local dimming_chips = require("../dimming")
 local gun = require("./gun")
+local shot = require("./shot")
 
 export type State = {
     variant: CircGunVariant,
@@ -64,7 +65,7 @@ local function make(
     local kind = new.kind {
         id = id,
         pool = "effect",
-        state = { variant = "record:circgun-variant", bonus = "u16", busy = "bool" },
+        state = { variant = shot.CIRCGUN_VARIANT, bonus = schema.u16, busy = schema.bool },
         -- `sub_80E7568`.
         update = dimming_chips.phases { name = "CircGun", effect = effect },
     }
@@ -87,7 +88,7 @@ end
 
 -- A gun's variant.
 local function variant(v: CircGunVariant): CircGunVariant
-    return new.record("circgun-variant", v)
+    return new.record(shot.CIRCGUN_VARIANT, v)
 end
 
 return { variant = variant, make = make }

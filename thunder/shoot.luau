@@ -19,7 +19,7 @@ export type State = {
 type Spec = ThunderShot
 
 -- One state for both chips' shots.
-shoot.STATE = { timer = "u16" }
+shoot.STATE = { timer = schema.u16 }
 
 -- The phases, on the attack's step.
 local SHOOT, RECOVER = 0x0, 0x4

@@ -16,7 +16,7 @@ export type State = {
 }
 
 -- One state for every throw.
-throw.STATE = { timer = "u16" }
+throw.STATE = { timer = schema.u16 }
 
 -- A chip's throw: the action's key, the yoyo arm (and its game's attachment kind), and what it throws (from (x, y),
 -- `HEIGHT` up, with the damage word: the yoyo or the controller, which the navi holds in its first related object).

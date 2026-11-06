@@ -164,7 +164,7 @@ function numberman.make(look: NumbrBlNumberManLook): NumbrBlNumberMan
     local kind = new.kind {
         id = look.id,
         pool = "actor",
-        state = { controller = "object", balls = "u8" },
+        state = { controller = schema.object, balls = schema.u8 },
         -- EXE5's 0x080C2018: by state, then the sprite (stepping while dimmed).
         update = function(me: Object)
             local l = me.lifecycle

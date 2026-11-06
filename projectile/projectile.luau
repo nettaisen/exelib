@@ -46,9 +46,12 @@ export type Look = {
 
 local BURST_HIT_MOD = 3
 
+local PROJECTILE_VARIANT = schema.record_type("projectile-variant")
+projectile.PROJECTILE_VARIANT = PROJECTILE_VARIANT
+
 -- A projectile variant.
 function projectile.variant(v: ProjectileVariant): ProjectileVariant
-    return new.record("projectile-variant", v)
+    return new.record(PROJECTILE_VARIANT, v)
 end
 
 -- `sub_80C5090`: a climbing variant sits a pixel further down the field
@@ -205,7 +208,7 @@ function projectile.make_kind(look: Look): Kind
     return new.kind {
         id = look.id,
         pool = "attack",
-        state = { variant = "record:projectile-variant", row = "i8" },
+        state = { variant = PROJECTILE_VARIANT, row = schema.i8 },
         -- `sub_80C4E58`.
         update = function(me: Object)
             local l = me.lifecycle

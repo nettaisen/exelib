@@ -43,9 +43,11 @@ export type SunMeteors = {
     ) -> Object?,
 }
 
+local SUN_METEOR = schema.record_type("sun-meteor")
+
 -- A meteor's variant (a record of the original's table).
 function sun_meteor.variant(v: SunMeteor): SunMeteor
-    return new.record("sun-meteor", v)
+    return new.record(SUN_METEOR, v)
 end
 
 local HIT_MOD = 3
@@ -172,7 +174,7 @@ function sun_meteor.make(look: Look): SunMeteors
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { variant = "record:sun-meteor" },
+        state = { variant = SUN_METEOR },
         -- `sub_80DBEE6`, EXE4's 0x080DDDEE.
         update = function(me: Object)
             local l = me.lifecycle

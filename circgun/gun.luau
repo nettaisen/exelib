@@ -240,11 +240,11 @@ function gun.make_kind(id: string, look: CircGunLook, shot_kind: Kind): Kind
         id = id,
         pool = "attack",
         state = {
-            variant = "record:circgun-variant",
-            controller = "object",
-            shots_left = "u8",
-            fired = "u32",
-            shots_out = "u8[8]",
+            variant = shot.CIRCGUN_VARIANT,
+            controller = schema.object,
+            shots_left = schema.u8,
+            fired = schema.u32,
+            shots_out = schema.array(schema.u8, 8),
         },
         -- `sub_80D655C`.
         update = function(me: Object)

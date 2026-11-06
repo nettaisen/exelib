@@ -128,7 +128,7 @@ function controller.make(look: SupportsLook): Kind
     return new.kind {
         id = look.id,
         pool = "effect",
-        state = { support = { "rush", "beat", "tango" }, out = "bool", eaten = "chip", telop_chip = "chip" },
+        state = { support = { "rush", "beat", "tango" }, out = schema.bool, eaten = schema.chip, telop_chip = schema.chip },
         -- `sub_80E8FE0`.
         update = dimming_chips.phases { name = "the supports", effect = effect },
     }

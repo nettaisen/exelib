@@ -23,9 +23,11 @@ export type State = { variant: BombVariant }
 local FLIGHT_TICKS = 0x28
 local SPEED, RISE, GRAVITY = 0x2E666, 0x20666, -0x2800
 
+local BOMB_VARIANT = schema.record_type("bomb-variant")
+
 -- A bomb variant.
 function bomb.variant(v: BombVariant): BombVariant
-    return new.record("bomb-variant", v)
+    return new.record(BOMB_VARIANT, v)
 end
 
 -- Done: hidden, off its panels, and freed at the next update.
@@ -137,7 +139,7 @@ function bomb.make(look: BombLook): Bombs
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { variant = "record:bomb-variant" },
+        state = { variant = BOMB_VARIANT },
         -- `sub_80C5BB0`.
         update = function(me: Object)
             local l = me.lifecycle

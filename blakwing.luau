@@ -128,7 +128,7 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
     local perch = new.kind {
         id = look.perch_id,
         pool = "effect",
-        state = { going = "bool" },
+        state = { going = schema.bool },
         -- 0x080E69F0.
         update = function(me: Object)
             local l = me.lifecycle
@@ -368,14 +368,14 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
         id = look.flock_id,
         pool = "attack",
         state = {
-            every = "u16",
-            perch1 = "object",
-            perch2 = "object",
-            perch3 = "object",
-            count = "u32",
-            last = "u32",
-            flap = "u32",
-            controller = "object",
+            every = schema.u16,
+            perch1 = schema.object,
+            perch2 = schema.object,
+            perch3 = schema.object,
+            count = schema.u32,
+            last = schema.u32,
+            flap = schema.u32,
+            controller = schema.object,
         },
         -- 0x080D6230.
         update = function(me: Object)
@@ -455,7 +455,7 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
     local controller = new.kind {
         id = look.controller_id,
         pool = "effect",
-        state = { bonus = "u16", busy = "bool" },
+        state = { bonus = schema.u16, busy = schema.bool },
         -- 0x080E6920.
         update = dimming_chips.phases { name = "BlakWing", effect = effect },
     }

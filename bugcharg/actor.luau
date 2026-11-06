@@ -164,7 +164,7 @@ function actor.make(look: Look): Actor
     local kind = new.kind {
         id = look.id,
         pool = "actor",
-        state = { controller = "object", held = "object" },
+        state = { controller = schema.object, held = schema.object },
         update = function(me: Object)
             local l = me.lifecycle
             if l == "init" then

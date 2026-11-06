@@ -149,7 +149,7 @@ function gust.make_kind(id: string, look: GustLook): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { stop_on_hit = "bool", holder = "object", slot = "u8", pulls = "bool", unseen = "bool" },
+        state = { stop_on_hit = schema.bool, holder = schema.object, slot = schema.u8, pulls = schema.bool, unseen = schema.bool },
         -- (EXE6's `sub_80CD2EC`.)
         update = function(me: Object)
             local l = me.lifecycle

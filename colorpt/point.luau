@@ -161,12 +161,12 @@ function point.make(look: Look): Point
         id = look.id,
         pool = "effect",
         state = {
-            holder = "object",
-            slot = "u8",
-            palette = "u8",
-            bonus = "u8",
-            target_x = "u8",
-            target_y = "u8",
+            holder = schema.object,
+            slot = schema.u8,
+            palette = schema.u8,
+            bonus = schema.u8,
+            target_x = schema.u8,
+            target_y = schema.u8,
         },
         -- `sub_80E655C`.
         update = function(me: Object)

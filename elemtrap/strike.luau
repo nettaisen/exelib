@@ -112,7 +112,7 @@ function strike.make_kind(id: string, look: ElemTrapStrikeLook): Kind
     return new.kind {
         id = id,
         pool = "effect",
-        state = { bonus = "u16" },
+        state = { bonus = schema.u16 },
         -- `sub_80E35A4`.
         update = dimming_chips.phases { name = "ElemTrap's counterattack", effect = effect },
     }

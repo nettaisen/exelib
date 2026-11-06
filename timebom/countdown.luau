@@ -53,6 +53,9 @@ local APPEAR_STEPS = 16
 local APPEAR, DESTROYED, COUNTDOWN, BLINK_AWAY = 0, 2, 8, 9
 
 
+local COUNTDOWN_VARIANT = schema.record_type("countdown-variant")
+countdown.COUNTDOWN_VARIANT = COUNTDOWN_VARIANT
+
 -- A countdown bomb kind (`id`) of `look`.
 function countdown.make_kind(id: string, look: CountdownLook): Kind
     local SPRITE = look.sprite
@@ -342,14 +345,14 @@ function countdown.make_kind(id: string, look: CountdownLook): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { variant = "record:countdown-variant" },
+        state = { variant = COUNTDOWN_VARIANT },
         update = update,
     }
 end
 
 -- A bomb's variant, as a record the bomb keeps.
 function countdown.variant(v: CountdownVariant): CountdownVariant
-    return new.record("countdown-variant", v)
+    return new.record(COUNTDOWN_VARIANT, v)
 end
 
 -- `sub_80CDC7C`: a bomb of `kind` and `variant` for `side` on (x, y) with

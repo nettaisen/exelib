@@ -72,7 +72,7 @@ function follow_effect.make(spec: Spec): FollowEffect
     local kind = new.kind {
         id = spec.id,
         pool = "effect",
-        state = { flip = "u8", palette_add = "u8" },
+        state = { flip = schema.u8, palette_add = schema.u8 },
         -- `sub_80E3D68`: its sprite steps unless held (HP bit 0).
         update = function(me: Object)
             local l = me.lifecycle

@@ -229,7 +229,7 @@ function otenko.make(look: Look): Otenko
     local statue = new.kind {
         id = look.statue_id,
         pool = "attack",
-        state = { entry = "u32", turn = "u32", count = "u32" },
+        state = { entry = schema.u32, turn = schema.u32, count = schema.u32 },
         -- `sub_80DB0E4`.
         update = function(me: Object)
             local l = me.lifecycle

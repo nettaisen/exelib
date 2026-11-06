@@ -109,7 +109,7 @@ function fist.make_kind(id: string, look: FireHitFistLook): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { hit_mod = "u8" },
+        state = { hit_mod = schema.u8 },
         -- `sub_80CFCF8`.
         update = function(me: Object)
             local l = me.lifecycle

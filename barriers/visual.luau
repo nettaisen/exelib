@@ -12,6 +12,7 @@
 -- rather than an attach point, no longer running while paused once the fight is on, its sprite stepped paused or
 -- not, and its spawn taking its navi's side alone.
 
+local controller = require("./controller")
 local element = require("@exelib/element")
 local looks = require("@exelib/looks")
 local visibility = require("@exelib/visibility")
@@ -259,7 +260,7 @@ function visual.make(spec: Spec): Visual
     local kind = new.kind {
         id = spec.id,
         pool = "effect",
-        state = { barrier = "record:barrier", shown = "bool", pop_hit_mod = "u8" },
+        state = { barrier = controller.BARRIER, shown = schema.bool, pop_hit_mod = schema.u8 },
         -- `sub_80E0AD4`: by state, then its sprite (but while the fight is on and paused).
         update = function(me: Object)
             local l = me.lifecycle

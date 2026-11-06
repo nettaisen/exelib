@@ -6,6 +6,7 @@
 -- controller spawns and what of its user's side and facing it takes (a maker taking a game's look).
 
 local dimming_chips = require("@exelib/dimming")
+local rock = require("../rock")
 
 local cube = {}
 
@@ -61,8 +62,8 @@ function cube.make(look: CubeLook): Cube
         id = look.id,
         pool = "effect",
         state = {
-            variant = "record:rock-variant",
-            class = "u8",
+            variant = rock.ROCK_VARIANT,
+            class = schema.u8,
             entrance = { "rise", "instant", "fall", "placed" },
         },
         -- `sub_80E4634`.

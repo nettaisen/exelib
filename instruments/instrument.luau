@@ -38,13 +38,16 @@ local EFFECT_PERIOD, TUNE_PERIOD = 3, 0x40
 -- The actions (the object's action byte).
 local APPEAR, DESTROYED, REST, PLAY = 0, 2, 8, 9
 
+local INSTRUMENT = schema.record_type("instrument")
+instrument.INSTRUMENT = INSTRUMENT
+
 -- An instrument; with its own sprite, its absorbed look is that sprite's
 -- (an "absorbed-look" record, as EXE6's objects/absorbed_obstacle makes).
 function instrument.instrument(i: Instrument): Instrument
     if i.sprite then
-        i.absorbed = new.record("absorbed-look", { sprite = i.sprite } :: AbsorbedLook)
+        i.absorbed = new.record(obstacle.absorbed_look, { sprite = i.sprite } :: AbsorbedLook)
     end
-    return new.record("instrument", i)
+    return new.record(INSTRUMENT, i)
 end
 
 -- An instrument kind (`id`) of `look`.
@@ -240,7 +243,7 @@ function instrument.make_kind(id: string, look: InstrumentLook): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { instrument = "record:instrument", effect_in = "u32", tune_in = "u32" },
+        state = { instrument = INSTRUMENT, effect_in = schema.u32, tune_in = schema.u32 },
         -- `sub_80D4088`.
         update = function(me: Object)
             local l = me.lifecycle

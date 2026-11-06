@@ -311,7 +311,7 @@ function bass.make(spec: Spec): Bass
     local kind = new.kind {
         id = spec.id,
         pool = "actor",
-        state = { controller = "object", cooldowns = "u8[18]", columns = "u8[7]" },
+        state = { controller = schema.object, cooldowns = schema.array(schema.u8, 18), columns = schema.array(schema.u8, 7) },
         -- `sub_80C3970`.
         update = function(me: Object)
             local l = me.lifecycle

@@ -131,7 +131,7 @@ function bugcurse.make(look: BugCurseLook): (user: Object, spec: DimmingChipSpec
     local curse = new.kind {
         id = look.curse_id,
         pool = "attack",
-        state = { controller = "object" },
+        state = { controller = schema.object },
         -- EXE5's 0x080D6534.
         update = function(me: Object)
             local l = me.lifecycle
@@ -193,7 +193,7 @@ function bugcurse.make(look: BugCurseLook): (user: Object, spec: DimmingChipSpec
     local controller = new.kind {
         id = look.controller_id,
         pool = "effect",
-        state = { waiting = "bool" },
+        state = { waiting = schema.bool },
         -- EXE5's 0x080E6AC8.
         update = dimming_chips.phases { name = "BugCurse", effect = effect },
     }

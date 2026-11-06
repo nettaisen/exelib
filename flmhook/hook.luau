@@ -18,8 +18,10 @@ local hook = {}
 -- What a chip's hook swings (`FlameHookFlames`).
 export type Flames = FlameHookFlames
 
+local FLMHOOK_FLAMES = schema.record_type("flmhook-flames")
+
 function hook.flames(f: Flames): Flames
-    return new.record("flmhook-flames", f)
+    return new.record(FLMHOOK_FLAMES, f)
 end
 
 -- A game's hook.
@@ -122,7 +124,7 @@ function hook.make(spec: Spec): {
     local kind = new.kind {
         id = spec.id,
         pool = "effect",
-        state = { flames = "record:flmhook-flames", controller = "object" },
+        state = { flames = FLMHOOK_FLAMES, controller = schema.object },
         -- `sub_80EA010`.
         update = function(me: Object)
             local l = me.lifecycle

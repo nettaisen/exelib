@@ -22,7 +22,7 @@ export type State = {
 }
 
 -- The declared types of `State`'s fields in a kind's state.
-targets.LAST, targets.GRID = "u32", "u8[40]"
+targets.LAST, targets.GRID = schema.u32, schema.array(schema.u8, 40)
 
 -- An enemy's body on a panel of the enemy's area (EXE6's `byte_80E8D6C`), an enemy's body on any panel (EXE4's
 -- 0x080CBABC), and the enemy's area (`byte_80E8D58`; EXE4's 0x080CB9FC), by the thrower's side.

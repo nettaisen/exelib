@@ -24,9 +24,12 @@ export type State = {
     palette_add: number,
 }
 
+local ATTACHMENT_LOOK = schema.record_type("attachment-look")
+attachment.ATTACHMENT_LOOK = ATTACHMENT_LOOK
+
 -- An attachment's look (see AttachmentLook in types.d.luau).
 function attachment.look(spec: AttachmentLook): AttachmentLook
-    return new.record("attachment-look", spec)
+    return new.record(ATTACHMENT_LOOK, spec)
 end
 
 -- (How it animates is an `AttachmentOptions`: its animation, whether it
@@ -90,10 +93,10 @@ function attachment.make_kind(id: string, lifted: Lifted?): Kind
         pool = "actor",
         state = {
             slot = slot.TYPE,
-            look = "record:attachment-look",
-            anim = "u8",
-            while_dimmed = "bool",
-            palette_add = "u8",
+            look = ATTACHMENT_LOOK,
+            anim = schema.u8,
+            while_dimmed = schema.bool,
+            palette_add = schema.u8,
         },
         update = function(me: Object)
             if me.lifecycle == "init" then

@@ -155,7 +155,7 @@ function ice_cube.make(look: Look): IceCube
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { look = "u8" },
+        state = { look = schema.u8 },
         -- `sub_80D984C`.
         update = function(me: Object)
             local l = me.lifecycle

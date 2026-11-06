@@ -360,7 +360,7 @@ function top.make(look: AirSpinTopLook): AirSpinTop
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { target_x = "i32", interval = "i32", spins = "u8", palette = "u8" },
+        state = { target_x = schema.i32, interval = schema.i32, spins = schema.u8, palette = schema.u8 },
         -- `sub_80D88E0` (EXE5's 0x080D9EE4).
         update = function(me: Object)
             local l = me.lifecycle

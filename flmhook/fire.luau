@@ -25,8 +25,10 @@ export type Swing = { swing: number, variant: Variant, spark: Spark }
 -- A chip's flames (`FlameHookVariant`).
 export type Variant = FlameHookVariant
 
+local FLMHOOK_FIRE_VARIANT = schema.record_type("flmhook-fire-variant")
+
 function fire.variant(v: Variant): Variant
-    return new.record("flmhook-fire-variant", v)
+    return new.record(FLMHOOK_FIRE_VARIANT, v)
 end
 
 -- A game's flames.
@@ -203,7 +205,7 @@ function fire.make(look: Look, sine: (angle: number) -> number): {
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { swing = "u8", variant = "record:flmhook-fire-variant", spark = "spark", center_x = "i32", center_y = "i32", trail = "u32" },
+        state = { swing = schema.u8, variant = FLMHOOK_FIRE_VARIANT, spark = schema.spark, center_x = schema.i32, center_y = schema.i32, trail = schema.u32 },
         -- `sub_80DE7F4`.
         update = function(me: Object)
             local l = me.lifecycle

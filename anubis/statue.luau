@@ -72,9 +72,12 @@ local OTHER_SIDE: { [number]: { number } } = { [0] = { 0x20, 0 }, [1] = { 0, 0x2
 -- counter (0x81), hitting by what it is alone (the look's drain, target row 0), no spark, hit modifier 0.
 local DRAIN_ELEMENT, DRAIN_DAMAGE, DRAIN_COUNTER = 5, 1, 0x81
 
+local ANUBIS_VARIANT = schema.record_type("anubis-variant")
+statue.ANUBIS_VARIANT = ANUBIS_VARIANT
+
 -- An Anubis statue's variant (`byte_80CF0C0`, by the chip's first parameter).
 function statue.variant(v: AnubisVariant): AnubisVariant
-    return new.record("anubis-variant", v)
+    return new.record(ANUBIS_VARIANT, v)
 end
 
 function statue.make(look: Look): Statue
@@ -271,7 +274,7 @@ function statue.make(look: Look): Statue
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { variant = "record:anubis-variant", bubble_in = "u32" },
+        state = { variant = ANUBIS_VARIANT, bubble_in = schema.u32 },
         -- `sub_80CF0D0`.
         update = function(me: Object)
             local l = me.lifecycle

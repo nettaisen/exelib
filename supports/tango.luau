@@ -183,7 +183,7 @@ function tango.make(look: TangoLook): SupportActor
     local kind = new.kind {
         id = look.id,
         pool = "actor",
-        state = { healing = "bool" },
+        state = { healing = schema.bool },
         update = update,
     }
 

@@ -61,7 +61,7 @@ function debris.make_kind(id: string, sprite: SpriteAsset, dust: Effect): Kind
     return new.kind {
         id = id,
         pool = "effect",
-        state = { palette = "u8" },
+        state = { palette = schema.u8 },
         -- `sub_80E46D8`.
         update = function(me: Object)
             local l = me.lifecycle

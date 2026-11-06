@@ -175,11 +175,11 @@ function drill.make_kind(
         pool = "attack",
         state = {
             slot = { "related", "child" },
-            child = "object",
-            second = "bool",
-            ticks = "u8",
-            light = "bool",
-            bugs = "u16",
+            child = schema.object,
+            second = schema.bool,
+            ticks = schema.u8,
+            light = schema.bool,
+            bugs = schema.u16,
         },
         -- `sub_80D2A94`.
         update = function(me: Object)

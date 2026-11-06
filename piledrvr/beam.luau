@@ -131,7 +131,7 @@ function beam.make_kind(look: Look): Kind
     return new.kind {
         id = look.id,
         pool = "attack",
-        state = { distance = "u8", ticks = "u8" },
+        state = { distance = schema.u8, ticks = schema.u8 },
         update = function(me: Object)
             local l = me.lifecycle
             if l == "init" then

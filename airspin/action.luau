@@ -18,7 +18,7 @@ export type State = {
 
 -- One state for every AirSpin: a use continues the last one's attack
 -- variables, as the original's one action does.
-action.STATE = { timer = "u16" }
+action.STATE = { timer = schema.u16 }
 
 -- The phases, on the attack's step.
 local SPIN, RECOVER = 0x0, 0x4

@@ -248,7 +248,7 @@ function land_mine.make_kind(look: Look): Kind
     return new.kind {
         id = look.id,
         pool = "attack",
-        state = { targets = "u8[18]", count = "u32", index = "u32", hop_ticks = "u8" },
+        state = { targets = schema.array(schema.u8, 18), count = schema.u32, index = schema.u32, hop_ticks = schema.u8 },
         update = update,
     }
 end

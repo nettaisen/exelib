@@ -8,6 +8,7 @@
 -- controller's `hook(change)`, its quake's change its own (`quake.change`, @exelib/geddon/quake).
 
 local dimming_chips = require("@exelib/dimming")
+local quake = require("./quake")
 
 local controller = {}
 
@@ -64,7 +65,7 @@ function controller.make(spec: Spec): Controller
     local kind = new.kind {
         id = spec.id,
         pool = "effect",
-        state = { change = "record:geddon-change", busy = "bool" },
+        state = { change = quake.GEDDON_CHANGE, busy = schema.bool },
         -- EXE6's `sub_80E24E4`.
         update = dimming_chips.phases { name = spec.name, effect = effect },
     }

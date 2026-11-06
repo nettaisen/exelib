@@ -5,6 +5,7 @@
 -- the controller spawns.
 
 local dimming_chips = require("@exelib/dimming")
+local fan = require("./fan")
 
 local controller = {}
 
@@ -36,7 +37,7 @@ function controller.make(look: WindControllerLook): WindController
     local kind = new.kind {
         id = look.id,
         pool = "effect",
-        state = { variant = "record:fan-variant" },
+        state = { variant = fan.FAN_VARIANT },
         -- `sub_80E309C`.
         update = dimming_chips.phases { name = "Wind's controller", effect = effect },
     }

@@ -159,7 +159,7 @@ function roller.make_kind(look: Look): Kind
     return new.kind {
         id = look.id,
         pool = "attack",
-        state = { swallowed = "bool" },
+        state = { swallowed = schema.bool },
         -- `sub_80DC260`.
         update = function(me: Object)
             local l = me.lifecycle

@@ -56,7 +56,7 @@ function invisible.make(spec: Spec): Invisible
     local kind = new.kind {
         id = spec.id,
         pool = "effect",
-        state = { ticks = "u16" },
+        state = { ticks = schema.u16 },
         -- `sub_80E74D4`.
         update = dimming_chips.phases {
             name = "Invisibl",

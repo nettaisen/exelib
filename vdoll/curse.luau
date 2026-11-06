@@ -180,7 +180,7 @@ function curse.make(look: Look): Curse
     local kind = new.kind {
         id = look.id,
         pool = "effect",
-        state = { target_x = "u8", target_y = "u8" },
+        state = { target_x = schema.u8, target_y = schema.u8 },
         -- EXE5's 0x080E6110, EXE4's 0x080E77E8.
         update = dimming_chips.phases { name = "the curse", effect = effect },
     }

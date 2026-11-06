@@ -24,7 +24,7 @@ export type State = {
     progress: { number },
 }
 
-action.STATE = { flip = "u8", progress = "u8[5]" }
+action.STATE = { flip = schema.u8, progress = schema.array(schema.u8, 5) }
 
 -- Ticks to enter a sequence.
 local COUNTDOWN = 0x30

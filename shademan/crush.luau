@@ -104,7 +104,7 @@ function crush.make(spec: ShadeManCrushSpec): ShadeManCrush
     local kind = new.kind {
         id = spec.id,
         pool = "attack",
-        state = { palette = "u8", hit_mod = "u8", status = "status", bug = "u8", bug_arg = "u8" },
+        state = { palette = schema.u8, hit_mod = schema.u8, status = schema.status, bug = schema.u8, bug_arg = schema.u8 },
         -- EXE5's 0x080CB4AC, EXE4's 0x080D3748.
         update = function(me: Object)
             local l = me.lifecycle

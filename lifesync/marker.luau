@@ -35,7 +35,7 @@ function marker.make_kind(look: LifeSyncMarkerLook): Kind
     return new.kind {
         id = look.id,
         pool = "effect",
-        state = { ticks = "u8" },
+        state = { ticks = schema.u8 },
         -- `sub_80E76F8`.
         update = function(me: Object)
             local l = me.lifecycle

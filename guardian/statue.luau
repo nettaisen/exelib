@@ -406,7 +406,7 @@ function statue.make(look: Look): Statue
     kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { staged = "bool", quiet = "bool", strike = "bool", attackers = "u32" },
+        state = { staged = schema.bool, quiet = schema.bool, strike = schema.bool, attackers = schema.u32 },
         -- `sub_80D4C84`.
         update = function(me: Object)
             local l = me.lifecycle
