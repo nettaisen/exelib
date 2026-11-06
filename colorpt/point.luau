@@ -37,7 +37,7 @@ export type Look = {
     -- The element byte its spawn leaves, register garbage where the game reads nothing of it but the recordings show
     -- it (EXE4's 0x080E7EAA: the low byte of the address its controller's panel test leaves in r2, 0x0800A3D9);
     -- none: the element it spawns with (EXE6's and EXE5's, whose garbage goes elsewhere).
-    element: number?,
+    element: Element?,
 }
 
 export type Point = {
@@ -69,7 +69,7 @@ function point.make(look: Look): Point
     local function take(me: Object)
         if me.phase_init == 0 then
             local x, y = me.panel_x, me.panel_y
-            field.set_alliance(x, y, bit32.bxor(me.alliance, 1))
+            field.set_alliance(x, y, battle.other_side(me.alliance))
             field.set_column_timer(x, STOLEN_TICKS)
             me.timer = 0x13
             me.phase_init = 4

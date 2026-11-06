@@ -108,8 +108,8 @@ function magnet.make(look: MagnetLook): MagnetSpawn
         end,
     }
 
-    return function(owner: Object, dx: number, dy: number, element: number, paralyzes: boolean, damage: number): Object?
-        local o = battle.spawn(kind, Vec3.new(dy, element, 0))
+    return function(owner: Object, dx: number, dy: number, element: Element, paralyzes: boolean, damage: number): Object?
+        local o = battle.spawn(kind, Vec3.new(dy, element.byte, 0))
         if o then
             local s = o.state :: State
             s.paralyzes, s.dx, s.dy = paralyzes, dx, dy

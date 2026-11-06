@@ -247,7 +247,7 @@ local function init(me: Object, look: Look)
     sprite.shadow = "with_sprite"
     me.anim = 0
     sprite:set_animation(0)
-    sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+    sprite:face(me)
     aim(me, look)
     me:set_lifecycle("update")
     tick(me, look)

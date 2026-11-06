@@ -84,7 +84,7 @@ function grab.edge_panel(me: Object): (number?, number?)
     local side, y, front = me.alliance, me.panel_y, me.facing
     -- sub_800D53C: from the far edge, back while the panels are the
     -- user's side's.
-    local x = 6 - 5 * bit32.bxor(me.alliance, me.flip)
+    local x = 6 - 5 * me.facing_side
     while true do
         if not field.valid(x, y) then
             return nil, nil

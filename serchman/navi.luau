@@ -219,7 +219,7 @@ function navi.make(spec: Spec): SearchMan
             local p = me.pos
             me.pos = Vec3.new(p.x, p.y, 0)
         end
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         sprite.palette = s.palette
         sprite.color_shader = 0x7FFF
         me.visible = true
@@ -262,7 +262,7 @@ function navi.make(spec: Spec): SearchMan
         return function(user: Object, controller: Object, nspec: NaviChipSpec): Object?
             local o: Object?
             if spec.summoned_alone then
-                o = battle.spawn(kind, Vec3.new(nspec.panel_x + nspec.panel_y * 0x100, nspec.element, user.alliance))
+                o = battle.spawn(kind, Vec3.new(nspec.panel_x + nspec.panel_y * 0x100, nspec.element.byte, user.alliance))
                 if o then
                     o.panel_x, o.panel_y = nspec.panel_x, nspec.panel_y
                     o.alliance = user.alliance

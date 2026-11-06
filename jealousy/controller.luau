@@ -101,7 +101,7 @@ function controller.make(look: JealousyLook): (user: Object, spec: DimmingChipSp
             local operation = look.operation_battle
             if operation and me.timer >= WARN_UNTIL and operation() then
                 -- (EXE5's 0x080E4642: on the consoles of the side this isn't, over the gauge.)
-                battle.warn(look.warning :: Sound, nil, bit32.bxor(me.alliance, 1))
+                battle.warn(look.warning :: Sound, nil, battle.other_side(me.alliance))
             end
             local t = me.timer - 1
             me.timer = t
@@ -109,7 +109,7 @@ function controller.make(look: JealousyLook): (user: Object, spec: DimmingChipSp
                 return
             end
             if operation and operation() then
-                battle.drain_side_gauge(bit32.bxor(me.alliance, 1), FULL_GAUGE)
+                battle.drain_side_gauge(battle.other_side(me.alliance), FULL_GAUGE)
             end
             dimming_chips.done(me)
         else

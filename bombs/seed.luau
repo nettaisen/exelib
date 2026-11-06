@@ -79,7 +79,7 @@ local function burst(me: Object)
     local x, y = me.panel_x, me.panel_y
     -- (The game passes the side and flip halfword as the side, unmasked,
     -- so a flipped seed's dx lands far off the field.)
-    local dir = panels.side_direction(me.alliance + me.flip * 0x100)
+    local dir = panels.side_direction(me.alliance + (if me.flip then 0x100 else 0))
     regions.effects_on_panels(x, y, v.effect, r, dir, 0)
     regions.set_types(x, y, v.panel, r)
     battle.play_sound(v.sound)
@@ -123,7 +123,7 @@ local function init(me: Object, look: SeedLook)
         return
     end
     me:setup_collision(look.is, look.hits, look.hit_mod)
-    sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+    sprite:face(me)
     local spark = look.spark
     if spark then
         me.collision:set_hit_effect(spark(me.element))

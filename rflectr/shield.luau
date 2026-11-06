@@ -111,7 +111,7 @@ function shield.make(spec: {
         me.anim_loaded = 0xFF
         sprite.palette = l.palette
         me:set_panel_from_coordinates()
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         battle.play_sound(spec.sound)
         me.vel = me.pos
         me:set_lifecycle("update")

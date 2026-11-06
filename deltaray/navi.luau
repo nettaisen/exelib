@@ -222,7 +222,7 @@ function deltaray.make(spec: Spec): {
             me:set_lifecycle("destroy")
             return
         end
-        st(me).facing = bit32.bxor(me.alliance, me.flip)
+        st(me).facing = me.facing_side
         me:set_action(4)
         if spec.tracks and battle.own_gauges() then
             me.phase = 0x1C
@@ -343,7 +343,7 @@ function deltaray.make(spec: Spec): {
     -- `sub_80C2EC4`: step `n` of the delta: his facing for it, the next corner
     -- (FuturePanel), Timer2 n + 1; whether he can stand there.
     local function step(me: Object, n: number): boolean
-        st(me).facing = bit32.bxor(bit32.band(n, 1), bit32.bxor(me.alliance, me.flip))
+        st(me).facing = bit32.bxor(bit32.band(n, 1), me.facing_side)
         local d = STEPS[n]
         if not d then
             error(string.format("DeltaRay step %d reads past byte_80C2F20", n))
@@ -386,7 +386,7 @@ function deltaray.make(spec: Spec): {
     local function appear_at(me: Object)
         if me.phase_init == 0 then
             me.anim = 3
-            me.sprite:set_flip(st(me).facing)
+            me.sprite:face_side(st(me).facing)
             me.timer = 3
             me.panel_x, me.panel_y = me.future_panel_x, me.future_panel_y
             me:set_coordinates_from_panel()
@@ -421,7 +421,7 @@ function deltaray.make(spec: Spec): {
         local box = battle.hitbox(me, {
             panel_x = x,
             panel_y = y,
-            element = 0,
+            element = Element.null,
             z = 0x10_0000,
             region = regions.wide,
             hit_effect = nil,
@@ -478,7 +478,7 @@ function deltaray.make(spec: Spec): {
         if me.phase_init == 0 then
             let_go(me)
             me.anim = 3
-            me.sprite:set_flip(bit32.bxor(bit32.bxor(me.alliance, me.flip), 1))
+            me.sprite:face_side(battle.other_side(me.facing_side))
             me.timer = 3
             local h = st(me).home
             me.panel_x, me.panel_y = bit32.band(h, 0xFF), bit32.rshift(h, 8)
@@ -497,7 +497,7 @@ function deltaray.make(spec: Spec): {
     -- white flash of 20 ticks).
     local function burst(me: Object, x: number, y: number)
         local cx, cy = field.center(x, y)
-        local fx = BURST.spawn(me, Vec3.new(cx, cy, 0), bit32.bxor(me.alliance, me.flip))
+        local fx = BURST.spawn(me, Vec3.new(cx, cy, 0), me.facing_side)
         if fx then
             fx.timer = 0x3C
         end
@@ -514,7 +514,7 @@ function deltaray.make(spec: Spec): {
             let_go(me)
             me.anim = spec.finish_anim
             me.timer = 0x3C
-            local x = me.future_panel_x + (if bit32.bxor(me.alliance, me.flip) ~= 0 then -1 else 1)
+            local x = me.future_panel_x + (if me.facing_side ~= 0 then -1 else 1)
             burst(me, x, 2)
             me.phase_init = 4
             return
@@ -597,7 +597,7 @@ function deltaray.make(spec: Spec): {
             local p = me.pos
             me.pos = Vec3.new(p.x, p.y, 0)
         end
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         st(me).home = bit32.bor(me.panel_x, bit32.lshift(me.panel_y, 8))
         sprite.palette = st(me).palette
         sprite.color_shader = 0x7FFF
@@ -651,7 +651,7 @@ function deltaray.make(spec: Spec): {
         return function(user: Object, controller: Object, nspec: NaviChipSpec): Object?
             local alone = spec.summoned_alone == true
             local pos = if alone
-                then Vec3.new(nspec.panel_x + nspec.panel_y * 0x100, nspec.element, user.alliance)
+                then Vec3.new(nspec.panel_x + nspec.panel_y * 0x100, nspec.element.byte, user.alliance)
                 else Vec3.zero
             local o = battle.spawn(kind, pos)
             if not o then

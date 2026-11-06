@@ -19,7 +19,7 @@ local controller = {}
 export type Spec = {
     id: string,
     -- A fist over (x, y) at height z with the damage word: the game's.
-    fist: (spawner: Object, x: number, y: number, element: number, z: number, damage: number) -> Object?,
+    fist: (spawner: Object, x: number, y: number, element: Element, z: number, damage: number) -> Object?,
     -- EXE6's: the first fist at an enemy's own panel (`sub_80E8C44`), and the
     -- enemy's whole area when no enemy stands (`sub_80E8CFA`).
     first_on_body: boolean,
@@ -62,7 +62,7 @@ function controller.make(spec: Spec): { kind: Kind, hook: (user: Object, dspec: 
         if x ~= 0 then
             -- sub_80E8BE2 (the punch's parity, Timer2 & 1, the fist's first
             -- parameter, is read by nothing).
-            local element = if spec.fists_take_element then me.element else 0
+            local element = if spec.fists_take_element then me.element else Element.null
             spec.fist(me, x, panels.y(target), element, HEIGHT, dimming_chips.damage_plus(me, s.bonus))
         end
         local n = me.timer2 - 1

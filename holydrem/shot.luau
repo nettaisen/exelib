@@ -97,8 +97,8 @@ function shot.make(look: Look): Shot
         sprite.shadow = "with_sprite"
         me.anim, me.anim_loaded = 0, 0xFF
         me.visible = true
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
-        me.element = 0
+        sprite:face(me)
+        me.element = Element.null
         me:set_panel_from_coordinates()
         me.vel = Vec3.new(me.facing * SPEED, me.vel.y, me.vel.z)
         if not me:create_collision() then

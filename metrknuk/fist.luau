@@ -56,7 +56,7 @@ local BURST_LEFT = 0x3_0000
 -- A game's fist kind, and its spawn.
 function fist.make(look: Look): {
     kind: Kind,
-    spawn: (spawner: Object, x: number, y: number, element: number, z: number, damage: number) -> Object?,
+    spawn: (spawner: Object, x: number, y: number, element: Element, z: number, damage: number) -> Object?,
 }
     -- `sub_80DBDBC`: forward and down; on landing a burst (jittered), the hit,
     -- the panel cracked, and on a solid panel the camera shaken.
@@ -136,7 +136,7 @@ function fist.make(look: Look): {
         me.anim, me.anim_loaded = look.anim, look.anim
         sprite:set_animation(look.anim)
         sprite.palette = 0
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         local sound = look.sound
         if sound then
             battle.play_sound(sound)
@@ -176,7 +176,7 @@ function fist.make(look: Look): {
     -- `sub_80DBEA2` (`sub_80DBE82` and the fast fall): a fist over (`x`, `y`)
     -- of `spawner`'s side and facing, at height `z`, running while dimmed.
     -- (Its X and Y are the spawner's registers until its init.)
-    local function spawn(spawner: Object, x: number, y: number, element: number, z: number, damage: number): Object?
+    local function spawn(spawner: Object, x: number, y: number, element: Element, z: number, damage: number): Object?
         local o = battle.spawn(kind, Vec3.new(0, 0, z))
         if o then
             o.panel_x, o.panel_y = x, y

@@ -101,7 +101,7 @@ function curse.make(look: Look): Curse
         local box = battle.hitbox(me, {
             panel_x = x,
             panel_y = y,
-            element = 0,
+            element = Element.null,
             z = 0,
             region = regions.single,
             hit_effect = look.spark,
@@ -186,7 +186,7 @@ function curse.make(look: Look): Curse
             local s = o.state :: State
             s.target_x, s.target_y = aim.target_x, aim.target_y
             o.panel_x, o.panel_y = doll.panel_x, doll.panel_y
-            o.element = 0
+            o.element = Element.null
             o.related1 = doll
             o.alliance = doll.alliance
             o.damage_word = damage

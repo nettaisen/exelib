@@ -48,7 +48,7 @@ function whirl.make(look: SeekingWhirlLook): { kind: Kind, sender: AirSpinSender
             return false
         end
         -- sub_800AE54: the other side's first combatant on (x, y).
-        for _, a in battle.alive_actors(bit32.bxor(me.alliance, 1)) do
+        for _, a in battle.alive_actors(battle.other_side(me.alliance)) do
             if a.panel_x == x and a.panel_y == y then
                 for _, f in look.hidden do
                     if (a.status :: any)[f] then
@@ -253,7 +253,7 @@ function whirl.make(look: SeekingWhirlLook): { kind: Kind, sender: AirSpinSender
             error("seeking whirl: no collision slot (sub_8011504; the game reads through a null pointer)")
         end
         me:setup_collision(look.attack, look.hits, HIT_MOD)
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me.visible = true
         me.collision:set_region(nil)
         me.collision:present()
@@ -296,7 +296,7 @@ function whirl.make(look: SeekingWhirlLook): { kind: Kind, sender: AirSpinSender
     -- position is the spawner's registers (the panel Y, the element, and the
     -- filter's forbidden bits: side 1's area bit, 0x20, for a side but 0,
     -- else none) until its init places it.
-    local function send(owner: Object, x: number, y: number, element: number, damage: number): Object?
+    local function send(owner: Object, x: number, y: number, element: Element, damage: number): Object?
         local dir = owner.facing
         -- (A side but 0 tests as side 1.)
         local side = if owner.alliance ~= 0 then 1 else 0
@@ -311,7 +311,7 @@ function whirl.make(look: SeekingWhirlLook): { kind: Kind, sender: AirSpinSender
         if x == 0 then
             return nil
         end
-        local o = battle.spawn(kind, Vec3.new(y, element, side * 0x20))
+        local o = battle.spawn(kind, Vec3.new(y, element.byte, side * 0x20))
         if o then
             o.panel_x, o.panel_y = x, y
             o.element = element

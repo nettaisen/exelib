@@ -33,22 +33,28 @@ function navi_status.end_anger(navi: Object, mood: "reset" | "unless_zero")
     navi.stun_ticks = 0
 end
 
--- EXE5's 0x08012802: the side's mood rises by `n`, to 254 at most; a mood of 0 or 0xFF (Full Synchro) stays (a
--- recovery's raise).
+-- EXE5's 0x08012802: the side's mood rises by `n`, to 254 at most; a mood of 0 or Full Synchro stays (a recovery's
+-- raise).
 function navi_status.gain_mood(side: number, n: number)
     local stats = battle.navi(side)
     local mood = stats.mood
-    if mood ~= 0 and mood ~= 0xFF then
-        stats.mood = math.min(mood + n, 254)
+    if mood ~= 0 and mood ~= "full_synchro" then
+        stats.mood = math.min((mood :: number) + n, 254)
     end
 end
 
--- `sub_8015C12` (EXE5's 0x08012820): the side's mood falls by `n`, to 1 at least; a mood of 0 stays.
+-- A mood as the game's arithmetic on it takes it: Full Synchro is the gauge's top, the byte 0xFF.
+function navi_status.mood_number(mood: Mood): number
+    return if mood == "full_synchro" then 0xFF else mood
+end
+
+-- `sub_8015C12` (EXE5's 0x08012820): the side's mood falls by `n`, to 1 at least; a mood of 0 stays (Full Synchro falls
+-- from the gauge's top).
 function navi_status.lose_mood(side: number, n: number)
     local stats = battle.navi(side)
     local mood = stats.mood
     if mood ~= 0 then
-        stats.mood = math.max(mood - n, 1)
+        stats.mood = math.max(navi_status.mood_number(mood) - n, 1)
     end
 end
 

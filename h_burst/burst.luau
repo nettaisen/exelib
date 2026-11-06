@@ -170,8 +170,8 @@ end
 -- `bursts` times, with the element and the damage word `damage`. Its
 -- position is the spawner's registers (the panel Y, the element and 0)
 -- until its init places it.
-function burst.spawn(kind: Kind, owner: Object, x: number, y: number, element: number, bursts: number, damage: number): Object?
-    local o = battle.spawn(kind, Vec3.new(y, element, 0))
+function burst.spawn(kind: Kind, owner: Object, x: number, y: number, element: Element, bursts: number, damage: number): Object?
+    local o = battle.spawn(kind, Vec3.new(y, element.byte, 0))
     if o then
         o.panel_x, o.panel_y = x, y
         o.element = element

@@ -9,7 +9,7 @@ local regions = require("@exelib/regions")
 local effects = {}
 
 -- The sixth element: the hit's damage is 0.
-local ELEMENT_NONE = 5
+local ELEMENT_NONE = Element.drain
 
 local function hit(me: Object, region: Region, is: CollisionType, hits: CollisionType, status: Status)
     battle.hitbox(me, {

@@ -46,9 +46,8 @@ end
 -- EXE4's front: from the far edge of the other side's field back toward the user's, the first panel of the other
 -- side's (0x0800A1AE with 0x080E4708's flags: the owner bit 0x20 for side 1, none for side 0).
 function controller.nearest_other(me: Object, y: number): number
-    local other = bit32.bxor(me.alliance, 1)
-    local require, forbid = if other == 1 then 0x20 else 0, if other == 1 then 0 else 0x20
-    return panels.closest_in_row(other, y, require, forbid)
+    local other = battle.other_side(me.alliance)
+    return panels.closest_in_row(other, y, "own_area", nil, other)
 end
 
 function controller.make(look: Look): Controller

@@ -31,7 +31,7 @@ function controller.make(spec: Spec): { hook: (user: Object, dspec: DimmingChipS
             -- (Where the statue goes: a solid panel with nothing on it.)
             if field.check(x, y, "solid", "occupied") then
                 local bonus = (me.state :: State).bonus
-                spec.statue(me, x, y, dimming_chips.damage_plus(me, bonus), Vec3.new(y, me.element, bonus))
+                spec.statue(me, x, y, dimming_chips.damage_plus(me, bonus), Vec3.new(y, me.element.byte, bonus))
             end
             me.timer = WAIT
             me.phase_init = 4

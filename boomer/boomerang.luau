@@ -102,7 +102,7 @@ local function init(me: Object, s: State, look: BoomerangLook)
     me.vel = Vec3.new(v.speed, vy, vel.z)
     me.timer = 0
     sprite.palette = 0
-    sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+    sprite:face(me)
     me:set_coordinates_from_panel()
     if not me:create_collision() then
         me:free()
@@ -239,8 +239,8 @@ end
 -- `sub_80CA4D8`: a boomerang (of `kind`, a game's) of `owner`'s on (x, y),
 -- thrown as `throw` says, with the damage word `damage`. (It spawns at the
 -- registers' values, which its init replaces but for Z.)
-function boomerang.spawn(kind: Kind, owner: Object, x: number, y: number, element: number, z: number, throw: Throw, damage: number): Object?
-    local o = battle.spawn(kind, Vec3.new(y, element, z))
+function boomerang.spawn(kind: Kind, owner: Object, x: number, y: number, element: Element, z: number, throw: Throw, damage: number): Object?
+    local o = battle.spawn(kind, Vec3.new(y, element.byte, z))
     if o then
         o.panel_x, o.panel_y = x, y
         o.element = element
@@ -263,7 +263,7 @@ end
 -- modifier 3: a flash with the flinch).
 function boomerang.instant(kind: Kind, variant: Variant, strong: boolean?): (user: Object, spec: InstantChipSpec) -> ()
     return function(user: Object, spec: InstantChipSpec)
-        local x = bit32.bxor(user.alliance, user.flip) * 5 + 1
+        local x = user.facing_side * 5 + 1
         boomerang.spawn(kind, user, x, 3, spec.element, 0x10_0000, { variant = variant, strong = strong }, spec.damage)
     end
 end

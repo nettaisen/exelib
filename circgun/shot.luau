@@ -110,7 +110,7 @@ function shot.make_kind(id: string, look_: CircGunLook): Kind
         sprite.shadow = "with_sprite"
         me.anim, me.anim_loaded = ANIM, 0xFF
         me.visible = true
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         if look_.on_floor then
             shot.place_on_floor(me)
         else
@@ -151,7 +151,7 @@ function shot.spawn_kind(
     gun: Object,
     x: number,
     y: number,
-    element: number,
+    element: Element,
     damage: number,
     ticks: number,
     variant: CircGunVariant,

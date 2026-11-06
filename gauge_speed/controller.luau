@@ -56,7 +56,7 @@ local function effect(me: Object, WARNING_SOUND: Sound)
         battle.set_gauge_rate(if fast then FAST_RATE else SLOW_RATE)
         set_timer(me.alliance, fast, OWN_TICKS)
         if battle.own_gauges() and not battle.link() then
-            set_timer(bit32.bxor(me.alliance, 1), fast, OTHER_TICKS)
+            set_timer(battle.other_side(me.alliance), fast, OTHER_TICKS)
         end
         -- (The gauge's slow or fast look is loaded into VRAM.)
         me.timer = WAIT

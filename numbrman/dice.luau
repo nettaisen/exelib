@@ -216,7 +216,7 @@ function dice.make(spec: DiceSpec): Dice
         local box = battle.hitbox(me, {
             panel_x = me.panel_x,
             panel_y = me.panel_y,
-            element = 0,
+            element = Element.null,
             z = 0,
             region = regions.square,
             hit_effect = nil,
@@ -276,7 +276,7 @@ function dice.make(spec: DiceSpec): Dice
         sprite.shadow = "with_sprite"
         me.visible = true
         me.anim, me.anim_loaded = 6, 0xFF
-        me.element = 0
+        me.element = Element.null
         if nine and s.face == 9 then
             sprite.palette = 1
         end

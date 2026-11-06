@@ -28,7 +28,7 @@ end
 -- player navi, while it has HP (`sub_80E8378`); offline, the other side's
 -- combatant with the most HP, the later slot on a tie.
 local function target(me: Object): (number?, number?)
-    local other = bit32.bxor(me.alliance, 1)
+    local other = battle.other_side(me.alliance)
     if battle.link() then
         local p = battle.player(other)
         if not p then
@@ -124,7 +124,7 @@ end
 -- `sub_80E8396`: a striker of `kind` with `element` and the damage word, of
 -- `user`'s side; its side's one field object of class 1. (Its position is
 -- the spawner's registers, which nothing reads.)
-function striker.spawn(kind: Kind, user: Object, element: number, damage: number): Object?
+function striker.spawn(kind: Kind, user: Object, element: Element, damage: number): Object?
     local o = battle.spawn(kind)
     if not o then
         return nil

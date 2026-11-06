@@ -90,7 +90,7 @@ function crush.make(spec: ShadeManCrushSpec): ShadeManCrush
         me.anim, me.anim_loaded = 11, 11
         sprite:set_animation(11)
         sprite.palette = s.palette
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me.timer = TICKS
         me:set_coordinates_from_panel()
         spec.place(me)
@@ -124,7 +124,7 @@ function crush.make(spec: ShadeManCrushSpec): ShadeManCrush
         local o = battle.spawn(kind, Vec3.new(y, 0, 0x12_0000))
         if o then
             o.panel_x, o.panel_y = x, y
-            o.element = 0
+            o.element = Element.null
             o.damage_word = shademan.damage_word
             o.alliance, o.flip = shademan.alliance, shademan.flip
             o.run_while_dimmed = true

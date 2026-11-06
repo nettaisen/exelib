@@ -116,7 +116,7 @@ function protoman.make(kind_spec: ProtoManKind): {
         me.future_panel_y = 1
         local s = me.state :: State
         s.fresh = 1
-        s.flip = bit32.bxor(me.alliance, me.flip)
+        s.flip = me.facing_side
         me:set_action(4)
     end
 
@@ -213,7 +213,7 @@ function protoman.make(kind_spec: ProtoManKind): {
         local box = battle.hitbox(me, {
             panel_x = x,
             panel_y = y,
-            element = 0,
+            element = Element.null,
             z = 0x10_0000,
             region = regions.wide,
             hit_effect = nil,
@@ -326,7 +326,7 @@ function protoman.make(kind_spec: ProtoManKind): {
             local p = me.pos
             me.pos = Vec3.new(p.x, p.y, 0)
         end
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         sprite.palette = look.palette
         sprite.color_shader = 0x7FFF
         me.visible = true
@@ -366,8 +366,8 @@ function protoman.make(kind_spec: ProtoManKind): {
         return function(user: Object, controller: Object, spec: NaviChipSpec): Object?
             local alone = kind_spec.summoned_alone == true
             local pos = if alone
-                then Vec3.new(spec.panel_x + spec.panel_y * 0x100, spec.element, user.alliance)
-                else Vec3.new(spec.panel_y, spec.element, look.spawner_address)
+                then Vec3.new(spec.panel_x + spec.panel_y * 0x100, spec.element.byte, user.alliance)
+                else Vec3.new(spec.panel_y, spec.element.byte, look.spawner_address)
             local o = battle.spawn(kind, pos)
             if not o then
                 return nil

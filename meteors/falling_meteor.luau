@@ -131,7 +131,7 @@ function falling_meteor.make_kind(id: string, look: MeteorLook): Kind
         me.anim, me.anim_loaded = ANIM, ANIM
         sprite:set_animation(ANIM)
         sprite:step()
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me:set_coordinates_from_panel()
         local d = me.facing
         me.vel = Vec3.new(SPEED * d, me.vel.y, SPEED)
@@ -183,7 +183,7 @@ function falling_meteor.spawn_kind(
     owner: Object,
     x: number,
     y: number,
-    element: number,
+    element: Element,
     damage: number,
     while_dimmed: boolean,
     pos: Vec3?

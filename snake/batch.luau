@@ -52,7 +52,7 @@ function batch.make(spec: SnakeBatchSpec): SnakeBatch
         local s = me.state :: NestState
         if me.phase_init == 0 then
             me.timer2 = 0
-            s.scan_x = 6 - 5 * bit32.bxor(me.alliance, me.flip)
+            s.scan_x = 6 - 5 * me.facing_side
             s.scan_y = 1
             me.phase_init = 4
         end

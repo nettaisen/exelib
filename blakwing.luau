@@ -215,7 +215,7 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
                 sprite.shadow = "with_sprite"
                 me.anim, me.anim_loaded = 3, 3
                 sprite:set_animation(3)
-                sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+                sprite:face(me)
                 me:set_coordinates_from_panel()
                 if not me:create_collision() then
                     me:free()
@@ -258,7 +258,7 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
 
     -- EXE5's 0x080D633E: a perch over each column of the enemy's area, from its front, listed as found.
     local function perches_found(me: Object, s: FlockState): number
-        local x = START[bit32.bxor(me.alliance, me.flip)]
+        local x = START[me.facing_side]
         local n = 0
         while field.valid(x, 1) do
             if has_area(me, x) then
@@ -310,7 +310,7 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
                 k -= 1
                 if k < 0 then
                     -- 0x080D650E: its position is the spawner's registers until its init places it.
-                    local o = battle.spawn(wing, Vec3.new(0, me.element, 0))
+                    local o = battle.spawn(wing, Vec3.new(0, me.element.byte, 0))
                     if o then
                         o.panel_x, o.panel_y = p.panel_x, 0
                         o.element = me.element

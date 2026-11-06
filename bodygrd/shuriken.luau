@@ -136,7 +136,7 @@ local function init(me: Object, look: Look)
     me.anim, me.anim_loaded = 0, 0xFF
     local x, y = field.center(me.panel_x, me.panel_y)
     me.pos = Vec3.new(int.i32(x - START * me.facing), y, START)
-    sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+    sprite:face(me)
     if not me:create_collision() then
         me:free()
         return
@@ -171,7 +171,7 @@ end
 -- `sub_80D006E`: a shuriken of `kind` onto (x, y) from `owner` with
 -- `element`, `hit_mod` and the damage word, of its side and facing. (Its
 -- position is the spawner's registers until its init places it.)
-function shuriken.spawn(kind: Kind, owner: Object, x: number, y: number, element: number, hit_mod: HitModifier, damage: number): Object?
+function shuriken.spawn(kind: Kind, owner: Object, x: number, y: number, element: Element, hit_mod: HitModifier, damage: number): Object?
     local o = battle.spawn(kind)
     if not o then
         return nil

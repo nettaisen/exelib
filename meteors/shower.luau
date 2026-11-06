@@ -16,7 +16,7 @@ local NEIGHBORS = { { 0, -1 }, { 0, 1 }, { -1, 0 }, { 1, 0 } }
 -- (a draw only if there is one).
 function shower.pick(me: Object): Object?
     local standing: { Object } = {}
-    for _, o in battle.alive_actors(bit32.bxor(me.alliance, 1)) do
+    for _, o in battle.alive_actors(battle.other_side(me.alliance)) do
         if o.hp ~= 0 then
             table.insert(standing, o)
         end

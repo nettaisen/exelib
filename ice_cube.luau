@@ -56,7 +56,7 @@ local FORMING_STEPS = 10
 -- What bursts it: bodies and neutral objects.
 local BURSTS_ON: { HitName } = { "own_body", "enemy_body", "neutral" }
 local HIT_MOD: HitModifier = { flinch = true, flash = true }
-local AQUA = 2
+local AQUA = Element.aqua
 
 function ice_cube.make(look: Look): IceCube
     -- `sub_80D99A4`: burst: two debris, the effect, the sound; gone.
@@ -140,7 +140,7 @@ function ice_cube.make(look: Look): IceCube
         me.visible = true
         me.anim, me.anim_loaded = s.look * 2, s.look * 2
         sprite:set_animation(s.look * 2)
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me.vel = Vec3.new(SPEED * (1 - 2 * me.alliance), me.vel.y, me.vel.z)
         me:set_coordinates_from_panel()
         if not me:create_collision() then

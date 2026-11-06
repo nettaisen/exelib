@@ -54,7 +54,7 @@ function strike.make(look: StrikeLook): Strike
     -- EXE6's `sub_80E6878`: the controller for `statue`, on its panel and side, with its element and damage word. (It
     -- sits at the spawner's registers: the panel's Y, the element, 0.)
     local function spawn(statue: Object): Object?
-        local o = battle.spawn(kind, Vec3.new(statue.panel_y, statue.element, 0))
+        local o = battle.spawn(kind, Vec3.new(statue.panel_y, statue.element.byte, 0))
         if not o then
             return nil
         end

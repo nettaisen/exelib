@@ -112,7 +112,7 @@ function bomb.make(look: BoyBombLook): BoyBomb
         battle.hitbox(me, {
             panel_x = me.panel_x,
             panel_y = me.panel_y,
-            element = 0,
+            element = Element.null,
             z = 0,
             region = regions.square,
             hit_effect = nil,
@@ -206,7 +206,7 @@ function bomb.make(look: BoyBombLook): BoyBomb
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
         sprite.palette = 0
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         if look.identity then
             me.identity = look.identity
         end
@@ -254,8 +254,8 @@ function bomb.make(look: BoyBombLook): BoyBomb
     -- EXE5's 0x080CD0E0: the bomb of `controller`'s on (x, y), with its element and damage word, running while
     -- dimmed, one of its side's field objects (class 0); its side and facing the controller's (EXE4's its side
     -- alone, `side_only`). (It spawns at the registers' values, which its init replaces but for Z.)
-    local function spawn(controller: Object, x: number, y: number, element: number, damage: number): Object?
-        local o = battle.spawn(kind, Vec3.new(y, element, 0))
+    local function spawn(controller: Object, x: number, y: number, element: Element, damage: number): Object?
+        local o = battle.spawn(kind, Vec3.new(y, element.byte, 0))
         if o then
             o.panel_x, o.panel_y = x, y
             o.element = element

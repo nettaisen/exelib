@@ -33,7 +33,7 @@ end
 -- `sub_80C36AE` (EXE5's 0x080C268E): behind and above the opponent's
 -- navi, swooping toward it.
 local function place(me: Object)
-    local other = bit32.bxor(me.alliance, 1)
+    local other = battle.other_side(me.alliance)
     local target = battle.player(other)
     if not target then
         -- The game reads the missing navi's position through a null
@@ -77,7 +77,7 @@ function beat.make(look: BeatLook): SupportActor
                 return
             end
             me.anim = 2
-            local target = battle.player(bit32.bxor(me.alliance, 1))
+            local target = battle.player(battle.other_side(me.alliance))
             if target then
                 battle.advance_hand(target.alliance)
             end
@@ -124,7 +124,7 @@ function beat.make(look: BeatLook): SupportActor
         sprite.shadow = "ground"
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me.visible = true
         place(me)
         me:set_lifecycle("update")

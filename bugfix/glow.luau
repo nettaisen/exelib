@@ -131,7 +131,7 @@ function glow.make(look: Look): Glow
         me.pos = Vec3.new(p.x, p.y + look.offset * 0x10000, p.z + look.offset * 0x10000)
         -- sub_801002C: the navi's palette (the one it wears).
         sprite.palette = navi.sprite.palette
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         look.wear(me, navi)
         me.anim, me.anim_loaded = 0, 0xFF
         me:set_lifecycle("update")

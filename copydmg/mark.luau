@@ -33,7 +33,7 @@ local MARK_POINT = 0x1B
 -- A panel with a player navi on it (either side's player bit).
 local PLAYERS: { PanelFlag } = { "own_navi", "enemy_navi" }
 -- The probe's element: the sixth slot, which no hit's element names.
-local SIXTH_ELEMENT = 5
+local SIXTH_ELEMENT = Element.drain
 -- EXE5's hit in the own-gauges mode: 50, hit modifier 3.
 local OWN_GAUGES_DAMAGE, OWN_GAUGES_HIT_MOD = 50, { flinch = true, flash = true }
 
@@ -144,7 +144,7 @@ function mark.make(look: CopyDamageMarkLook): CopyDamageMark
                 battle.hitbox(me, {
                     panel_x = me.panel_x,
                     panel_y = me.panel_y,
-                    element = 0,
+                    element = Element.null,
                     z = 0,
                     region = regions.single,
                     hit_effect = hit.spark,
@@ -218,8 +218,8 @@ function mark.make(look: CopyDamageMarkLook): CopyDamageMark
     -- (x, y) for `owner`, with the damage word `damage`. It goes at the end
     -- of the update list (`sub_8003374`). Its position is the spawner's
     -- registers (the panel Y, the element and 0) until its init places it.
-    local function spawn(owner: Object, x: number, y: number, element: number, damage: number): Object?
-        local o = battle.spawn_at_end(kind, Vec3.new(y, element, 0))
+    local function spawn(owner: Object, x: number, y: number, element: Element, damage: number): Object?
+        local o = battle.spawn_at_end(kind, Vec3.new(y, element.byte, 0))
         if o then
             o.panel_x, o.panel_y = x, y
             o.damage_word = damage

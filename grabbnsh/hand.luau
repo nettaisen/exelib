@@ -57,7 +57,7 @@ local function fall(me: Object, look: Look)
     local h = battle.hitbox(me, {
         panel_x = me.panel_x,
         panel_y = me.panel_y,
-        element = 0,
+        element = Element.null,
         z = 0,
         region = regions.single,
         hit_effect = nil,
@@ -148,7 +148,7 @@ end
 -- the damage word, of `owner`'s side (not its facing), running while
 -- dimmed; `first`: no hand came before it this strike. (Its position is
 -- the spawner's registers until its init places it.)
-function hand.spawn(kind: Kind, owner: Object, x: number, y: number, element: number, damage: number, first: boolean): Object?
+function hand.spawn(kind: Kind, owner: Object, x: number, y: number, element: Element, damage: number, first: boolean): Object?
     local o = battle.spawn(kind)
     if not o then
         return nil

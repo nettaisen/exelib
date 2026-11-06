@@ -47,16 +47,11 @@ local function set_step(me: Object, step: number)
     me.step_init = 0
 end
 
--- `object_getFlip`.
-local function flip(me: Object): number
-    return bit32.bxor(me.alliance, me.flip)
-end
-
 -- The flip that ends a step sword's step turned round (`sub_800F2C6`: the
 -- sprite, and the HP number's place, which the engine doesn't draw).
 local function turn(me: Object)
-    me.flip = bit32.bxor(me.flip, 1)
-    me.sprite:set_flip(flip(me))
+    me.flip = not me.flip
+    me.sprite:face(me)
 end
 
 -- The damage word: the chip's damage and hit parameter, plus the bonus.
@@ -172,7 +167,7 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
         battle.afterimage(me, me.pos, {
             sprite = navi_afterimage(me),
             anim = 0,
-            flip = flip(me),
+            facing = me.facing_side,
             color_shader = AFTERIMAGE_SHADER,
             lifetime = 0x14,
             shadow = "ground",
@@ -230,7 +225,7 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
             }, word)
         end
         local cx, cy = field.center(x, y)
-        battle.effect(Vec3.new(cx, cy, 0x10 * 0x10000), spec.effect, flip(me), spec.effect_palette or 0)
+        battle.effect(Vec3.new(cx, cy, 0x10 * 0x10000), spec.effect, me.facing_side, spec.effect_palette or 0)
     end
 
     -- `sub_80EB862`: hold the blade and swing: a step sword leaves two more
@@ -254,7 +249,7 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
             battle.afterimage(me, me.pos, {
                 sprite = navi_afterimage(me),
                 anim = SWING_ANIM,
-                flip = flip(me),
+                facing = me.facing_side,
                 color_shader = AFTERIMAGE_SHADER,
                 lifetime = 0x1E,
                 shadow = "ground",
@@ -262,7 +257,7 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
             battle.afterimage(me, me.pos, {
                 sprite = spec.blade.sprite,
                 anim = blade_anim(me),
-                flip = flip(me),
+                facing = me.facing_side,
                 color_shader = AFTERIMAGE_SHADER,
                 lifetime = 0x1E,
                 shadow = "with_sprite",

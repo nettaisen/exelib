@@ -69,7 +69,7 @@ local SHAKE_MAGNITUDE, SHAKE_TICKS = 3, 0x14
 -- A game's flame kind, over its game's sine table, and its swing.
 function fire.make(look: Look, sine: (angle: number) -> number): {
     kind: Kind,
-    swing: (owner: Object, x: number, y: number, element: number, damage: number, how: Swing) -> Object?,
+    swing: (owner: Object, x: number, y: number, element: Element, damage: number, how: Swing) -> Object?,
 }
     -- `sub_80DE9E4`: an afterimage where it is (its sprite; a shadow at its
     -- height; its variant's palette, `sub_80E3428`).
@@ -82,7 +82,7 @@ function fire.make(look: Look, sine: (angle: number) -> number): {
         battle.afterimage(me, me.pos, {
             sprite = look.sprite,
             anim = me.anim,
-            flip = bit32.bxor(me.alliance, me.flip),
+            facing = me.facing_side,
             lifetime = trail.ticks,
             color_shader = trail.shader,
             palette = v.palette,
@@ -156,7 +156,7 @@ function fire.make(look: Look, sine: (angle: number) -> number): {
     -- `sub_80DE818`.
     local function init(me: Object)
         local s = me.state :: State
-        local turn = bit32.bxor(me.alliance, me.flip)
+        local turn = me.facing_side
         -- (The canonical side's facing, unturned: its row is the one read as it is.)
         local canonical = field.canonical_side()
         local arc = s.variant.arcs
@@ -190,7 +190,7 @@ function fire.make(look: Look, sine: (angle: number) -> number): {
             error("The hook's flame without a collision slot (sub_80DE818 doesn't check)")
         end
         me:setup_collision(look.self_type, look.target, HIT_MOD)
-        sprite:set_flip(turn)
+        sprite:face_side(turn)
         -- EXE6's `sprite_setPalette` (EXE5 sets none: its variant's is 0,
         -- a loaded sprite's).
         sprite.palette = s.variant.palette
@@ -223,8 +223,8 @@ function fire.make(look: Look, sine: (angle: number) -> number): {
     -- `sub_80DE960` and `sub_801155A`: a flame `owner`'s (the hook) on
     -- (x, y), running while dimmed if its variant says. (It spawns at the
     -- registers' values, which its update replaces.)
-    local function swing_from(owner: Object, x: number, y: number, element: number, damage: number, how: Swing): Object?
-        local o = battle.spawn(kind, Vec3.new(y, element, 0))
+    local function swing_from(owner: Object, x: number, y: number, element: Element, damage: number, how: Swing): Object?
+        local o = battle.spawn(kind, Vec3.new(y, element.byte, 0))
         if o then
             o.panel_x, o.panel_y = x, y
             o.element = element

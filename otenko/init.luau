@@ -212,7 +212,7 @@ function otenko.make(look: Look): Otenko
             error("Otenko's statue has no collision: sub_80DB108 presents through a null pointer")
         end
         me:setup_collision(look.is, look.hits, HIT_MOD)
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me.collision:present()
         me.timer = look.lifetime
         me.identity = look.identity
@@ -251,7 +251,7 @@ function otenko.make(look: Look): Otenko
             return nil
         end
         o.panel_x, o.panel_y = x, y
-        o.element = 0
+        o.element = Element.null
         o.damage_word = damage
         o.alliance, o.flip = user.alliance, user.flip
         o.related1 = user

@@ -155,7 +155,7 @@ local function trail(me: Object, look: Look, s: State)
     end
     battle.afterimage(me, me.pos, {
         sprite = look.sprite,
-        flip = bit32.bxor(me.alliance, me.flip),
+        facing = me.facing_side,
         lifetime = TRAIL_TICKS,
         color_shader = tint,
     })
@@ -264,7 +264,7 @@ local function init(me: Object, look: Look)
     me.vel = Vec3.new(me.facing, if s.down then 1 else -1, me.vel.z)
     s.across = false
     s.steps = 0
-    sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+    sprite:face(me)
     if not me:create_collision() then
         me:free()
         return
@@ -319,13 +319,13 @@ function puck.spawn(
     owner: Object,
     x: number,
     y: number,
-    element: number,
+    element: Element,
     z: number,
     damage: number,
     variant: Variant,
     down: boolean
 ): Object?
-    local o = battle.spawn(kind, Vec3.new(y, element, z))
+    local o = battle.spawn(kind, Vec3.new(y, element.byte, z))
     if o then
         local s = o.state :: State
         s.variant, s.down = variant, down

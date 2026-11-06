@@ -52,7 +52,7 @@ local function init(me: Object, look: ImmobilizerLook)
     battle.hitbox(me, {
         panel_x = me.panel_x,
         panel_y = me.panel_y,
-        element = 0,
+        element = Element.null,
         z = 0,
         region = regions.single,
         hit_effect = nil,
@@ -92,7 +92,7 @@ function immobilizer.spawn(kind: Kind, owner: Object, x: number, y: number): Obj
     local o = battle.spawn(kind, Vec3.new(y, 0, 0))
     if o then
         o.panel_x, o.panel_y = x, y
-        o.element = 0
+        o.element = Element.null
         o.damage_word = 0
         o.alliance, o.flip = owner.alliance, owner.flip
         o.related1 = owner

@@ -45,7 +45,6 @@ local BODIES: { PanelFlag } = { "own_other_body", "enemy_other_body", "neutral" 
 local CRUSHING: { HitName } = { "own_body", "enemy_body", "own_other_body", "enemy_other_body", "neutral", "break" }
 -- Hits that make EXE6's spin once more: a pushing hit, or a wind hit
 -- (secondary element 0x20).
-local WIND = 0x20
 local EXTRA_SPIN_HIT = "pushing"
 -- Its hit modifier, and its gust's: the ring around its panel, no spark.
 local HIT_MOD, HIT_MOD_SPIN = { flinch = true, flash = true }, { flinch = true }
@@ -285,7 +284,7 @@ function top.make(look: AirSpinTopLook): AirSpinTop
             battle.play_sound(look.sounds.hit_bomb)
             leave(me)
         else
-            local wind_hit = c:hit_any(EXTRA_SPIN_HIT) or bit32.btest(c.damage_elements, WIND)
+            local wind_hit = c:hit_any(EXTRA_SPIN_HIT) or c.damage_elements.wind
             if look.extra_spins and wind_hit then
                 local s = me.state :: State
                 s.spins += 1
@@ -340,7 +339,7 @@ function top.make(look: AirSpinTopLook): AirSpinTop
             error("air spin: no collision slot for the whirlwind (sub_8011504)")
         end
         me:setup_collision(look.body, look.hit_by, HIT_MOD)
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me.visible = true
         me.vel = Vec3.new(me.facing * SPEED, me.vel.y, me.vel.z)
         me.timer2 = MAX_PANELS
@@ -384,12 +383,12 @@ function top.make(look: AirSpinTopLook): AirSpinTop
         owner: Object,
         x: number,
         y: number,
-        element: number,
+        element: Element,
         palette: number,
         spins: number,
         damage: number
     ): Object?
-        local o = battle.spawn(kind, Vec3.new(y, element, 0))
+        local o = battle.spawn(kind, Vec3.new(y, element.byte, 0))
         if o then
             o.panel_x, o.panel_y = x, y
             o.element = element
@@ -411,7 +410,7 @@ function top.make(look: AirSpinTopLook): AirSpinTop
         return {
             palette = palette,
             spins = spins,
-            send = function(user: Object, x: number, y: number, element: number, damage: number): Object?
+            send = function(user: Object, x: number, y: number, element: Element, damage: number): Object?
                 return spawn(user, x, y, element, palette, spins, damage)
             end,
         }

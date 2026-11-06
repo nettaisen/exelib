@@ -158,7 +158,7 @@ function zsaver.make(look: ZSaverLook): Action
             battle.afterimage(me, me.pos, {
                 sprite = look.blade.sprite,
                 anim = look.blade_anim(me),
-                flip = step_sword.flip(me),
+                facing = me.facing_side,
                 color_shader = AFTERIMAGE_SHADER,
                 lifetime = 0x1E,
                 shadow = "with_sprite",
@@ -187,7 +187,7 @@ function zsaver.make(look: ZSaverLook): Action
                     hit_mod = HIT_MOD,
                 })
                 local cx, cy = field.center(x, y)
-                battle.effect(Vec3.new(cx, cy, EFFECT_Z), look.effects[index + 1], bit32.bxor(me.alliance, me.flip))
+                battle.effect(Vec3.new(cx, cy, EFFECT_Z), look.effects[index + 1], me.facing_side)
             else
                 look.boom(me, x, y, me.attack_element, damage, BOOM)
             end

@@ -142,7 +142,7 @@ local function target(me: Object, spec: Spec): (number, number)
     end
     local occupied = spec.occupied or OCCUPIED
     local user_panel_free = spec.user_panel_free ~= false
-    local right = bit32.bxor(me.alliance, me.flip) == 0
+    local right = me.facing_side == 0
     local candidates = {}
     for _, p in found do
         local x, y = panels.x(p), panels.y(p)
@@ -208,7 +208,7 @@ function roll.make(spec: Spec): Roll
         local box = battle.hitbox(me, {
             panel_x = x,
             panel_y = y,
-            element = 0,
+            element = Element.null,
             z = 0x14_0000,
             region = regions.single,
             hit_effect = spec.spark,
@@ -554,7 +554,7 @@ function roll.make(spec: Spec): Roll
             local p = me.pos
             me.pos = Vec3.new(p.x, p.y, 0)
         end
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         sprite.palette = (me.state :: State).palette
         sprite.color_shader = 0x7FFF
         me:set_lifecycle("update")
@@ -609,7 +609,7 @@ function roll.make(spec: Spec): Roll
         return function(user: Object, controller: Object, nspec: NaviChipSpec): Object?
             local alone = spec.summoned_alone == true
             local z = if alone then user.alliance else spec.spawner_address
-            local o = battle.spawn(kind, Vec3.new(nspec.panel_y, nspec.element, z))
+            local o = battle.spawn(kind, Vec3.new(nspec.panel_y, nspec.element.byte, z))
             if not o then
                 return nil
             end

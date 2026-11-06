@@ -174,7 +174,7 @@ function bomb.thrower(kind: Kind, variant: BombVariant): Thrower
             local o = battle.spawn(kind, pos)
             if o then
                 (o.state :: State).variant = variant
-                o.element = 0
+                o.element = Element.null
                 o.alliance, o.flip = user.alliance, user.flip
                 o.damage_word = damage
                 o.related1 = user

@@ -68,7 +68,7 @@ local BUBBLE_EVERY = 0x10
 local OTHER_SIDE = "enemy_area"
 -- The drain (`byte_80CF31C`, by side): the other side's whole area, the silent element 5, 1 damage that can't
 -- counter (0x81), hitting by what it is alone (the look's drain, target row 0), no spark, hit modifier 0.
-local DRAIN_ELEMENT, DRAIN_DAMAGE, DRAIN_COUNTER = 5, 1, 1
+local DRAIN_ELEMENT, DRAIN_DAMAGE, DRAIN_COUNTER = Element.drain, 1, 1
 
 local ANUBIS_VARIANT = schema.record_type("anubis-variant")
 statue.ANUBIS_VARIANT = ANUBIS_VARIANT
@@ -244,7 +244,7 @@ function statue.make(look: Look): Statue
         sprite.shadow = "ground"
         me.anim, me.anim_loaded = v.anim, v.anim
         sprite:set_animation(v.anim)
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me:set_coordinates_from_panel()
         me.pos = Vec3.new(me.pos.x, me.pos.y, HEIGHT)
         me.future_panel_x, me.future_panel_y = me.panel_x, me.panel_y
@@ -252,7 +252,7 @@ function statue.make(look: Look): Statue
             me.identity = v.identity
         end
         me.vel = Vec3.new(me.vel.x, me.vel.y, FALL_SPEED)
-        me.element = 0
+        me.element = Element.null
         me.timer = v.lifetime
         me.hp, me.max_hp = v.hp, v.hp
         ;(me.state :: State).bubble_in = 1
@@ -299,7 +299,7 @@ function statue.make(look: Look): Statue
         o.alliance, o.flip = owner.alliance, owner.flip
         o.run_while_dimmed = true
         -- The registry's side is the whole alliance and flip halfword: a flipped owner's lands past the registry.
-        if o.flip ~= 0 then
+        if o.flip then
             error("sub_80CF374 registers a flipped user's Anubis statue past the field-object registry (alliance + 0x100)")
         end
         obstacle.register(o, o.alliance, "one_a_side")

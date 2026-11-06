@@ -132,7 +132,7 @@ function pile.make_kind(look: Look): Kind
         sprite:set_animation(0xFF)
         sprite:step()
         me.visible = true
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me:set_coordinates_from_panel()
         me.pos = Vec3.new(me.pos.x, me.pos.y, 0)
         me:set_lifecycle("update")
@@ -167,12 +167,12 @@ function pile.spawn(
     slot: number,
     x: number,
     y: number,
-    element: number,
+    element: Element,
     bonus: number,
     damage: number,
     distance: number
 ): Object?
-    local o = battle.spawn(kind, Vec3.new(y, element, bonus))
+    local o = battle.spawn(kind, Vec3.new(y, element.byte, bonus))
     if o then
         o.panel_x, o.panel_y = x, y
         o.element = element

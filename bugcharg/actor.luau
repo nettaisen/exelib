@@ -183,7 +183,8 @@ function actor.make(look: Look): Actor
         local o = battle.spawn(kind)
         if o then
             o.panel_x, o.panel_y = controller.panel_x, controller.panel_y
-            o.element = controller.alliance
+            -- (The spawner stores the register holding the side as the element: side 1's is fire.)
+            o.element = Element.from_byte(controller.alliance)
             o.damage_word = damage
             o.related1 = user;
             (o.state :: State).controller = controller;

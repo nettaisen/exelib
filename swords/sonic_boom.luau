@@ -94,14 +94,17 @@ local function init(me: Object, look: Look)
     me.anim = 0
     sprite:set_animation(0)
     sprite:step()
-    sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+    sprite:face(me)
     if s.pierces then
         sprite.palette = look.piercing_palette
     else
-        local e = bit32.band(me.element, look.element_mask)
-        local palette = look.palettes[e]
+        -- (The game reads the palette by the element's number: EXE6's by the primary element's alone, EXE4's and
+        -- EXE5's by the whole byte, which a secondary element takes past the table.)
+        local e = me.element
+        local p = e.primary
+        local palette = if p and (not look.whole_byte or e == Element.new(p)) then look.palettes[p] else nil
         if palette == nil then
-            error(string.format("element %#x reads past byte_80CF8A8", e))
+            error(string.format("element %s reads past byte_80CF8A8", tostring(e)))
         end
         sprite.palette = palette
     end
@@ -146,7 +149,7 @@ end
 -- what it is, flying at `SPEED`; nil if the attack pool is full. It takes
 -- the owner's side and flip, runs later this tick, right after its spawner;
 -- its init sets its Z.
-function sonic_boom.throw(kind: Kind, owner: Object, x: number, y: number, element: number, damage: number, boom: SonicBoom): Object?
+function sonic_boom.throw(kind: Kind, owner: Object, x: number, y: number, element: Element, damage: number, boom: SonicBoom): Object?
     local o = battle.spawn(kind, Vec3.zero)
     if o then
         local s = o.state :: State
