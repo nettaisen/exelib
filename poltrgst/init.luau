@@ -115,7 +115,7 @@ function poltrgst.make(spec: Spec): Poltrgst
         if spec.wears_overlay and user.actor_type == "player" then
             overlays.add_overlay_of(me, user)
         end
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         dimming.hide_user_sparing(user)
         me:set_lifecycle("update")
         stand(me)
@@ -160,7 +160,8 @@ function poltrgst.make(spec: Spec): Poltrgst
             local o = battle.spawn(stand_in)
             if o then
                 o.panel_x, o.panel_y = me.panel_x, me.panel_y
-                o.element = me.alliance
+                -- (The spawner stores the register holding the side as the element: side 1's is fire.)
+                o.element = Element.from_byte(me.alliance)
                 o:set_damage_word(dimming_chips.damage_plus(me, if spec.adds_bonus then s.bonus else 0))
                 o.related1 = user
                 local ss = o.state :: StandInState

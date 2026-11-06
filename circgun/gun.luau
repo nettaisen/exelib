@@ -224,7 +224,7 @@ function gun.make_kind(id: string, look: CircGunLook, shot_kind: Kind): Kind
         sprite:set_animation(0xFF)
         sprite:step()
         me.visible = true
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         place(me)
         sprite.palette = s.variant.palette
         me.vel = Vec3.new(-me.facing, 1, me.vel.z)
@@ -270,7 +270,7 @@ function gun.spawn_kind(
     variant: CircGunVariant,
     x: number,
     y: number,
-    element: number,
+    element: Element,
     damage: number
 ): Object?
     local o = battle.spawn(kind)

@@ -85,7 +85,7 @@ end
 -- `sub_80C95EC`: the nearest target, looking the way it faces first (a look's
 -- own search in its place: EXE4's).
 local function find_target(me: Object): (number, number)
-    local ahead = if bit32.bxor(me.alliance, me.flip) == 0 then 1 else -1
+    local ahead = if me.facing_side == 0 then 1 else -1
     local x, y = search(me, ahead)
     if x == 0 then
         x, y = search(me, -ahead)
@@ -186,7 +186,7 @@ local function init(me: Object, look: ThunderBallLook)
     me.anim_loaded = anim
     sprite:set_animation(anim)
     sprite.palette = 0
-    sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+    sprite:face(me)
     me:set_coordinates_from_panel()
     if not me:create_collision() then
         me:free()
@@ -260,8 +260,8 @@ end
 -- `damage`. Its position is the spawner's registers (the panel Y, the
 -- element and a height of 10 pixels) until its init places it; the height
 -- stays. Of `kind`, a game's.
-function ball.spawn(kind: Kind, owner: Object, x: number, y: number, element: number, damage: number, spec: Spec): Object?
-    local o = battle.spawn(kind, Vec3.new(y, element, 0xA_0000))
+function ball.spawn(kind: Kind, owner: Object, x: number, y: number, element: Element, damage: number, spec: Spec): Object?
+    local o = battle.spawn(kind, Vec3.new(y, element.byte, 0xA_0000))
     if o then
         local s = o.state :: State
         s.fast, s.panels, s.status, s.bug = spec.fast or false, spec.panels, spec.status, spec.bug or 0

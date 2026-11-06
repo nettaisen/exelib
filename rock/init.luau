@@ -22,7 +22,6 @@
 -- An obstacle: its update runs the obstacle framework's steps (the `obstacle` service) around its own actions.
 
 local debris = require("@self/debris")
-local element = require("@exelib/element")
 local regions = require("@exelib/regions")
 
 local rock = {}
@@ -254,7 +253,7 @@ function rock.make(look: Look): Rock
         me:set_coordinates_from_panel()
         me.pos = Vec3.new(me.pos.x, me.pos.y, 0)
         me.future_panel_x, me.future_panel_y = me.panel_x, me.panel_y
-        me.element = element.byte(v.element)
+        me.element = Element.new(v.element)
         me.hp, me.max_hp = v.hp, v.hp
         if v.identity then
             me.identity = v.identity

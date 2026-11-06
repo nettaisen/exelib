@@ -32,7 +32,7 @@ function heal.make(look: TangoHealLook): TangoHeal
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
         sprite:step()
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         local s = me.state :: State
         local x, y = field.center(s.target_x, s.target_y)
         me.vel = look.trajectory.in_ticks(me.pos, x, y, 0, FLIGHT_TICKS, GRAVITY, me.alliance)

@@ -59,7 +59,7 @@ local HIT_MOD, SELF_DAMAGE, COUNTER = 3, 0x64, 0x1E
 -- The burst (`byte_80CD828`): over the whole area of the side it hits, no
 -- hit spark, hit modifier 3, fire; then explosions there every 3 ticks
 -- (panel bursts).
-local BURST_HIT_MOD, FIRE = 3, 1
+local BURST_HIT_MOD, FIRE = 3, Element.fire
 local BURST_INTERVAL = 2
 
 -- The actions (the object's action byte).
@@ -139,7 +139,7 @@ local function idle(_me: Object) end
 -- `sub_80CD7A0`: a fire hit sets it off (its HP emptied but EXE4's).
 local function catch_fire(me: Object, look: Look)
     local s = me.state :: State
-    if s.set_off or me.collision:element_damage(FIRE) == 0 then
+    if s.set_off or me.collision:element_damage("fire") == 0 then
         return
     end
     s.set_off = true
@@ -183,10 +183,10 @@ local function burst(me: Object, k: Look)
     if not panel then
         error(string.format("BlkBomb bursts off the field at (%d, %d)", me.panel_x, me.panel_y))
     end
-    local side = bit32.bxor(panel.alliance, 1)
+    local side = battle.other_side(panel.alliance)
     me.alliance = side
     -- The area of the side it hits: the other side's.
-    local area = regions.area[bit32.bxor(side, 1)]
+    local area = regions.area[battle.other_side(side)]
     battle.hitbox(me, {
         panel_x = me.panel_x,
         panel_y = me.panel_y,

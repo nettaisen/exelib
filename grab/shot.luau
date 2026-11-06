@@ -70,7 +70,7 @@ local function fall(me: Object, look: Look)
     if hit then
         hit.run_while_dimmed = true
     end
-    local victim = bit32.bxor(me.alliance, 1)
+    local victim = battle.other_side(me.alliance)
     local spared = if look.spares == "back_column" then x == victim * 5 + 1 else not panels.can_take(x, y, victim)
     if field.check(x, y, TAKES.require, TAKES.forbid, me.alliance) and not spared then
         -- (The original takes the side from its first parameter, which its
@@ -146,7 +146,7 @@ end
 -- `sub_80C6548`: a grab shot (of `kind`, a game's) for `owner`'s side onto
 -- (x, y), with the damage word `damage`. (Its position is the spawner's
 -- registers until its init places it.)
-function shot.spawn(kind: Kind, owner: Object, x: number, y: number, element: number, damage: number): Object?
+function shot.spawn(kind: Kind, owner: Object, x: number, y: number, element: Element, damage: number): Object?
     local o = battle.spawn(kind, Vec3.zero)
     if o then
         o.panel_x, o.panel_y = x, y

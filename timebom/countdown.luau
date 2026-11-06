@@ -41,7 +41,9 @@ local OCCUPIED_BUT_BODIES: { PanelFlag } = { "reserved", "own_other_body", "enem
 -- The countdown: three steps of 60 ticks showing 3, 2 and 1 (the sprite
 -- parts left hidden), then 30 more.
 local STEP_TICKS, LAST_TICKS, SHORT_TICKS = 0x3C, 0x1E, 0xF
-local SHOWS_3, SHOWS_2, SHOWS_1 = 0x3400_0000, 0x2C00_0000, 0x1C00_0000
+local SHOWS_3: HiddenParts = { [2] = true, [3] = true, [5] = true }
+local SHOWS_2: HiddenParts = { [2] = true, [4] = true, [5] = true }
+local SHOWS_1: HiddenParts = { [3] = true, [4] = true, [5] = true }
 -- Blinking away: 8 ticks.
 local BLINK_TICKS = 8
 -- The blast (`byte_80CDD30`): over the area of the side it hits for, no
@@ -80,7 +82,7 @@ function countdown.make_kind(id: string, look: CountdownLook): Kind
         if not panel then
             error("sub_80CDCBC reads the panel of a countdown bomb off the field")
         end
-        me.alliance = bit32.bxor(panel.alliance, 1)
+        me.alliance = battle.other_side(panel.alliance)
         local area = regions.area[1 - me.alliance]
         battle.hitbox(me, {
             panel_x = me.panel_x,
@@ -145,7 +147,7 @@ function countdown.make_kind(id: string, look: CountdownLook): Kind
     end
 
     -- One countdown step: when the timer runs out, show the next number.
-    local function count(me: Object, shows: number, ticks: number, sound: Sound?, next_phase: number)
+    local function count(me: Object, shows: HiddenParts, ticks: number, sound: Sound?, next_phase: number)
         local t = me.timer - 1
         me.timer = t
         if t ~= 0 then

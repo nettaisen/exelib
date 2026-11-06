@@ -98,7 +98,7 @@ local function init(me: Object, look: FireHitFistLook)
     me.anim, me.anim_loaded = 0, 0xFF
     me.visible = false
     me:set_coordinates_from_panel()
-    sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+    sprite:face(me)
     battle.play_sound(look.sound)
     me:set_lifecycle("update")
     tick(me, look)
@@ -129,8 +129,8 @@ end
 -- `owner`'s on (x, y), its hit with the damage word `damage` and modifier
 -- `hit_mod`. (It spawns at the registers' values, which its init replaces
 -- but for Z.)
-function fist.spawn(kind: Kind, owner: Object, x: number, y: number, element: number, z: number, hit_mod: number, damage: number): Object?
-    local o = battle.spawn(kind, Vec3.new(y, element, z))
+function fist.spawn(kind: Kind, owner: Object, x: number, y: number, element: Element, z: number, hit_mod: number, damage: number): Object?
+    local o = battle.spawn(kind, Vec3.new(y, element.byte, z))
     if o then
         o.panel_x, o.panel_y = x, y
         o.element = element

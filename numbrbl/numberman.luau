@@ -154,7 +154,7 @@ function numberman.make(look: NumbrBlNumberManLook): NumbrBlNumberMan
             me.anim = 0xFF
         end
         sprite.palette = look.palette
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me:set_coordinates_from_panel()
         local p = me.pos
         me.pos = Vec3.new(p.x, p.y, 0)
@@ -188,7 +188,7 @@ function numberman.make(look: NumbrBlNumberManLook): NumbrBlNumberMan
     -- damage word `damage`, setting `balls` balls down; he holds the controller's `busy` and sets it. (His position is
     -- the spawner's registers, which his init overwrites but for Z.)
     local function spawn(controller: Object, x: number, y: number, damage: number, balls: number): Object?
-        local o = battle.spawn(kind, Vec3.new(y, controller.element, controller.alliance))
+        local o = battle.spawn(kind, Vec3.new(y, controller.element.byte, controller.alliance))
         if o then
             o.panel_x, o.panel_y = x, y
             o.element = controller.element

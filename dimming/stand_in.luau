@@ -80,7 +80,7 @@ function stand_in.init(me: Object, wear: Wear?): Object
     me:set_panel_from_coordinates()
     -- sub_801002C: the user's navi palette.
     sprite.palette = user.sprite.palette
-    sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+    sprite:face(me)
     ;(wear or stand_in.parts)(me, user)
     dimming.hide_user_sparing(user)
     return user

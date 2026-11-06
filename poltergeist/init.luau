@@ -95,7 +95,7 @@ end
 -- difference, then the upper; (0, 0) when there is none.
 local function nearest_target(me: Object): (number, number)
     local found = panels(NAVIS, nil, me.alliance, me)
-    local facing_left = bit32.bxor(me.alliance, me.flip) ~= 0
+    local facing_left = me.facing_side ~= 0
     local best_x, best_y, best_dx, best_dy = 0, 0, 0xFF, 0xFF
     for _, p in found do
         local x, y = p[1], p[2]
@@ -150,7 +150,7 @@ function poltergeist.make(id: string): Poltergeist
             me:set_lifecycle("destroy")
             return
         end
-        local facing_left = bit32.bxor(me.alliance, me.flip) ~= 0
+        local facing_left = me.facing_side ~= 0
         for i = 1, n - 1 do
             for j = i + 1, n do
                 local a, b = s.taken[i], s.taken[j]
@@ -242,7 +242,8 @@ function poltergeist.make(id: string): Poltergeist
             return nil
         end
         o.panel_x, o.panel_y = holder.panel_x, holder.panel_y
-        o.element = holder.alliance
+        -- (The spawner stores the register holding the side as the element: side 1's is fire.)
+        o.element = Element.from_byte(holder.alliance)
         o.related1 = holder
         o.alliance, o.flip = holder.alliance, holder.flip
         o:set_damage_word(damage)

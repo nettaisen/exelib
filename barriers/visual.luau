@@ -13,7 +13,6 @@
 -- not, and its spawn taking its navi's side alone.
 
 local controller = require("./controller")
-local element = require("@exelib/element")
 local looks = require("@exelib/looks")
 local visibility = require("@exelib/visibility")
 
@@ -59,7 +58,7 @@ local UP, DOWN, BLOWN = 0, 4, 8
 local BLOWN_SPEED, BLOWN_RISE, BLOWN_TICKS = -0x80000, -0x28000, 0x14
 local PUSHED_FORWARD = 0x14
 -- LifeAur's aura's part 6 (`timer_2000000`'s address as the parts word).
-local PART_6 = 0x2000000
+local PART_6: HiddenParts = { [6] = true }
 
 local function owner_of(me: Object): Object
     local owner = me.related1
@@ -127,7 +126,7 @@ function visual.raise_barrier(navi: Object, b: Barrier)
         hp = b.hp,
         threshold = b.threshold,
         timer = b.timer,
-        weak_element = if b.weak then element.byte(b.weak) else 0,
+        weak_element = b.weak,
     }
 end
 
@@ -244,7 +243,7 @@ function visual.make(spec: Spec): Visual
         if b.hidden_unless_local_megaman then
             local owner = owner_of(me)
             local megaman = owner.actor_type == "player" and owner.ai_index == 0
-            local function hidden_on(side: number): number
+            local function hidden_on(side: number): HiddenParts
                 return if megaman and owner.alliance == side then look.hidden_parts else PART_6
             end
             looks.by_console(sprite, "hidden_parts", hidden_on(0), hidden_on(1))

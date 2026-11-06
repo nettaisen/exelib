@@ -155,7 +155,7 @@ function numbrman.make(spec: NumberManSpec): NumberMan
         sprite.shadow = "ground"
         me.anim, me.anim_loaded = 0, 0xFF
         sprite.palette = s.palette
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         s.face = spec.face.spawn(me)
         me:set_coordinates_from_panel()
         local p = me.pos

@@ -28,7 +28,7 @@ export type State = {
     armed: boolean,
     -- The element that sprang it (the original's first parameter); in a
     -- trap that watches one element, that element from the start.
-    sprung_by: number,
+    sprung_by: ElementName,
 }
 
 local trap = {}
@@ -40,7 +40,7 @@ local HIT_MOD = 0
 
 -- What springs it: damage in these elements (fire to wood; the first one
 -- that has some).
-local FIRST_ELEMENT, LAST_ELEMENT = 1, 4
+local SPRUNG_BY: { ElementName } = { "fire", "aqua", "elec", "wood" }
 
 -- Its actions (`off_80CE02C`, byte offsets).
 local WATCH, SPRING = 0, 4
@@ -73,7 +73,7 @@ local function spring(me: Object, look: ElemTrapLook)
             error("ElemTrap's trap has no user (sub_80E360E reads through a null pointer)")
         end
         local damage = bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
-        local counter = strike.spawn(look.strike_kind, user, s.sprung_by, damage, s.bonus)
+        local counter = strike.spawn(look.strike_kind, user, Element.new(s.sprung_by), damage, s.bonus)
         dimming.start(user.alliance, true, counter, user, { chip = s.chip, bonus = s.bonus })
     end
     battle.clear_linked(me.alliance)
@@ -84,11 +84,8 @@ end
 -- tick springs it (in a trap that watches one element, that element's).
 local function watch(me: Object, look: ElemTrapLook)
     local s = me.state :: State
-    local first, last = FIRST_ELEMENT, LAST_ELEMENT
-    if look.watches == "one" then
-        first, last = s.sprung_by, s.sprung_by
-    end
-    for e = first, last do
+    local watched = if look.watches == "one" then { s.sprung_by } else SPRUNG_BY
+    for _, e in watched do
         if me.collision:element_damage(e) ~= 0 then
             s.sprung_by = e
             me.collision:set_region(nil)
@@ -158,7 +155,7 @@ function trap.make_kind(id: string, look: ElemTrapLook): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { chip = schema.chip, bonus = schema.u16, armed = schema.bool, sprung_by = schema.u8 },
+        state = { chip = schema.chip, bonus = schema.u16, armed = schema.bool, sprung_by = { "null", "fire", "aqua", "elec", "wood" } },
         -- `sub_80CDF84`.
         update = function(me: Object)
             local l = me.lifecycle
@@ -177,13 +174,13 @@ end
 -- the controller's damage word, its chip and the bonus; a trap that
 -- watches one element watches `element`. (Its position is the spawner's
 -- registers, which nothing reads.)
-function trap.spawn(kind: Kind, controller: Object, user: Object, chip: Chip?, bonus: number, element: number?): Object?
-    local o = battle.spawn(kind, Vec3.new(0, controller.element, 0))
+function trap.spawn(kind: Kind, controller: Object, user: Object, chip: Chip?, bonus: number, element: ElementName?): Object?
+    local o = battle.spawn(kind, Vec3.new(0, controller.element.byte, 0))
     if not o then
         return nil
     end
     o.related1 = user
-    o.element = 0
+    o.element = Element.null
     o.damage, o.stamina = controller.damage, controller.stamina
     o.alliance = controller.alliance
     local s = o.state :: State

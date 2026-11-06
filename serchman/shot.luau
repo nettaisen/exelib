@@ -61,8 +61,9 @@ function shot.make(spec: Spec): Shot
         c:remove()
         me:hit_spark()
         if not c.hit then
-            local flip = bit32.band(battle.rng_positive(), 2)
-            battle.effect(battle.jitter(0xF, me.pos), spec.miss, flip, 0, 0)
+            -- (Upside down or not by a draw's bit 1.)
+            local upside_down = bit32.btest(battle.rng_positive(), 2)
+            battle.effect(battle.jitter(0xF, me.pos), spec.miss, 0, 0, 0, upside_down)
         end
         c:set_region(nil)
         c:free()

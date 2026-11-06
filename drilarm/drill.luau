@@ -49,7 +49,7 @@ local HIT_MOD, LIGHT_HIT_MOD = 0x61, 3
 function drill.make_kind(
     id: string,
     look: DrillLook
-): (Kind, (owner: Object, element: number, z: number, damage: number, spec: Spec, slot: ("related" | "child")?) -> Object?)
+): (Kind, (owner: Object, element: Element, z: number, damage: number, spec: Spec, slot: ("related" | "child")?) -> Object?)
     local kind: Kind
 
     -- Whether the slot that holds it still does.
@@ -112,14 +112,14 @@ function drill.make_kind(
     -- its init places it), held in `slot` of `owner`.
     local function spawn(
         owner: Object,
-        element: number,
+        element: Element,
         z: number,
         damage: number,
         spec: Spec,
         second: boolean,
         slot: "related" | "child"
     ): Object?
-        local o = battle.spawn(kind, Vec3.new(0, element, z))
+        local o = battle.spawn(kind, Vec3.new(0, element.byte, z))
         if o then
             if look.keeps_element then
                 o.element = element
@@ -194,7 +194,7 @@ function drill.make_kind(
         end,
     }
 
-    return kind, function(owner: Object, element: number, z: number, damage: number, spec: Spec, slot: ("related" | "child")?): Object?
+    return kind, function(owner: Object, element: Element, z: number, damage: number, spec: Spec, slot: ("related" | "child")?): Object?
         return spawn(owner, element, z, damage, spec, false, slot or "related")
     end
 end

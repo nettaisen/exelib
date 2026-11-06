@@ -75,7 +75,7 @@ end
 local function find_columns(me: Object): number
     local s = me.state :: State
     local x = me.panel_x
-    local facing_right = bit32.bxor(me.alliance, me.flip) == 0
+    local facing_right = me.facing_side == 0
     if facing_right then
         if x < 3 then
             x = 3
@@ -166,7 +166,7 @@ function bass.make(spec: Spec): Bass
         -- sub_80C3CA0: the flash 20 pixels ahead of him and 34 up, jittered.
         local p = me.pos
         local pos = battle.jitter(spec.flash_jitter or 0xF, Vec3.new(p.x + me.facing * 0x14_0000, p.y, p.z + 0x22_0000))
-        battle.effect(pos, spec.flash, bit32.bxor(me.alliance, me.flip))
+        battle.effect(pos, spec.flash, me.facing_side)
     end
 
     -- `sub_80C3A98`: he raises his arm; when it ends, the volleys.
@@ -280,7 +280,7 @@ function bass.make(spec: Spec): Bass
         me.anim_loaded = 0
         sprite:set_animation(0)
         sprite.palette = 0
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me:set_coordinates_from_panel()
         local p = me.pos
         me.pos = Vec3.new(p.x, p.y, 0)

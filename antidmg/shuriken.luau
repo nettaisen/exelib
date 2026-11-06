@@ -140,7 +140,7 @@ local function init(me: Object, look: Look)
     s.from_x, s.from_y = thrower.pos.x, thrower.pos.y
     s.from_z = me.pos.z
     s.to_x, s.to_y = field.center(me.panel_x, me.panel_y)
-    sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+    sprite:face(me)
     if not me:create_collision() then
         me:free()
         return
@@ -190,13 +190,13 @@ function shuriken.spawn(
     thrower: Object,
     x: number,
     y: number,
-    element: number,
+    element: Element,
     hit_mod: number,
     damage: number,
-    flip: number,
+    flip: boolean,
     height: number
 ): Object?
-    local o = battle.spawn(kind, Vec3.new(y, element, height))
+    local o = battle.spawn(kind, Vec3.new(y, element.byte, height))
     if not o then
         return nil
     end

@@ -59,17 +59,17 @@ end
 -- target is left of the navi or in its column: a side-0 navi's shuriken at
 -- a target in its column flies back, a side-1 navi's ahead. nettai's goes
 -- as the canonical side's, in its frame: docs/engine/side-symmetry.md.)
-local function flip_toward(me: Object, x: number): number
+local function flip_toward(me: Object, x: number): boolean
     local d = field.side_sign(me.alliance) * (me.panel_x - x)
-    local at_or_left = if d >= 0 then 1 else 0
-    return bit32.bxor(field.canonical_side(), at_or_left)
+    local at_or_left = d >= 0
+    return (field.canonical_side() == 1) ~= at_or_left
 end
 
 -- `sub_8016004`: one of the other side's combatants (in slot order),
 -- picked by a draw.
 local function random_enemy(me: Object): (number?, number?)
     local panels = {}
-    for _, o in battle.alive_actors(bit32.bxor(me.alliance, 1)) do
+    for _, o in battle.alive_actors(battle.other_side(me.alliance)) do
         table.insert(panels, bit32.bor(o.panel_x, bit32.lshift(o.panel_y, 4)))
     end
     if #panels == 0 then

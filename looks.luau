@@ -92,7 +92,7 @@ function looks.load_form_sprite(me: Object, form: FormDef)
     local sprite = me.sprite
     sprite:load(looks.navi_sprite(battle.navi(me.alliance).navi, form))
     sprite.shadow = "ground"
-    sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+    sprite:face(me)
     sprite.white = true
     me.anim, me.anim_loaded = 0, 0xFF
     sprite:set_animation(0)
@@ -144,7 +144,7 @@ function looks.wear_absorbed(me: Object, identity: Identity): boolean
     sprite.palette = look.palette or 0
     -- (The time bombs' looks keep their own flip, and the original sets a drawing bit instead: presentation.)
     if not look.keeps_flip then
-        sprite:set_flip(me.alliance)
+        sprite:face_side(me.alliance)
     end
     return true
 end

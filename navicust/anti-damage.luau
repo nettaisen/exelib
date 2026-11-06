@@ -60,7 +60,7 @@ function anti_damage.make(ids: { weapon: string, action: string, charge_ticks: {
 
     -- `sub_80121BC`.
     local function setup(navi: Object): Action
-        navi.attack_element = 0
+        navi.attack_element = Element.null
         navi.attack_variant = 0
         navi.charged = 0
         navi.extra = 0

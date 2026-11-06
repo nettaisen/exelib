@@ -98,7 +98,7 @@ function bassanly.make(spec: Spec): { kind: Kind, summon: (user: Object, control
         battle.play_sound(spec.sounds.raise)
         local glow = spec.glow
         if glow then
-            local fx = battle.effect(me.pos, glow.effect, bit32.bxor(me.alliance, me.flip))
+            local fx = battle.effect(me.pos, glow.effect, me.facing_side)
             if fx then
                 fx.timer = glow.ticks
             end
@@ -195,7 +195,7 @@ function bassanly.make(spec: Spec): { kind: Kind, summon: (user: Object, control
         me.anim_loaded = 0
         sprite:set_animation(0)
         sprite.palette = 0
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me:set_coordinates_from_panel()
         local p = me.pos
         me.pos = Vec3.new(p.x, p.y, 0)

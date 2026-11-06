@@ -65,7 +65,7 @@ end
 -- the first.
 function scope.exe5_columns(me: Object): (number, number, number)
     local back = -me.facing
-    local x = 6 - 5 * bit32.bxor(me.alliance, me.flip)
+    local x = 6 - 5 * me.facing_side
     while not_sides(x, me.alliance) == 0 do
         x += back
         if x - 1 < 0 or x - 1 > 5 then

@@ -54,9 +54,9 @@ local function hit_panels(me: Object, look: ElemTrapStrikeLook)
         return
     end
     local e = me.element
-    local by_element = look.strikes[e]
+    local by_element = if e.primary then look.strikes[e.primary :: PrimaryElement] else nil
     if by_element == nil then
-        error(string.format("ElemTrap's counterattack: element %d reads past its tables", e))
+        error(string.format("ElemTrap's counterattack: element %s reads past its tables", tostring(e)))
     end
     local sound = by_element.sound
     if sound then
@@ -126,8 +126,8 @@ end
 -- user's decision, 2026-10-02: docs/engine/jp-differences.md §8.1). (Its
 -- position is the spawner's registers, which nothing reads.) Of `kind`, a
 -- game's.
-function strike.spawn(kind: Kind, user: Object, element: number, damage: number, bonus: number): Object?
-    local o = battle.spawn(kind, Vec3.new(0, element, 0))
+function strike.spawn(kind: Kind, user: Object, element: Element, damage: number, bonus: number): Object?
+    local o = battle.spawn(kind, Vec3.new(0, element.byte, 0))
     if not o then
         return nil
     end

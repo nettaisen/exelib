@@ -150,7 +150,7 @@ function shademan.make(spec: ShadeManSpec): ShadeMan
         me.anim, me.anim_loaded = spec.appear_anim, spec.appear_anim
         sprite:set_animation(spec.appear_anim)
         sprite.palette = s.palette
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me:set_coordinates_from_panel()
         -- (EXE4's init keeps the spawner's height, its 0.)
         local p = me.pos

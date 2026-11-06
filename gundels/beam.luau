@@ -72,7 +72,7 @@ local function init(me: Object, hum: Sound)
     sprite:set_animation(0)
     sprite:step()
     sprite.shadow = "with_sprite"
-    sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+    sprite:face(me)
     sprite.palette = s.palette
     me.no_sprite_update = false
     me.anim = 0

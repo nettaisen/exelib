@@ -50,7 +50,7 @@ function crack.make(look: Look): Crack
             battle.hitbox(me, {
                 panel_x = me.panel_x,
                 panel_y = me.panel_y,
-                element = 0,
+                element = Element.null,
                 z = 0,
                 region = regions.single,
                 hit_effect = nil,
@@ -80,7 +80,7 @@ function crack.make(look: Look): Crack
         me.visible = true
         me.anim, me.anim_loaded = 0, 0xFF
         me:set_coordinates_from_panel()
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         battle.play_sound(look.sound)
         me:set_lifecycle("update")
         tick(me)
@@ -106,8 +106,8 @@ end
 
 -- EXE5's 0x080C77A4, EXE4's 0x080CFEFC (EXE6's `sub_80C7114`): a crack of `owner`'s side on (x, y) with the damage
 -- word. (It spawns at the registers' values: the panel Y, the element and Z, which its init replaces but for Z.)
-local function spawn(c: Crack, owner: Object, x: number, y: number, element: number, damage: number)
-    local o = battle.spawn(c.kind, Vec3.new(y, element, 0))
+local function spawn(c: Crack, owner: Object, x: number, y: number, element: Element, damage: number)
+    local o = battle.spawn(c.kind, Vec3.new(y, element.byte, 0))
     if o then
         o.panel_x, o.panel_y = x, y
         o.element = element

@@ -132,7 +132,7 @@ function lance.make_kind(id: string, look: LanceLook): Kind
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
         sprite.shadow = "ground"
-        sprite:set_flip(bit32.bxor(bit32.bxor(me.alliance, me.flip), 1))
+        sprite:face_side(battle.other_side(me.facing_side))
         me:set_coordinates_from_panel()
         local facing = me.facing
         local p = me.pos
@@ -194,14 +194,14 @@ function lance.spawn_kind(
     owner: Object,
     x: number,
     y: number,
-    element: number,
+    element: Element,
     z: number,
     palette: number,
     damage: number,
     side_only: boolean?,
     hit: LanceHit?
 ): Object?
-    local o = battle.spawn(kind, Vec3.new(y, element, z))
+    local o = battle.spawn(kind, Vec3.new(y, element.byte, z))
     if o then
         o.panel_x, o.panel_y = x, y
         o.element = element
@@ -224,14 +224,14 @@ end
 function lance.thrust(
     kind: Kind,
     user: Object,
-    element: number,
+    element: Element,
     z: number,
     palette: number,
     damage: number,
     side_only: boolean?,
     hit: LanceHit?
 )
-    local facing = if side_only then user.alliance else bit32.bxor(user.alliance, user.flip)
+    local facing = if side_only then user.alliance else user.facing_side
     local x = 6 - facing * 5
     for y = 1, 3 do
         lance.spawn_kind(kind, user, x, y, element, z, palette, damage, side_only, hit)

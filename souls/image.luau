@@ -183,7 +183,7 @@ function image.make(spec: Spec): Image
         if spec.priority ~= nil then
             sprite.priority = spec.priority
         end
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me.visible = true
         battle.play_sound(spec.sound)
         if look.put_on ~= nil then

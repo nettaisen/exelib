@@ -97,7 +97,7 @@ local function init(me: Object, look: MoonBladeLook)
     sprite.shadow = "with_sprite"
     me.anim = 0
     me.anim_loaded = 0
-    sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+    sprite:face(me)
     me.visible = true
     me:set_lifecycle("update")
     if look.ds then
@@ -138,7 +138,7 @@ function blade.spawn(kind: Kind, owner: Object, panel_x: number, routine: number
     local o = battle.spawn(kind, Vec3.new(routine, 0, 0))
     if o then
         o.panel_x, o.panel_y = panel_x, bit32.band(routine, 0xFF)
-        o.element = 0
+        o.element = Element.null
         o:set_damage_word(damage)
         o.alliance, o.flip = owner.alliance, owner.flip
         o.related1 = owner

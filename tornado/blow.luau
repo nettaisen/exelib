@@ -45,7 +45,7 @@ end
 local function blow(spec: Blow, look: TornadoBlowLook): Action
     local tornado_kind = spec.tornado_kind or look.tornado
     -- `sub_80CA104` / `sub_80CA19E`: the spread's tornadoes around (x, y).
-    local function spread_tornadoes(me: Object, x: number, y: number, element: number, damage: number)
+    local function spread_tornadoes(me: Object, x: number, y: number, element: Element, damage: number)
         local spread = spec.spread :: any
         local dir = me.facing
         local level = math.min(spread.level(me), 3)

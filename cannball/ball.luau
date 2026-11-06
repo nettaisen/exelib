@@ -137,7 +137,7 @@ function ball.make(look: CannonballLook, aim: Trajectory): Cannonball
                 local o = battle.spawn(kind, pos)
                 if o then
                     o.alliance = user.alliance
-                    o.element = 0
+                    o.element = Element.null
                     o:set_damage_word(damage)
                     local s = o.state :: State
                     s.target_x, s.target_y = user.panel_x + REACH * user.facing, user.panel_y

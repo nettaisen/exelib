@@ -46,8 +46,7 @@ end
 -- with the variant's modifier and status), the effect, the sound.
 local function burst(me: Object, v: BulletVariant, look: BulletLook)
     me:reset_collision_types(look.attack, look.target, v.hit_mod)
-    me.collision.element = bit32.band(me.element, 0xF)
-    me.collision.secondary_element = bit32.band(me.element, 0xF0)
+    me.collision.element = me.element
     local status = v.status
     if status then
         me.collision.status_base = status
@@ -59,7 +58,7 @@ local function burst(me: Object, v: BulletVariant, look: BulletLook)
     c:set_region(v.region)
     if v.single then
         -- (EXE4's shows it unturned, `look.single_unturned`: 0x080CF55E passes no flip.)
-        local flip = if look.single_unturned then 0 else bit32.bxor(me.alliance, me.flip)
+        local flip = if look.single_unturned then 0 else me.facing_side
         battle.effect(me.pos, v.effect, flip)
     else
         battle.region_effects(c.panel_x, c.panel_y, v.region, me.alliance, v.effect, me.pos.z)
@@ -103,7 +102,7 @@ local function init(me: Object, look: BulletLook)
         return
     end
     me:setup_collision(look.probe, look.target, 0)
-    me.collision.element = 0
+    me.collision.element = Element.null
     me.collision:present()
     me:set_lifecycle("update")
 end
@@ -132,7 +131,7 @@ end
 -- on panel (x, y) at height `z` (16.16), with `element` and the damage
 -- word; nil if the attack pool is full. It takes the owner's side and flip,
 -- runs later this tick, right after its spawner, and keeps its Z.
-function bullet.fire(kind: Kind, owner: Object, x: number, y: number, z: number, variant: BulletVariant, element: number, damage: number): Object?
+function bullet.fire(kind: Kind, owner: Object, x: number, y: number, z: number, variant: BulletVariant, element: Element, damage: number): Object?
     local o = battle.spawn(kind, Vec3.new(0, 0, z))
     if o then
         (o.state :: State).variant = variant

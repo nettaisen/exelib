@@ -28,7 +28,7 @@ end
 export type Spec = {
     id: string,
     -- A flame of swing `swing` from (x, y): the game's.
-    flame: (owner: Object, x: number, y: number, element: number, damage: number, swing: number, flames: Flames) -> Object?,
+    flame: (owner: Object, x: number, y: number, element: Element, damage: number, swing: number, flames: Flames) -> Object?,
     -- EXE6's keeps its user's element (EXE5's spawner leaves it 0).
     keeps_element: boolean,
 }
@@ -153,7 +153,7 @@ function hook.make(spec: Spec): {
         user: Object,
         x: number,
         y: number,
-        element: number,
+        element: Element,
         damage: number,
         pos: Vec3,
         flames: Flames,
@@ -179,7 +179,7 @@ function hook.make(spec: Spec): {
     -- no controller waiting for it.
     local function instant(flames: Flames): (user: Object, spec: InstantChipSpec) -> ()
         return function(user: Object, ispec: InstantChipSpec)
-            local pos = Vec3.new(ispec.panel_y, ispec.element, ispec.z)
+            local pos = Vec3.new(ispec.panel_y, ispec.element.byte, ispec.z)
             spawn(user, ispec.panel_x, ispec.panel_y, ispec.element, ispec.damage, pos, flames, nil)
         end
     end
@@ -188,7 +188,7 @@ function hook.make(spec: Spec): {
     -- `controller`.
     local function summon(flames: Flames, spawner_address: number): (user: Object, controller: Object, spec: NaviChipSpec) -> Object?
         return function(user: Object, controller: Object, nspec: NaviChipSpec): Object?
-            local pos = Vec3.new(nspec.panel_y, nspec.element, spawner_address)
+            local pos = Vec3.new(nspec.panel_y, nspec.element.byte, spawner_address)
             return spawn(user, nspec.panel_x, nspec.panel_y, nspec.element, nspec.damage, pos, flames, controller)
         end
     end

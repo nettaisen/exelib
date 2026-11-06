@@ -28,6 +28,23 @@ local function byte(name: string): Write
     end
 end
 
+-- A byte where 0xFF is none (nil).
+local function optional(name: string): Write
+    return function(s: Navi, v: number)
+        s[name] = if v == 0xFF then nil else v
+    end
+end
+
+-- The mood: 0xFF is Full Synchro.
+local function mood(s: Navi, v: number)
+    s.mood = if v == 0xFF then "full_synchro" else v
+end
+
+-- The element, by its byte.
+local function element(s: Navi, v: number)
+    s.element = Element.from_byte(v)
+end
+
 local function flag(name: string): Write
     return function(s: Navi, v: number)
         s[name] = v ~= 0
@@ -122,8 +139,8 @@ local BYTES: { [number]: Write } = {
     [0x0B] = byte("mega_level"),
     [0x0C] = byte("giga_level"),
     [0x0D] = supports,
-    [0x0E] = byte("mood"),
-    [0x10] = byte("element"),
+    [0x0E] = mood,
+    [0x10] = element,
     [0x11] = byte("auto_step"),
     [0x12] = byte("panel_trail"),
     [0x13] = byte("panel_trail_level"),
@@ -141,8 +158,8 @@ local BYTES: { [number]: Write } = {
     [0x2B] = byte("navi_variant"),
     [0x2C] = form("form"),
     [0x2D] = byte("folder"),
-    [0x2E] = byte("folder_1_regular"),
-    [0x2F] = byte("folder_2_regular"),
+    [0x2E] = optional("folder_1_regular"),
+    [0x2F] = optional("folder_2_regular"),
     [0x31] = byte("step_bug"),
     [0x39] = cleared("a_charge_weapon", 0xFF, "weapon routine"),
     [0x3D] = byte("starting_damage"),
@@ -161,10 +178,10 @@ local BYTES: { [number]: Write } = {
     [0x51] = high("chip_recovery"),
     [0x52] = flag("status_guard"),
     [0x55] = high("custom_damage"),
-    [0x56] = byte("folder_1_tag_a"),
-    [0x57] = byte("folder_1_tag_b"),
-    [0x58] = byte("folder_2_tag_a"),
-    [0x59] = byte("folder_2_tag_b"),
+    [0x56] = optional("folder_1_tag_a"),
+    [0x57] = optional("folder_1_tag_b"),
+    [0x58] = optional("folder_2_tag_a"),
+    [0x59] = optional("folder_2_tag_b"),
     [0x63] = byte("hand_shrink_turn"),
 }
 

@@ -113,7 +113,7 @@ function rush.make(look: RushLook): SupportActor
         if spared and (me.state :: State).eaten == spared then
             return
         end
-        local target = battle.player(bit32.bxor(me.alliance, 1))
+        local target = battle.player(battle.other_side(me.alliance))
         if target then
             battle.advance_hand(target.alliance)
         elseif look.lost_target == "unbalances" then
@@ -141,7 +141,7 @@ function rush.make(look: RushLook): SupportActor
             if me.timer ~= 0 then
                 return
             end
-            local target = battle.player(bit32.bxor(me.alliance, 1))
+            local target = battle.player(battle.other_side(me.alliance))
             if not target then
                 me:set_lifecycle("destroy")
                 return
@@ -218,11 +218,11 @@ function rush.make(look: RushLook): SupportActor
         sprite.shadow = "with_sprite"
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me.visible = true
         place(me, look.stand or STAND, look.not_on)
         battle.play_sound(look.appear_sound)
-        me.element = 0
+        me.element = Element.null
         me.damage, me.stamina = 0, 0
         if not me:create_collision() then
             me:free()

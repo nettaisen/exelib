@@ -72,7 +72,7 @@ end
 
 -- EXE5's where the other side may lose the panel (0x0800BBCC).
 function gel.can_take(x: number, y: number, side: number): boolean
-    return panels.can_take(x, y, bit32.bxor(side, 1))
+    return panels.can_take(x, y, battle.other_side(side))
 end
 
 function gel.make(look: Look): Gel
@@ -95,7 +95,7 @@ function gel.make(look: Look): Gel
         local h = battle.hitbox(me, {
             panel_x = x,
             panel_y = y,
-            element = 2,
+            element = Element.aqua,
             z = 0,
             region = regions.single,
             hit_effect = look.spark,
@@ -176,7 +176,7 @@ function gel.make(look: Look): Gel
                 local sprite = me.sprite
                 sprite:load(look.sprite)
                 sprite.shadow = "with_sprite"
-                sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+                sprite:face(me)
                 me.anim, me.anim_loaded = 0, 0xFF
                 me.vel = Vec3.new(me.vel.x, me.vel.y, DROP)
                 local cx, cy = field.center(me.panel_x, me.panel_y)
