@@ -1219,6 +1219,7 @@ export type WaveVariant = {
     trails: boolean,
     collision: CollisionType,
     bug: number?,
+    bug_arg: number?,
     palette: number?,
     -- Its sprite where a game's isn't EXE6's wide wave (EXE5's), and its
     -- trail's where that isn't EXE6's rock cubes (EXE5's is its wave's).
@@ -1543,7 +1544,7 @@ export type ColorPoint = { palette: number, bonus: number }
 -- A tornado's look and rhythm (chips/tornado/tornado, a row of the
 -- original's `byte_80CA064`): its palette, the ticks between hits, the bug
 -- its hits carry (nil: none); `plain`: it takes its panel's variant.
-export type TornadoVariant = { palette: number, rearm: number, bug: number?, plain: boolean? }
+export type TornadoVariant = { palette: number, rearm: number, bug: number?, bug_arg: number?, plain: boolean? }
 
 -- A game's tornado (chips/tornado/tornado, `make_kind`): the variant a
 -- plain one takes on a panel type, whether that doubles its damage, its

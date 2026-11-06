@@ -33,7 +33,7 @@ local STEP_TICKS = 0xA
 -- What the crush will carry, kept.
 local function carry(s: State, hit: ShadeManHit)
     local h = s.hit
-    h.palette, h.hit_mod, h.status = hit.palette, hit.hit_mod, hit.status
+    h.palette, h.hit_mod, h.status = hit.palette, hit_modifier.byte(hit.hit_mod), hit.status
     h.bug, h.bug_arg = hit.bug or 0, hit.bug_arg or 0
 end
 

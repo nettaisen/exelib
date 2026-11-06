@@ -142,7 +142,7 @@ local function init(me: Object, look: TornadoLook)
         c.status_base = status
     end
     if v.bug then
-        c.bug, c.bug_arg = v.bug, 0
+        c.bug, c.bug_arg = v.bug, v.bug_arg or 0
     end
     c:present()
     battle.play_sound(look.sound)
