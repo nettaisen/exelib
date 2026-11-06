@@ -180,7 +180,7 @@ function doll.make(look: DollLook): Doll
             me.phase_init = 4
             return
         end
-        if me:status("carried") then
+        if me.status.carried then
             go(me)
             return
         end
@@ -209,7 +209,7 @@ function doll.make(look: DollLook): Doll
         local blink = obstacle.blink_out(me)
         if blink == "blinking" then
             return
-        elseif blink == "done" or me:status("carried") then
+        elseif blink == "done" or me.status.carried then
             go(me)
             return
         end
@@ -255,7 +255,7 @@ function doll.make(look: DollLook): Doll
             me.phase_init = 4
             return
         end
-        if me:status("carried") then
+        if me.status.carried then
             go(me)
             return
         end
@@ -432,7 +432,7 @@ function doll.make(look: DollLook): Doll
                     o:set_damage_word(damage)
                     o.alliance, o.flip = user.alliance, user.flip
                     o.run_while_dimmed = true
-                    obstacle.register(o, user.alliance, 1)
+                    obstacle.register(o, user.alliance, "one_a_side")
                 end
                 return o
             end,

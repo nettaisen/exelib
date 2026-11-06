@@ -13,7 +13,7 @@ local cube = {}
 export type State = {
     -- The rock it places: its variant, class and entrance.
     variant: RockVariant,
-    class: number,
+    class: ObstacleClass,
     entrance: RockEntrance,
 }
 
@@ -63,7 +63,7 @@ function cube.make(look: CubeLook): Cube
         pool = "effect",
         state = {
             variant = rock.ROCK_VARIANT,
-            class = schema.u8,
+            class = { "two_a_side", "one_a_side" },
             entrance = { "rise", "instant", "fall", "placed" },
         },
         -- `sub_80E4634`.
@@ -78,7 +78,7 @@ function cube.make(look: CubeLook): Cube
                     o.pos = look.position(user, spec)
                 end
                 local s = o.state :: State
-                s.variant, s.class, s.entrance = placed.variant, placed.class or 0, placed.entrance or "rise"
+                s.variant, s.class, s.entrance = placed.variant, placed.class or "two_a_side", placed.entrance or "rise"
             end
             return o
         end

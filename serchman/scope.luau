@@ -151,7 +151,7 @@ function scope.make(spec: Spec): Scope
     local function pressed(s: State, keys: { Key }): boolean
         local user = s.user :: Object
         for _, k in keys do
-            if not user:dimmed_pressed(k) then
+            if not (user.dimmed_pressed :: any)[k] then
                 return false
             end
         end

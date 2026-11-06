@@ -63,7 +63,7 @@ local function blow(spec: Blow, look: TornadoBlowLook): Action
             me:set_animation(0x0A)
             me:open_counter_window()
             attachment.attach(look.attachment, me, spec.fan, "overlay", { palette_add = spec.fan_palette })
-            me:set_status("using_action", true)
+            me.status.using_action = true
             me.step_init = 4
             s.timer = 0x2A
         end

@@ -22,7 +22,7 @@ local DRAIN_EVERY = 6
 -- never 6, so an immune body never heals there; its count goes to 0.)
 local function drain(me: Object)
     local c = me.collision
-    if me:status("untouchable") or me:status("float_shoe") or me:status("invulnerable") then
+    if me.status.untouchable or me.status.float_shoe or me.status.invulnerable then
         c.standing_count = 0
         return
     end
@@ -63,7 +63,7 @@ function panel_types.grass(slows_at: number?): (Object) -> ()
             return
         end
         local slow = slows_at ~= nil and me.hp <= slows_at
-        if battle.cycle(if slow then 2 else 1) == 0 then
+        if battle.cycle(if slow then "second" else "first") == 0 then
             me.hp = math.min(me.hp + 1, me.max_hp)
         end
     end
@@ -93,15 +93,15 @@ function panel_types.burn(spec: BurnSpec): (Object, boolean) -> ()
             return
         end
         local c = me.collision
-        if c.element == FIRE or c.region == nil or me:status("float_shoe") then
+        if c.element == FIRE or c.region == nil or me.status.float_shoe then
             return
         end
         for _, s in spec.spared_by do
-            if me:status(s) then
+            if (me.status :: any)[s] then
                 return
             end
         end
-        if not me:status("guard") and not me:status("invulnerable") then
+        if not me.status.guard and not me.status.invulnerable then
             local damage = bit32.band(bit32.lshift(spec.damage, battle.weakness(c.element, FIRE)), 0xFFFF)
             c:add_damage(FIRE, damage, true)
             c:add_mood_damage(spec.mood or 0)
@@ -118,13 +118,13 @@ end
 -- A slide a panel starts: the body's slide request, of type `kind` ("rows": by the arena's rows and the move's
 -- direction; "panel": the panel's own carry).
 local function request_slide(me: Object, kind: SlideType)
-    me:set_request("slide", true)
+    me.requests.slide = true
     me.slide_type = kind
 end
 
 -- Floating or submerged (the status word's 0x24, which the slides' tests share).
 local function off_the_floor(me: Object): boolean
-    return me:status("float_shoe") or me:status("submerged")
+    return me.status.float_shoe or me.status.submerged
 end
 
 -- A road's `rest` (`sub_801A36A`'s first test, `sub_801A400`): a body at rest on it is carried the road's way (slide
@@ -150,10 +150,10 @@ end
 -- move's direction), unless the body is dragged or moving, slid within its cooldown, floats or is submerged, or is a
 -- navi whose form stands on magnet panels (EXE5's MagnetSoul).
 function panel_types.magnet(me: Object)
-    if me:status("drag") or me:status("moving") then
+    if me.status.drag or me.status.moving then
         return
     end
-    if me.slide_cooldown ~= 0 or off_the_floor(me) or me:form_trait("stands_on_magnet") then
+    if me.slide_cooldown ~= 0 or off_the_floor(me) or me.form_traits.stands_on_magnet then
         return
     end
     request_slide(me, "panel")
@@ -163,14 +163,14 @@ end
 -- `sub_800EB18`) with `splash`, unless the body is dragged or moving, floats, dives or is of aqua.
 function panel_types.holds(ticks: number, splash: Effect): (Object) -> ()
     return function(me: Object)
-        if me:status("drag") or me:status("moving") then
+        if me.status.drag or me.status.moving then
             return
         end
-        if me:status("float_shoe") or me:navi_state("dives") or me.element == AQUA then
+        if me.status.float_shoe or me.navi_flags.dives or me.element == AQUA then
             return
         end
-        me:set_status_timer("immobilize", ticks)
-        me:set_status("immobilized", true)
+        me.status_timers.immobilize = ticks
+        me.status.immobilized = true
         battle.effect(me.pos, splash)
     end
 end
@@ -183,19 +183,20 @@ end
 -- Ice's `move_end` (EXE6's `sub_801A3DA`, EXE5's 0x080171F0): a body not of aqua, not floating or submerged, that ice
 -- affects, slides (slide type 2, "rows": the arena's rows by the move's direction).
 function panel_types.ice_slides(me: Object)
-    if me.collision.element ~= AQUA and not off_the_floor(me) and me:status("affected_by_ice") then
+    if me.collision.element ~= AQUA and not off_the_floor(me) and me.status.affected_by_ice then
         request_slide(me, "rows")
     end
 end
 
 -- EXE4's ice's `move_end` (0x0801335A): the same body is pushed, a bit by its side and the move's direction ORed into
--- its final hit modifier (the table at 0x080133B4, five directions a side; a direction past a side's row pushes
--- nothing), which the intake reads after: a slide by the push's row, or a drag with a hit's drag bit.
-function panel_types.ice_pushes(bits: { { number } }): (Object) -> ()
+-- its final hit modifier (the table at 0x080133B4, five directions a side, by the move's direction; a direction past a
+-- side's row, "other", pushes nothing), which the intake reads after: a slide by the push's row, or a drag with a hit's
+-- drag bit.
+function panel_types.ice_pushes(bits: { { [MoveDirection]: number } }): (Object) -> ()
     return function(me: Object)
-        if me.collision.element ~= AQUA and not off_the_floor(me) and me:status("affected_by_ice") then
+        if me.collision.element ~= AQUA and not off_the_floor(me) and me.status.affected_by_ice then
             local row = bits[bit32.band(me.alliance, 1) + 1]
-            me.collision:add_final_hit_mod(row[me.collision.direction + 1] or 0)
+            me.collision:add_final_hit_mod(row[me.collision.direction] or 0)
         end
     end
 end
@@ -208,7 +209,7 @@ end
 -- EXE4's pitfall's `slide` (0x080102FC, 0x08010B54; an obstacle's, 0x080106B8 and its kin): a slide, a drag or an
 -- obstacle's slide stops on it, unless the body floats.
 function panel_types.pitfall(me: Object, _how: SlideHow): SlideAnswer?
-    return if me:status("float_shoe") then nil else "stop"
+    return if me.status.float_shoe then nil else "stop"
 end
 
 -- EXE6's ice's `hit` (the hit kernel's aqua on ice): an aqua attack touching a body standing on it freezes the body

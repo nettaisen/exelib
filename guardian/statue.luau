@@ -399,7 +399,7 @@ function statue.make(look: Look): Statue
             o.run_while_paused = true
         end
         o.run_while_dimmed = true
-        obstacle.register(o, o.alliance, 1)
+        obstacle.register(o, o.alliance, "one_a_side")
         return o
     end
 

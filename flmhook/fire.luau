@@ -138,7 +138,7 @@ function fire.make(look: Look, sine: (angle: number) -> number): {
                 battle.shake_camera(SHAKE_MAGNITUDE, SHAKE_TICKS)
             end
             -- A white flash that goes on while dimmed.
-            battle.palette_flash(0, FLASH_TICKS, true)
+            battle.palette_flash("one_layer", FLASH_TICKS, true)
         end
         local x, y = me.panel_x, me.panel_y
         local a = me.action

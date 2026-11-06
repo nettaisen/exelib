@@ -40,7 +40,7 @@ function tankcan.action(spec: Spec): Action
             me:open_counter_window()
             s.timer = AIM_TICKS
             attachment.attach(spec.attachment, me, spec.cannon, "overlay")
-            me:set_status("using_action", true)
+            me.status.using_action = true
             me.step_init = 4
             return
         end

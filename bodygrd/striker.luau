@@ -132,7 +132,7 @@ function striker.spawn(kind: Kind, user: Object, element: number, damage: number
     o.element = element
     o.alliance = user.alliance
     o:set_damage_word(damage)
-    obstacle.register(o, user.alliance, 1)
+    obstacle.register(o, user.alliance, "one_a_side")
     return o
 end
 

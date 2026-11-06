@@ -247,7 +247,7 @@ function dice.make(spec: DiceSpec): Dice
             go(me)
             return
         end
-        if me:take_damage(0) < 0 or bit32.btest(c.hit_flags, ENEMY[me.alliance]) then
+        if me:take_damage("damage_sound") == "broken" or bit32.btest(c.hit_flags, ENEMY[me.alliance]) then
             battle.effect(me.pos, explosion(s))
             battle.play_sound(spec.blow_up)
             go(me)

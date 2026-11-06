@@ -35,7 +35,7 @@ function action.action(spec: HyperBurstSpec, look: HyperBurstLook): Action
             me:set_animation(look.anim)
             me:open_counter_window()
             look.hold(me, look.spreader, look.slot)
-            me:set_status("using_action", true)
+            me.status.using_action = true
             me.step_init = 4
             s.timer = 0
         end
@@ -68,7 +68,7 @@ function action.action(spec: HyperBurstSpec, look: HyperBurstLook): Action
         local t = s.timer - 1
         s.timer = t
         if t < 0 then
-            me:set_status("using_action", false)
+            me.status.using_action = false
             me.related1 = nil
             me.overlay = nil
             me:exit_attack()

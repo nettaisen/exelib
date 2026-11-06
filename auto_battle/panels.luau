@@ -57,7 +57,7 @@ local STEP: { { number } } = {
 
 -- `sub_8010368` (EXE4's 0x0800C3FC): the conditions of a panel `navi` may step onto: (require, forbid).
 function panels.step_condition(navi: Object): (number, number)
-    local row = STEP[(if navi:status("air_shoe") then 2 else 0) + bit32.band(navi.alliance, 1) + 1]
+    local row = STEP[(if navi.status.air_shoe then 2 else 0) + bit32.band(navi.alliance, 1) + 1]
     return row[1], row[2]
 end
 

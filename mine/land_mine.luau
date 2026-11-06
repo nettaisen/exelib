@@ -264,7 +264,7 @@ function land_mine.spawn(kind: Kind, side: number, damage: number): Object?
     o.alliance = side
     o:set_damage_word(damage)
     o.run_while_dimmed = true
-    obstacle.register(o, side, 0)
+    obstacle.register(o, side, "two_a_side")
     return o
 end
 

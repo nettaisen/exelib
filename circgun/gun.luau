@@ -141,7 +141,7 @@ function gun.make_kind(id: string, look: CircGunLook, shot_kind: Kind): Kind
             local fire = t < 0
             if not fire then
                 local player = battle.player(me.alliance)
-                fire = player ~= nil and player:dimmed_pressed("a")
+                fire = player ~= nil and player.dimmed_pressed.a
             end
             if fire then
                 s.shots_left = s.variant.shots

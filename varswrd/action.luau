@@ -48,7 +48,7 @@ local KEYS: { { key: Key, bit: number } } = {
 local function held_word(me: Object): number
     local w = 0
     for _, k in KEYS do
-        if me:held(k.key) then
+        if (me.held :: any)[k.key] then
             w += k.bit
         end
     end
@@ -80,7 +80,7 @@ local function become(me: Object, chip: Chip)
         error(string.format("VarSwrd's pick %s has no action", chip.id :: string))
     end
     me.attack_chip = chip
-    me:set_attack(a, 0)
+    me:set_attack(a, "plain")
 end
 
 -- A game's VarSwrd-like action: `spec`'s sequences and picks, `game`'s sound and souls.

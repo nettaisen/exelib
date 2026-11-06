@@ -94,7 +94,7 @@ function shield.make(spec: {
         visibility.hide_from_blind(me)
         if hides_with_owner then
             local owner = me.related1 :: Object
-            if owner:navi_state("vanished") then
+            if owner.navi_flags.vanished then
                 me.visible = false
             end
         end

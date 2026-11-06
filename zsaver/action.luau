@@ -75,10 +75,10 @@ local function command(me: Object, s: State): boolean
     local slot = s.slot
     s.slot = if slot + 1 >= 3 then 0 else slot + 1
     local keys = 0
-    if me:pressed("b") then
+    if me.pressed.b then
         keys = bit32.bor(keys, KEY_B)
     end
-    if me:pressed("left") then
+    if me.pressed.left then
         keys = bit32.bor(keys, KEY_LEFT)
     end
     s.keys[slot + 1] = keys
@@ -103,7 +103,7 @@ function zsaver.make(look: ZSaverLook): Action
     -- `sub_80EFF00` (EXE5's 0x080EE110): the slash index (a byte store over
     -- the shots word's low byte), three slashes, the command cleared.
     local function start(me: Object, s: State)
-        me:set_status("using_action", true)
+        me.status.using_action = true
         me.attack_count = bit32.band(me.attack_count, 0xFF00)
         s.slashes = SLASHES
         s.timer = 0
@@ -121,7 +121,7 @@ function zsaver.make(look: ZSaverLook): Action
     -- opens the window), or the fourth's boom; at the swing's end the next
     -- slash, or the recovery (EXE5's step back first, charged).
     local function slash(me: Object, s: State)
-        if look.a_held_window and not me:held("a") then
+        if look.a_held_window and not me.held.a then
             s.shut = true
         end
         if s.window and not s.shut and command(me, s) then
@@ -217,7 +217,7 @@ function zsaver.make(look: ZSaverLook): Action
     local function recover(me: Object, s: State)
         if me.step_init == 0 then
             if look.recovery_clears_moving then
-                me:set_status("moving", false)
+                me.status.moving = false
             end
             s.timer = RECOVER_TICKS
             me.step_init = 4
