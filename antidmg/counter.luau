@@ -43,7 +43,7 @@ export type Spec = {
 
 local VANISH_ANIM = 4
 -- The shuriken's hit modifier, and the height it is thrown from.
-local HIT_MOD = 1
+local HIT_MOD: HitModifier = { flinch = true }
 local HEIGHT = 0xA0_0000
 -- An enemy's body (`byte_8016290`, by side).
 local ENEMY_BODY: PanelFlags = { enemy_body = true }
@@ -143,7 +143,7 @@ local function throw(me: Object, s: State, spec: Spec)
             end
         end
         if x and y then
-            local damage = int.u32(me.attack_damage + me.hit_param * 0x10000 + me.extra)
+            local damage = damage_word.plus(me.attack_word, me.extra)
             if spec.throw then
                 spec.throw(me, x, y, damage)
             else

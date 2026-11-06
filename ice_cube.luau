@@ -6,7 +6,7 @@
 -- a bubble becomes (the role `hooks.encased`, `replace`: EXE6's content calls it the encased bubble, by that flag), and
 -- in EXE4 what ColdMan forms and punches. EXE6's code and EXE4's are the same but for the parts each game passes
 -- (`ice_cube.make`): its sprite, sounds, effects, debris and spark, what pushes it (its final hit modifier's bits:
--- EXE6's 0x3C, EXE4's 0xFC) and the ice block an obstacle encased in ice becomes.
+-- EXE6's four pushes, EXE4's six) and the ice block an obstacle encased in ice becomes.
 
 local rock_debris = require("@exelib/rock/debris")
 
@@ -22,8 +22,8 @@ export type Look = {
     spark: Spark,
     is: CollisionType,
     hits: CollisionType,
-    -- Its final hit modifier's bits that push it.
-    pushes: number,
+    -- Its final hit modifier's bits that push it, any one of them.
+    pushes: { [string]: boolean },
     -- The debris its burst throws up (palette 1), the effect it leaves (16 pixels up), and the puff it goes in off
     -- solid ground (12 pixels up).
     debris: Kind,
@@ -55,7 +55,7 @@ local FORMED = 2
 local FORMING_STEPS = 10
 -- What bursts it: bodies and neutral objects.
 local BURSTS_ON: HitNames = { own_body = true, enemy_body = true, neutral = true }
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 local AQUA = Element.aqua
 
 local SOLID: PanelFlags = { solid = true }
@@ -82,8 +82,12 @@ function ice_cube.make(look: Look): IceCube
             me.anim = FORMED
             s.look = FORMED
         end
-        if bit32.btest(me.collision.hit_mod_final, look.pushes) then
-            me:set_action(4)
+        local hit = hit_modifier.bits(me.collision.hit_mod_final)
+        for push, on in look.pushes do
+            if on and hit[push] then
+                me:set_action(4)
+                break
+            end
         end
     end
 
@@ -182,7 +186,7 @@ function ice_cube.make(look: Look): IceCube
         (o.state :: State).look = cube_look
         o.panel_x, o.panel_y = x, y
         o.element = AQUA
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance = owner.alliance
         o.run_while_dimmed = true
         return o
@@ -193,7 +197,7 @@ function ice_cube.make(look: Look): IceCube
     -- unregistered obstacle's ice block would take class 0xFF, which `setFieldBattleObject_800F614` turns into a
     -- write past the registry: a content error here.)
     local function replace(obstacle: Object, ice: boolean, class: ObstacleClass?)
-        local damage = bit32.bor(obstacle.damage, bit32.lshift(obstacle.stamina, 16))
+        local damage = obstacle.damage_word
         if ice then
             if class == nil then
                 error("an unregistered obstacle's ice block registers in class 0xFF, past the field-object registry")

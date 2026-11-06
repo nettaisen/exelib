@@ -147,7 +147,7 @@ function falling_meteor.make_kind(id: string, look: MeteorLook): Kind
         me.collision:set_region(nil)
         if row.bug then
             -- sub_801A4D0
-            me.collision.bugs = row.bug + bit32.lshift(row.bug_arg or 0, 8)
+            me.collision.bug, me.collision.bug_arg = row.bug, row.bug_arg or 0
         end
         me.collision:present()
         local side = if look.marker_takes_side then me.alliance else 0
@@ -195,7 +195,7 @@ function falling_meteor.spawn_kind(
     (o.state :: State).row = row
     o.panel_x, o.panel_y = x, y
     o.element = element
-    o:set_damage_word(damage)
+    o.damage_word = damage
     o.alliance, o.flip = owner.alliance, owner.flip
     if while_dimmed then
         o.run_while_dimmed = true

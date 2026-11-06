@@ -40,8 +40,6 @@ function tornado.variant(v: Variant): Variant
     return new.record(TORNADO_VARIANT, v)
 end
 
--- The damage bits that are flags, kept when the damage doubles.
-local DAMAGE_FLAGS = 0xF800
 
 -- The destroy state, hidden and harmless.
 local function finish(me: Object)
@@ -105,8 +103,10 @@ local function init(me: Object, look: TornadoLook)
             s.variant = v
             field.set_type(me.panel_x, me.panel_y, "normal")
             if look.doubles_on_panel then
-                local d = me.damage
-                me.damage = bit32.bor(bit32.band(d, DAMAGE_FLAGS), bit32.band(d, bit32.bnot(DAMAGE_FLAGS)) * 2)
+                -- (Its amount as hits read it doubles; the bits above it, the flags, are kept: 0xF800.)
+                local w = me.damage_word
+                local amount = damage_word.read_amount(w)
+                me.damage_word = damage_word.with_damage(w, bit32.bor(damage_word.damage(w) - amount, amount * 2))
             end
         end
     end
@@ -134,7 +134,7 @@ local function init(me: Object, look: TornadoLook)
         me:free()
         return
     end
-    me:setup_collision(if v.bug and look.bug_is then look.bug_is else look.is, look.target, 1)
+    me:setup_collision(if v.bug and look.bug_is then look.bug_is else look.is, look.target, { flinch = true })
     local c = me.collision
     c:set_hit_effect(look.spark(me.element))
     local status = s.status
@@ -142,7 +142,7 @@ local function init(me: Object, look: TornadoLook)
         c.status_base = status
     end
     if v.bug then
-        c.bugs = v.bug
+        c.bug, c.bug_arg = v.bug, 0
     end
     c:present()
     battle.play_sound(look.sound)
@@ -181,7 +181,7 @@ function tornado.spawn(kind: Kind, owner: Object, x: number, y: number, element:
         o.element = element
         o.panel_x, o.panel_y = x, y
         o.timer = spec.ticks
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance = owner.alliance
     end
     return o

@@ -44,7 +44,7 @@ function shoot.action(spec: Spec, look: ThunderShotLook): Action
         if s.timer == 1 then
             -- The damage word (the hit parameter in its high half), plus
             -- the Atk+ bonus.
-            local damage = me.attack_damage + me.hit_param * 0x10000 + me.extra
+            local damage = damage_word.plus(me.attack_word, me.extra)
             ball.spawn(ball_kind, me, me.panel_x + me.facing, me.panel_y, me.attack_element, damage, spec.ball)
         end
         local t = s.timer + 1

@@ -26,7 +26,7 @@ export type State = {
 
 local LIFETIME = 0x960
 -- Its collision's hit modifier.
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 
 -- Resting before it plays.
 local REST_TICKS = 0x1E
@@ -266,7 +266,7 @@ function instrument.spawn_kind(kind: Kind, owner: Object, x: number, y: number, 
     if not o then
         return nil
     end
-    o:set_damage_word(damage)
+    o.damage_word = damage
     o.panel_x, o.panel_y = x, y
     o.alliance, o.flip = owner.alliance, owner.flip
     o.run_while_dimmed = true

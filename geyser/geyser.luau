@@ -29,7 +29,7 @@ type WaterState = {
 }
 
 local SPEED, GRAVITY = 0x2E666, -0x2800
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- The splash's damage on solid ground (its damage word's hit parameter, damage 10).
 local SPLASH_DAMAGE = 10
 -- The geyser's water: two ticks in; then a panel every three ticks.
@@ -68,8 +68,7 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
             hit_effect = look.spark,
             target = look.hits,
             self_type = look.attack,
-            damage = bit32.band(word, 0xFFFF),
-            stamina = bit32.rshift(word, 16),
+            damage = word,
             hit_mod = HIT_MOD,
         })
     end
@@ -102,7 +101,7 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
             me.timer = WATER_TICKS
             local d = AROUND[s.order[s.count + 1]]
             local x, y = me.panel_x + me.facing * d[1], me.panel_y + d[2]
-            hit(me, x, y, me.pos.z, int.u32(me.damage + me.stamina * 0x10000))
+            hit(me, x, y, me.pos.z, me.damage_word)
             local cx, cy = field.center(x, y)
             battle.effect(Vec3.new(cx, cy, 0), look.splash)
             s.count += 1
@@ -119,7 +118,7 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
         local o = battle.spawn(water_kind, Vec3.new(y, me.element.byte, look.water_height))
         if o then
             o.panel_x, o.panel_y = x, y
-            o:set_damage_word(int.u32(me.damage + me.stamina * 0x10000))
+            o.damage_word = me.damage_word
             o.element = me.element
             o.alliance, o.flip = me.alliance, me.flip
         end
@@ -155,9 +154,9 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
         end
         if field.solid(x, y) then
             -- EXE5's 0x080CDB36: a splash of 10 damage (EXE4's 0x080D5A92: and the throw's Atk+ bonus).
-            local word = bit32.bor(bit32.band(int.u32(me.damage + me.stamina * 0x10000), 0xFFFF0000), SPLASH_DAMAGE)
+            local word = damage_word.with_damage(me.damage_word, SPLASH_DAMAGE)
             if look.splash_bonus then
-                word = int.u32(word + ((me.state :: State).bonus :: number))
+                word = damage_word.plus(word, (me.state :: State).bonus :: number)
             end
             hit(me, x, y, 0, word)
             battle.effect(me.pos, look.splash)
@@ -303,7 +302,7 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
             throw = function(user: Object, pos: Vec3, damage: number): Object?
                 local o = battle.spawn(kind, pos)
                 if o then
-                    o:set_damage_word(damage)
+                    o.damage_word = damage
                     o.element = AQUA
                     o.alliance = user.alliance
                     local s = o.state :: State

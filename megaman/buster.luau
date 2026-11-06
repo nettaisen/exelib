@@ -65,12 +65,6 @@ function buster.pick(navi: Object): "buster" | "blank" | "charged"
     return "buster"
 end
 
--- The attack's damage word: its damage | its hit parameter << 16
--- (AIAttackVars+0x08 as a word).
-local function damage_word(me: Object): number
-    return bit32.bor(me.attack_damage, bit32.lshift(me.hit_param, 16))
-end
-
 -- `sub_80EB450`: raise the buster; on the second tick the shot, or the
 -- spread's three, or the throw, and the attachment in the first related
 -- slot; after five ticks, the recovery. (The attachment in the first
@@ -95,7 +89,7 @@ local function shoot(me: Object, s: State, look: MegaManBusterLook)
             flash = look.buster.arm
         else
             -- (Without a setup's projectile, the table's first row.)
-            local variant, damage = s.projectile or look.plain, damage_word(me)
+            local variant, damage = s.projectile or look.plain, me.attack_word
             local projectile = look.projectiles
             me.attack_count = projectile.fire(me, { variant = variant, damage = damage, z = SHOT_Z })
             if s.spread then
@@ -159,7 +153,5 @@ function buster.shot_action(look: MegaManBusterLook): Action
     }
 end
 
--- The damage word a throw carries (the attack's damage and hit parameter).
-buster.damage_word = damage_word
 
 return buster

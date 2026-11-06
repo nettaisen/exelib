@@ -33,7 +33,7 @@ export type State = { variant: CountdownVariant }
 
 local countdown = {}
 
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- Where it can stand once it is up: a solid panel on the field with
 -- nothing on it (`allows_bodies`: bodies are fine).
 local STANDS: PanelCondition = { solid = true, on_field = true, occupied = false }
@@ -56,7 +56,7 @@ local SHOWS_1: HiddenParts = { [3] = true, [4] = true, [5] = true }
 local BLINK_TICKS = 8
 -- The blast (`byte_80CDD30`): over the area of the side it hits for, no
 -- hit spark, hit modifier 3; with bursts there every 2 ticks.
-local BLAST_HIT_MOD = 3
+local BLAST_HIT_MOD: HitModifier = { flinch = true, flash = true }
 local BURST_INTERVAL = 2
 -- Its rise (each variant's appearing animation) lasts 16 of its sprite's steps (every game's).
 local APPEAR_STEPS = 16
@@ -102,8 +102,7 @@ function countdown.make_kind(id: string, look: CountdownLook): Kind
             hit_effect = nil,
             target = look.blast.hits,
             self_type = look.blast.is,
-            damage = me.damage,
-            stamina = me.stamina,
+            damage = me.damage_word,
             hit_mod = BLAST_HIT_MOD,
         })
         panel_bursts.spawn(look.bursts, me, area, BURST_INTERVAL, 0, look.explosion)
@@ -386,7 +385,7 @@ function countdown.spawn_kind(
     s.variant = variant
     o.panel_x, o.panel_y = x, y
     o.alliance = side
-    o:set_damage_word(damage)
+    o.damage_word = damage
     if variant.linked then
         -- The game links these variants to a slot at the spawner's r7 (the
         -- bomb's related1; its init and end clear the slot), which its only

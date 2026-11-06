@@ -32,8 +32,7 @@ local PATTERNS: { [number]: { number } } = {
     [5] = { 1, -1, 0 },
 }
 -- Its damage: 5 x (the buster's Attack + 1), hit parameter 0x85.
-local DAMAGE_PER_ATTACK, HIT_PARAM = 5, 0x85
-
+local DAMAGE_PER_ATTACK, COUNTER = 5, 5
 -- A game's rapid buster (its action keyed `look.id`): its setup (`sub_8012124`: the attack's damage, no shots yet;
 -- the action) and the action.
 function rapid_buster.make(look: RapidBusterLook): { setup: (navi: Object) -> Action, action: Action }
@@ -70,7 +69,7 @@ function rapid_buster.make(look: RapidBusterLook): { setup: (navi: Object) -> Ac
         if s.timer == SHOT_TICK then
             battle.play_sound(look.shot_sound)
             local row = PATTERNS[s.pattern][me.attack_count % 3 + 1]
-            local damage = int.u32(me.attack_damage + me.hit_param * 0x10000)
+            local damage = me.attack_word
             look.projectiles.spawn(me, me.panel_x + me.facing, me.panel_y + row, { variant = look.shot, damage = damage, z = SHOT_Z })
             attachment.attach(look.attachment, me, look.buster.flash, "related")
         end
@@ -131,8 +130,7 @@ function rapid_buster.make(look: RapidBusterLook): { setup: (navi: Object) -> Ac
 
     -- `sub_8012124`: the attack's damage, no shots yet; the action.
     function made.setup(navi: Object): Action
-        navi.attack_damage = (battle.navi(navi.alliance).attack + 1) * DAMAGE_PER_ATTACK
-        navi.hit_param = HIT_PARAM
+        navi.attack_word = damage_word.of { amount = (battle.navi(navi.alliance).attack + 1) * DAMAGE_PER_ATTACK, counter = COUNTER, cant_counter = true }
         navi.attack_count = 0
         return made.action
     end

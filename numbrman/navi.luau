@@ -89,7 +89,7 @@ function numbrman.make(spec: NumberManSpec): NumberMan
             hp = die.hp,
             status = die.status,
             hit_mod = die.hit_mod,
-            damage = bit32.bor(me.damage, bit32.lshift(me.stamina, 16)),
+            damage = me.damage_word,
             holder = me,
         })
         -- (A halfword store: the phase's entry flag too.)

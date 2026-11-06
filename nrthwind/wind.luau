@@ -131,7 +131,7 @@ function wind.make(spec: {
                     me:free()
                     return
                 end
-                me:setup_collision(spec.is, spec.hits, 0)
+                me:setup_collision(spec.is, spec.hits, {})
                 me.collision:set_region(nil)
                 battle.play_sound(spec.sound)
                 me.lifecycle = "update"

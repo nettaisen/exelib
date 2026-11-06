@@ -23,7 +23,7 @@ export type State = {
     -- Shown with its navi (the original's +0x0C).
     shown: boolean,
     -- The hit modifier that popped the barrier (its ExtraVars+8).
-    pop_hit_mod: number,
+    pop_hit_mod: HitModifierByte,
 }
 
 export type Spec = {
@@ -53,10 +53,9 @@ export type Visual = {
 
 -- Its actions.
 local UP, DOWN, BLOWN = 0, 4, 8
--- Blown away: 8 pixels a tick back (or forward, pushed that way: hit modifier bits 0x14) and 2.5 up the field, for
--- 20 ticks.
+-- Blown away: 8 pixels a tick back (or forward, pushed that way: hit modifier bits 0x14, `forward_far` or `forward`)
+-- and 2.5 up the field, for 20 ticks.
 local BLOWN_SPEED, BLOWN_RISE, BLOWN_TICKS = -0x80000, -0x28000, 0x14
-local PUSHED_FORWARD = 0x14
 -- LifeAur's aura's part 6 (`timer_2000000`'s address as the parts word).
 local PART_6: HiddenParts = { [6] = true }
 
@@ -99,7 +98,8 @@ end
 local function blown(me: Object)
     if me.phase_init == 0 then
         local vx = int.mul32(me.facing, BLOWN_SPEED)
-        if bit32.btest((me.state :: State).pop_hit_mod, PUSHED_FORWARD) then
+        local popped = hit_modifier.bits((me.state :: State).pop_hit_mod)
+        if popped.forward_far or popped.forward then
             vx = int.i32(-vx)
         end
         me.vel = Vec3.new(vx, BLOWN_RISE, me.vel.z)

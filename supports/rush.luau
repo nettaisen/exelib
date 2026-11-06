@@ -219,12 +219,12 @@ function rush.make(look: RushLook): SupportActor
         place(me, look.stand or STAND, look.not_on)
         battle.play_sound(look.appear_sound)
         me.element = Element.null
-        me.damage, me.stamina = 0, 0
+        me.damage_word = 0
         if not me:create_collision() then
             me:free()
             return
         end
-        me:setup_collision(look.is, look.hits, 0)
+        me:setup_collision(look.is, look.hits, {})
         me.collision.status_base = look.status
         me.collision:set_region(nil)
         me:set_lifecycle("update")

@@ -62,13 +62,13 @@ export type Statue = {
 
 -- It drops from 160 pixels, 8 a tick.
 local HEIGHT, FALL_SPEED = 0xA0_0000, 0x8_0000
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- A bubble every 16 ticks, on one of the other side's panels but its own (`byte_80CF364`, by side), in palette 1.
 local BUBBLE_EVERY = 0x10
 local OTHER_SIDE: PanelCondition = { enemy_area = true }
 -- The drain (`byte_80CF31C`, by side): the other side's whole area, the silent element 5, 1 damage that can't
 -- counter (0x81), hitting by what it is alone (the look's drain, target row 0), no spark, hit modifier 0.
-local DRAIN_ELEMENT, DRAIN_DAMAGE, DRAIN_COUNTER = Element.drain, 1, 0x81
+local DRAIN_ELEMENT, DRAIN_DAMAGE, DRAIN_COUNTER = Element.drain, 1, 1
 
 local ANUBIS_VARIANT = schema.record_type("anubis-variant")
 statue.ANUBIS_VARIANT = ANUBIS_VARIANT
@@ -161,9 +161,8 @@ function statue.make(look: Look): Statue
             hit_effect = nil,
             target = look.nothing,
             self_type = look.drain,
-            damage = DRAIN_DAMAGE,
-            stamina = DRAIN_COUNTER,
-            hit_mod = 0,
+            damage = damage_word.of { amount = DRAIN_DAMAGE, counter = DRAIN_COUNTER, cant_counter = true },
+            hit_mod = {},
         })
     end
 
@@ -298,7 +297,7 @@ function statue.make(look: Look): Statue
         end
         (o.state :: State).variant = variant
         o.panel_x, o.panel_y = x, y
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance, o.flip = owner.alliance, owner.flip
         o.run_while_dimmed = true
         -- The registry's side is the whole alliance and flip halfword: a flipped owner's lands past the registry.

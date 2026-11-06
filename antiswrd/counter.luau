@@ -35,7 +35,7 @@ export type Spec = {
     hold: ((me: Object, blade: AttachmentLook) -> ())?,
     -- Every boom's hit modifier (EXE4's 1: 0x080EDB00; none: by the swings
     -- left, `dword_80EEB14`, the last one's knocking back).
-    boom_hit_mod: number?,
+    boom_hit_mod: HitModifier?,
     -- The blade's animation by its holder (none: the shared one's,
     -- @exelib/swords/parts; EXE6's gives its Beast forms' arms).
     blade_anim: ((Object) -> number)?,
@@ -51,10 +51,10 @@ local SWING_TICKS, WAVE_AT = 0x15, 0xC
 local SWING_ANIM = 5
 -- The booms by the swings left (`dword_80EEB14`, their hit modifiers).
 local BOOMS: { [number]: SonicBoom } = {
-    [0] = { hit_mod = 1, pierces = false },
-    { hit_mod = 3, pierces = false },
-    { hit_mod = 1, pierces = false },
-    { hit_mod = 1, pierces = false },
+    [0] = { hit_mod = { flinch = true }, pierces = false },
+    { hit_mod = { flinch = true, flash = true }, pierces = false },
+    { hit_mod = { flinch = true }, pierces = false },
+    { hit_mod = { flinch = true }, pierces = false },
 }
 
 local function set_step(me: Object, step: number)
@@ -95,7 +95,7 @@ local function swing(me: Object, s: State, spec: Spec)
         me.step_init = 4
     end
     if s.timer == WAVE_AT then
-        local damage = int.u32(me.attack_damage + me.hit_param * 0x10000 + me.extra)
+        local damage = damage_word.plus(me.attack_word, me.extra)
         local boom = if spec.boom_hit_mod then { hit_mod = spec.boom_hit_mod, pierces = false } else BOOMS[me.attack_count]
         if boom == nil then
             error(string.format("AntiSwrd's counter: swing %d reads past dword_80EEB14", me.attack_count))

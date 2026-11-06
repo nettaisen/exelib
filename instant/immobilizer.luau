@@ -58,8 +58,7 @@ local function init(me: Object, look: ImmobilizerLook)
         hit_effect = nil,
         target = look.target,
         self_type = look.self_type,
-        damage = 0,
-        stamina = 0,
+        damage = damage_word.of { amount = 0, counter = 0 },
         status = look.status,
     })
     battle.play_sound(look.sound)
@@ -94,7 +93,7 @@ function immobilizer.spawn(kind: Kind, owner: Object, x: number, y: number): Obj
     if o then
         o.panel_x, o.panel_y = x, y
         o.element = Element.null
-        o:set_damage_word(0)
+        o.damage_word = 0
         o.alliance, o.flip = owner.alliance, owner.flip
         o.related1 = owner
     end

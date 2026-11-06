@@ -169,7 +169,7 @@ function seed.thrower(kind: Kind, variant: SeedVariant): Thrower
             if o then
                 (o.state :: State).variant = variant
                 o.alliance, o.flip = user.alliance, user.flip
-                o:set_damage_word(damage)
+                o.damage_word = damage
                 o.related1 = user
             end
             return o

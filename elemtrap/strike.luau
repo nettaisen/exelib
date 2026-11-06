@@ -63,7 +63,7 @@ local function hit_panels(me: Object, look: ElemTrapStrikeLook)
         battle.play_sound(sound)
     end
     local s = me.state :: State
-    local word = int.u32(bit32.bor(me.damage, bit32.lshift(me.stamina, 16)) + s.bonus)
+    local word = damage_word.plus(me.damage_word, s.bonus)
     for i = #list, 1, -1 do
         local p = list[i]
         local box = battle.hitbox(me, {
@@ -75,8 +75,7 @@ local function hit_panels(me: Object, look: ElemTrapStrikeLook)
             hit_effect = by_element.spark,
             target = look.target,
             self_type = look.self_type,
-            damage = bit32.band(word, 0xFFFF),
-            stamina = bit32.rshift(word, 16),
+            damage = word,
             hit_mod = by_element.hit_mod,
             status = by_element.status,
         })
@@ -134,7 +133,7 @@ function strike.spawn(kind: Kind, user: Object, element: Element, damage: number
     o.element = element
     o.related1 = user
     o.alliance = user.alliance
-    o:set_damage_word(damage)
+    o.damage_word = damage
     local s = o.state :: State
     s.bonus = bonus
     return o

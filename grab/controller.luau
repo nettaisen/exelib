@@ -121,7 +121,7 @@ local WAIT = 0x3C
 local function effect(me: Object, spec: Spec)
     local s = me.state :: State
     if me.phase_init == 0 then
-        local damage = bit32.bor(me.damage, bit32.lshift(me.stamina, 16)) + s.bonus
+        local damage = damage_word.plus(me.damage_word, s.bonus)
         local function drop(x: number, y: number)
             local o = shot.spawn(spec.shot, me, x, y, me.element, damage)
             if o then

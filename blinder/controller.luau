@@ -55,9 +55,8 @@ function controller.make(look: BlinderLook): (user: Object, spec: DimmingChipSpe
                 hit_effect = nil,
                 target = look.hits,
                 self_type = look.is,
-                damage = 0,
-                stamina = 0,
-                hit_mod = 0,
+                damage = damage_word.of { amount = 0, counter = 0 },
+                hit_mod = {},
                 status = look.status,
             })
             -- (`sub_80C53A6`: it resolves while dimmed.)

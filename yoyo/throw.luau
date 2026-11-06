@@ -38,7 +38,7 @@ function throw.action(spec: Spec): Action
             local x, y = me.panel_x + me.facing, me.panel_y
             -- The damage word (the hit parameter in its high half), plus the Atk+ bonus. The yoyos are
             -- null-element whatever the chip says.
-            local damage = me.attack_damage + me.hit_param * 0x10000 + me.extra
+            local damage = damage_word.plus(me.attack_word, me.extra)
             me.related1 = spec.throw(me, x, y, HEIGHT, damage)
             s.timer = 0x1E
             me.step_init = 4

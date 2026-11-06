@@ -35,7 +35,7 @@ local SWEEP = {
 -- The hits: hit modifier 3, no status, bug 0x18 with argument 1 (`dword_80D5D50`, 0x01180003: its bytes are the hit
 -- modifier, the status, the bug and its argument), or hit modifier 3 alone for a plain blade; what it is and hits
 -- are its game's (`dword_80D5D4C`, 0x0705FF01: rows 7 and 5).
-local HIT_MOD, BUG, BUG_ARG = 3, 0x18, 1
+local HIT_MOD, BUG, BUG_ARG = { flinch = true, flash = true }, 0x18, 1
 
 -- `sub_80D5CC8`: on its owner.
 local function follow(me: Object)
@@ -61,8 +61,7 @@ local function sweep(me: Object, look: MoonBladeLook, i: number)
         hit_effect = nil,
         target = look.hits,
         self_type = look.is,
-        damage = me.damage,
-        stamina = me.stamina,
+        damage = me.damage_word,
         hit_mod = HIT_MOD,
         bug = if plain then 0 else BUG,
         bug_arg = if plain then 0 else BUG_ARG,
@@ -139,7 +138,7 @@ function blade.spawn(kind: Kind, owner: Object, panel_x: number, routine: number
     if o then
         o.panel_x, o.panel_y = panel_x, bit32.band(routine, 0xFF)
         o.element = Element.null
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance, o.flip = owner.alliance, owner.flip
         o.related1 = owner
         local s = o.state :: State

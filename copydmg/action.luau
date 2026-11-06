@@ -32,7 +32,7 @@ function action.make(spec: CopyDamageSpec): Action
             battle.play_sound(spec.sound)
             -- The damage word (the hit parameter in its high half), plus
             -- the Atk+ bonus.
-            local damage = me.attack_damage + me.hit_param * 0x10000 + me.extra
+            local damage = damage_word.plus(me.attack_word, me.extra)
             spec.shot(me, me.panel_x + me.facing, me.panel_y, me.attack_element, damage)
         end
         local t = s.timer + 1

@@ -268,7 +268,7 @@ function navi.make(spec: Spec): SearchMan
                 if o then
                     o.panel_x, o.panel_y = nspec.panel_x, nspec.panel_y
                     o.alliance = user.alliance
-                    o:set_damage_word(nspec.damage)
+                    o.damage_word = nspec.damage
                 end
             else
                 o = navi_chips.spawn(kind, user, nspec)

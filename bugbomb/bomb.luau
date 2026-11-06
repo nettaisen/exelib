@@ -33,7 +33,7 @@ export type Look = BugBombLook
 local SPEED, LANDING_Z, GRAVITY = 0x2C000, 0x0A * 0x10000, -0x2800
 local HP = 0x28
 -- Collision while it sits.
-local HIT_MOD = 0
+local HIT_MOD: HitModifier = {}
 -- The burst: ticks it sits (61).
 local SIT_TICKS = 0x3C
 -- What in its hits ends it at once.
@@ -116,7 +116,7 @@ local function sit(me: Object, look: Look)
     me.collision:set_region(regions.ring)
     local burst_is, burst_hits = look.burst_is, look.burst_hits
     if burst_is and burst_hits then
-        me:reset_collision_types(burst_is, burst_hits, 0)
+        me:reset_collision_types(burst_is, burst_hits, {})
     end
     battle.region_effects(me.panel_x, me.panel_y, regions.square, me.alliance, look.burst, 0)
     battle.shake_camera(1, 0xF)
@@ -225,7 +225,7 @@ function bomb.thrower(kind: Kind): Thrower
                 local s = o.state :: State
                 s.target_x = bit32.band(xy, 0xFF)
                 s.target_y = bit32.extract(xy, 8, 8)
-                o:set_damage_word(damage)
+                o.damage_word = damage
                 o.alliance, o.flip = user.alliance, user.flip
             end
             return o

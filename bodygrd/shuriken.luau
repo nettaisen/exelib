@@ -13,7 +13,7 @@ local shuriken = {}
 
 export type State = {
     -- Its hit modifier (the original's first parameter).
-    hit_mod: number,
+    hit_mod: HitModifierByte,
 }
 
 -- A game's shuriken: its kind's key, its sprite, its landing's sound, the
@@ -171,7 +171,7 @@ end
 -- `sub_80D006E`: a shuriken of `kind` onto (x, y) from `owner` with
 -- `element`, `hit_mod` and the damage word, of its side and facing. (Its
 -- position is the spawner's registers until its init places it.)
-function shuriken.spawn(kind: Kind, owner: Object, x: number, y: number, element: Element, hit_mod: number, damage: number): Object?
+function shuriken.spawn(kind: Kind, owner: Object, x: number, y: number, element: Element, hit_mod: HitModifier, damage: number): Object?
     local o = battle.spawn(kind)
     if not o then
         return nil
@@ -179,8 +179,8 @@ function shuriken.spawn(kind: Kind, owner: Object, x: number, y: number, element
     o.panel_x, o.panel_y = x, y
     o.element = element
     o.alliance, o.flip = owner.alliance, owner.flip
-    o:set_damage_word(damage)
-    ;(o.state :: State).hit_mod = hit_mod
+    o.damage_word = damage
+    ;(o.state :: State).hit_mod = hit_modifier.byte(hit_mod)
     return o
 end
 

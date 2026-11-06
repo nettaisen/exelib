@@ -22,7 +22,7 @@ function controller.make(look: WindControllerLook): WindController
             local x, y = me.panel_x + me.facing, me.panel_y
             -- (Where the fan goes: a solid panel with nothing on it.)
             if field.check(x, y, SOLID_NOT_OCCUPIED) then
-                local damage = bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
+                local damage = me.damage_word
                 look.spawn_fan(me, (me.state :: State).variant, x, y, damage)
             end
             me.timer = WAIT

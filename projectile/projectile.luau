@@ -43,7 +43,7 @@ export type Look = {
     burst_self_type: CollisionType?,
 }
 
-local BURST_HIT_MOD = 3
+local BURST_HIT_MOD: HitModifier = { flinch = true, flash = true }
 
 local PROJECTILE_VARIANT = schema.record_type("projectile-variant")
 projectile.PROJECTILE_VARIANT = PROJECTILE_VARIANT
@@ -88,8 +88,7 @@ local function burst(me: Object, look: Look, x: number, y: number, shown: Region
         hit_effect = nil,
         target = target,
         self_type = self_type,
-        damage = me.damage,
-        stamina = me.stamina,
+        damage = me.damage_word,
         hit_mod = BURST_HIT_MOD,
     })
 end
@@ -195,7 +194,7 @@ local function init(me: Object, look: Look)
         c.status_base = status
     end
     if bug ~= 0 then
-        c.bugs = bit32.bor(bug, bit32.lshift(v.bug_arg or 0, 8))
+        c.bug, c.bug_arg = bug, v.bug_arg or 0
     end
     c:present()
     me:set_lifecycle("update")
@@ -245,7 +244,7 @@ function projectile.spawn(kind: Kind, owner: Object, x: number, y: number, shot:
         s.variant = shot.variant
         s.row = shot.row or 0
         o.panel_x, o.panel_y = x, y
-        o:set_damage_word(shot.damage)
+        o.damage_word = shot.damage
         o.alliance, o.flip = owner.alliance, owner.flip
         o.related1 = owner
     end

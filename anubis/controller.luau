@@ -25,7 +25,7 @@ function controller.make(spec: Spec): { hook: (variant: AnubisVariant) -> (user:
     -- `sub_80E4130`: the statue, then 120 ticks.
     local function effect(me: Object)
         if me.phase_init == 0 then
-            local damage = bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
+            local damage = me.damage_word
             spec.statue(me, (me.state :: State).variant, me.panel_x + me.facing, me.panel_y, damage)
             me.timer = WAIT
             me.phase_init = 4

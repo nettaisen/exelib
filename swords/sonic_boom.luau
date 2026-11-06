@@ -15,7 +15,7 @@ local sonic_boom = {}
 
 export type State = {
     -- Its hit modifier (Param1) and whether it goes through (Param2).
-    hit_mod: number,
+    hit_mod: HitModifierByte,
     pierces: boolean,
 }
 
@@ -153,11 +153,11 @@ function sonic_boom.throw(kind: Kind, owner: Object, x: number, y: number, eleme
     local o = battle.spawn(kind, Vec3.zero)
     if o then
         local s = o.state :: State
-        s.hit_mod = boom.hit_mod
+        s.hit_mod = hit_modifier.byte(boom.hit_mod)
         s.pierces = boom.pierces
         o.panel_x, o.panel_y = x, y
         o.element = element
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance, o.flip = owner.alliance, owner.flip
         o.related1 = owner
         o.vel = Vec3.new(sonic_boom.SPEED, 0, 0)

@@ -142,14 +142,14 @@ local function init(me: Object, look: Look)
         int.i32(bit32.bor(bit32.band(b.z, 0xFFFF0000), frac(me.pos.z)))
     )
     me:set_panel_from_coordinates()
-    me:set_damage_word(0)
+    me.damage_word = 0
     ;(me.state :: State).swallowed = false
     if not me:create_collision() then
         (ball.state :: BallState).roller = nil
         me:free()
         return
     end
-    me:setup_collision(look.self_type, look.target, 0)
+    me:setup_collision(look.self_type, look.target, {})
     me.collision:set_hit_effect(nil)
     me.collision:present()
     me:set_lifecycle("update")

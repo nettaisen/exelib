@@ -34,7 +34,7 @@ function instruments.make(
             local x, y = me.panel_x + me.facing, me.panel_y
             -- (`byte_80E5E98`: the panel in front must be solid and free, both sides.)
             if field.check(x, y, SOLID_NOT_OCCUPIED) then
-                local damage = bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
+                local damage = me.damage_word
                 instrument.spawn_kind(instrument_kind, me, x, y, (me.state :: State).instrument, damage)
             end
             me.timer = WAIT

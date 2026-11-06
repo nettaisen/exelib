@@ -164,7 +164,7 @@ function gun.make_kind(id: string, look: CircGunLook, shot_kind: Kind): Kind
         if s.fired >= 8 then
             error("CircGun's gun: a ninth shot's flag lies past its variables")
         end
-        local damage = bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
+        local damage = me.damage_word
         local ticks = s.variant.period * 4 + 0x14
         shot.spawn_kind(shot_kind, me, ox, oy, me.element, damage, ticks, s.variant, s.fired)
         s.fired += 1
@@ -279,7 +279,7 @@ function gun.spawn_kind(
     end
     o.panel_x, o.panel_y = x, y
     o.element = element
-    o:set_damage_word(damage)
+    o.damage_word = damage
     o.alliance, o.flip = controller.alliance, controller.flip
     local s = o.state :: State
     s.variant, s.controller = variant, controller

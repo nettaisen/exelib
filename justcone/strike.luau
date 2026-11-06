@@ -40,7 +40,7 @@ export type Strike = {
 }
 
 -- Its own collision's hit modifier (`dword_80DB558`).
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- How far behind and above it starts, and how fast it falls (both ways), 16.16.
 local START, SPEED = 0x100_0000, 0x10_0000
 local FALL_TICKS = 0x10
@@ -50,7 +50,7 @@ local LANDS: PanelFlags = { any_body = true, solid = true }
 -- the damage's flag bits) and hit modifier 3.
 local WAVES = { regions.beside, regions.diagonals }
 local NO_SPARK: Spark? = nil
-local WAVE_DAMAGE, WAVE_HIT_MOD = 0x64, 3
+local WAVE_DAMAGE, WAVE_HIT_MOD = 0x64, { flinch = true, flash = true }
 -- The dust (effect 0) around its panel (`byte_80DB540`: dx facing forward, dy).
 local DUST = { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, -1 }, { 0, 0 }, { 0, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 } }
 local STAY_TICKS = 0x1E
@@ -96,7 +96,7 @@ function strike.make(look: Look): Strike
     -- `sub_80DB4CE`: a camera shake (magnitude 3, 45 ticks), the landing's hits (running while dimmed) and dust.
     local function land(me: Object)
         battle.shake_camera(3, 0x2D)
-        local damage = bit32.band(me.damage, 0xF000) + WAVE_DAMAGE
+        local damage = damage_word.flag_word(me.damage_word) + WAVE_DAMAGE
         local element = if look.waves_take_element then me.element else Element.null
         for _, region in WAVES do
             local box = battle.hitbox(me, {
@@ -108,8 +108,7 @@ function strike.make(look: Look): Strike
                 hit_effect = NO_SPARK,
                 target = look.hits,
                 self_type = look.wave_is,
-                damage = damage,
-                stamina = me.stamina,
+                damage = damage_word.with_damage(me.damage_word, damage),
                 hit_mod = WAVE_HIT_MOD,
             })
             -- sub_80C53A6
@@ -215,7 +214,7 @@ function strike.make(look: Look): Strike
         if o then
             o.panel_x, o.panel_y = x, y
             o.element = element
-            o:set_damage_word(damage)
+            o.damage_word = damage
             o.alliance, o.flip = owner.alliance, owner.flip
             o.related1 = owner
         end

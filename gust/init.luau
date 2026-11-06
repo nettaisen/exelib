@@ -30,7 +30,7 @@ local ELEMENT = Element.drain
 local SPEED = 0xA_0000
 
 -- The push its hit gives: a weak gust pushes weaker.
-local PUSH, WEAK_PUSH = 8, 4
+local PUSH: HitModifier, WEAK_PUSH: HitModifier = { back_far = true }, { forward_far = true }
 -- The palette of a gust that pulls (its first parameter times 2).
 local PULL_PALETTE = 2
 
@@ -192,7 +192,7 @@ function gust.spawn(
     end
     o.panel_x, o.panel_y = x, y
     o.alliance, o.flip = alliance, flip
-    o:set_damage_word(damage)
+    o.damage_word = damage
     local s = o.state :: State
     s.holder = holder
     s.slot = slot

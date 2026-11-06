@@ -37,7 +37,7 @@ function flame.make_kind(look: Look): ElemFlame
             if s.count > 1 then
                 s.count -= 1
                 local x, y = me.panel_x + me.facing, me.panel_y
-                local damage = bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
+                local damage = me.damage_word
                 local function next_flame(paralyzes: boolean, spread: boolean): State
                     return {
                         count = s.count,
@@ -91,7 +91,7 @@ function flame.make_kind(look: Look): ElemFlame
             if c.hit then
                 s.hit = true
                 me.timer2 = 0
-                c.hit_mod_base = 3
+                c.hit_mod_base = { flinch = true, flash = true }
                 c:set_region(nil)
             end
             ended = battle.over()
@@ -144,7 +144,7 @@ function flame.make_kind(look: Look): ElemFlame
             me:free()
             return
         end
-        local hit_mod = if s.paralyzes then 1 else 3
+        local hit_mod = if s.paralyzes then { flinch = true } else { flinch = true, flash = true }
         local is = if s.attack_480 then look.attack_480 else look.attack
         me:setup_collision(is, look.hits, hit_mod)
         me.collision:set_hit_effect(look.spark(me.element))
@@ -208,7 +208,7 @@ function flame.make_kind(look: Look): ElemFlame
         end
         o.panel_x, o.panel_y = x, y
         o.element = element
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance, o.flip = owner.alliance, owner.flip
         o.related1 = nil
         local t = o.state :: State

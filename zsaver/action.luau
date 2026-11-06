@@ -50,13 +50,13 @@ local SWING_TICKS, HIT_TICK, AFTERIMAGE_TICK, RECOVER_TICKS = 0x15, 0xC, 0x10, 5
 -- The command's ticks, and its keys (B and Left, as the game's bits).
 local COMMAND_TICKS = 0xC
 local KEY_B, KEY_LEFT = 0x02, 0x20
-local HIT_MOD = 1
+local HIT_MOD: HitModifier = { flinch = true }
 local EFFECT_Z = 0x10_0000
 -- The slashes by index (EXE6's `byte_80F004C`, EXE5's 0x080EE2D8): the
 -- region hit.
 local REGIONS = { [0] = regions.long, regions.wide, regions.line }
 -- The fourth slash's boom: it staggers and goes through.
-local BOOM: SonicBoom = { hit_mod = 3, pierces = true }
+local BOOM: SonicBoom = { hit_mod = { flinch = true, flash = true }, pierces = true }
 local AFTERIMAGE_SHADER = 0xFFE0
 
 -- `sub_8012956`: once done, false; past its twelve ticks, done; else the
@@ -167,7 +167,7 @@ function zsaver.make(look: ZSaverLook): Action
         if s.timer == HIT_TICK then
             local index = me.attack_count
             local x, y = me.panel_x + me.facing, me.panel_y
-            local damage = int.u32(me.attack_damage + me.hit_param * 0x10000 + me.extra)
+            local damage = damage_word.plus(me.attack_word, me.extra)
             if index < 3 then
                 if index == 2 then
                     s.window = true
@@ -183,8 +183,7 @@ function zsaver.make(look: ZSaverLook): Action
                     hit_effect = nil,
                     target = look.hits,
                     self_type = look.is,
-                    damage = bit32.band(damage, 0xFFFF),
-                    stamina = bit32.rshift(damage, 16),
+                    damage = damage,
                     hit_mod = HIT_MOD,
                 })
                 local cx, cy = field.center(x, y)

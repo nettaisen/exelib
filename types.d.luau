@@ -25,7 +25,7 @@ export type SonicBoomLook = {
 export type SlashGame = {
     blade_anim: ((Object) -> number)?,
     -- The hit modifier its hits take, by its holder and the chip's (none: the chip's; EXE4's ProtoSoul's, 0x080EB7FE).
-    hit_mod: ((me: Object, chip_hit_mod: number) -> number)?,
+    hit_mod: ((me: Object, chip_hit_mod: HitModifier) -> HitModifier)?,
     -- The sprite its afterimages of the navi show (none: a copy of the navi's NameID's, EXE6's and EXE5's; EXE4's its
     -- sprite in its form, 0x0800B90A).
     navi_afterimage: ((me: Object) -> SpriteAsset)?,
@@ -448,7 +448,7 @@ export type SnakeLook = {
     wait: number,
     strike_element: Element,
     strike_spark: Spark,
-    strike_hit_mod: number,
+    strike_hit_mod: HitModifier,
     is: CollisionType,
     hits: CollisionType,
     joined: (me: Object) -> (),
@@ -508,7 +508,7 @@ export type SeedLook = {
     anim: number,
     is: CollisionType,
     hits: CollisionType,
-    hit_mod: number,
+    hit_mod: HitModifier,
     spark: ((element: Element) -> Spark)?,
     splash: Effect,
     puff: Effect,
@@ -770,18 +770,21 @@ export type NumberBall = {
 -- the panel it is given (its init places it there).
 export type LifeSyncMarkerLook = { id: string, sprite: SpriteAsset, palette: number, height: number? }
 
+-- A bug code a hit brings, with its argument.
+export type BugCode = { bug: number, arg: number }
+
 -- A game's BugCurse (@exelib/bugcurse): its controller's and curse's kind ids, the curse's sheet and sound, what keeps
--- it off the enemy navi, its bugs (code | argument << 8, one a tick), and EXE5's operation battle (the mode's test and
--- its bugs).
+-- it off the enemy navi, its bugs (each a bug code and its argument, one a tick), and EXE5's operation battle (the
+-- mode's test and its bugs).
 export type BugCurseLook = {
     controller_id: string,
     curse_id: string,
     sprite: SpriteAsset,
     sound: Sound,
     untouched: { [StatusFlag]: boolean },
-    bugs: { number },
+    bugs: { BugCode },
     operation_battle: (() -> boolean)?,
-    operation_bugs: { number }?,
+    operation_bugs: { BugCode }?,
     is: CollisionType,
     hits: CollisionType,
 }
@@ -1120,7 +1123,7 @@ export type PanelHit = {
 export type ProjectileVariant = {
     id: string?,
     collision: { is: CollisionType, hits: CollisionType },
-    hit_mod: number,
+    hit_mod: HitModifier,
     element: ElementName,
     secondary: SecondaryElements?,
     spark: Spark?,
@@ -1144,7 +1147,7 @@ export type ProjectileVariant = {
 -- the region, or once at the bullet when `single`), and its sound.
 export type BulletVariant = {
     region: Region,
-    hit_mod: number,
+    hit_mod: HitModifier,
     effect: Effect,
     single: boolean?,
     status: Status?,
@@ -1225,12 +1228,12 @@ export type WaveVariant = {
 
 -- A sonic boom (lib/swords/sonic_boom.luau): its hit modifier, whether it
 -- goes through what it hits.
-export type SonicBoom = { hit_mod: number, pierces: boolean }
+export type SonicBoom = { hit_mod: HitModifier, pierces: boolean }
 
 -- TankCan's shell (chips/tankcan/shell.luau): its hit's modifier, whether
 -- its blast at the field's edge cracks the panels, how far the blast's
 -- damage word shifts right.
-export type ShellSpec = { hit_mod: number, cracks: boolean, shift: number }
+export type ShellSpec = { hit_mod: HitModifier, cracks: boolean, shift: number }
 
 -- What a projectile (objects/projectile) is fired with
 -- (lib/projectile.luau).
@@ -1284,7 +1287,7 @@ export type ThrowSpec = {
 -- leaves the tick after.
 export type BombVariant = {
     collision: { is: CollisionType, hits: CollisionType },
-    hit_mod: number,
+    hit_mod: HitModifier,
     palette: number,
     anim: number,
     blast: Region?,
@@ -1310,7 +1313,7 @@ export type SeedVariant = {
 export type SwordHit = {
     region: Region,
     collision: { is: CollisionType, hits: CollisionType },
-    hit_mod: number,
+    hit_mod: HitModifier,
     status: Status?,
     bug: number?,
     bug_arg: number?,
@@ -1494,7 +1497,7 @@ export type Instrument = {
 -- sprite also steps after each update (the charged shot's own wave).
 export type SwordWaveVariant = {
     collision: { is: CollisionType, hits: CollisionType },
-    hit_mod: number,
+    hit_mod: HitModifier,
     region: Region,
     sprite: SpriteAsset,
     anim: number,
@@ -1590,7 +1593,7 @@ export type ThunderBallLook = {
     big_steps: { flight: number, burst: number }?,
     is: CollisionType,
     target: CollisionType,
-    hit_mod: number,
+    hit_mod: HitModifier,
     spark: Spark,
     sound: Sound,
     find_target: ((me: Object) -> (number, number))?,
@@ -1598,7 +1601,7 @@ export type ThunderBallLook = {
 
 -- ElemTrap's counterattack by element (chips/elemtrap/strike): its sound,
 -- its hits' spark, hit modifier and status, and the bursts' look.
-export type ElemTrapStrike = { sound: Sound?, spark: Spark, hit_mod: number, status: Status?, burst: Effect }
+export type ElemTrapStrike = { sound: Sound?, spark: Spark, hit_mod: HitModifier, status: Status?, burst: Effect }
 
 -- A game's counterattack (`strike.make_kind`): its strikes by element
 -- (null to wood), what its hits are and reach, its bursts' kind; the panels
@@ -1710,7 +1713,7 @@ export type LanceHit = {
     is: CollisionType,
     hits: CollisionType,
     spark: Spark,
-    hit_mod: number,
+    hit_mod: HitModifier,
     bug: number?,
     bug_arg: number?,
 }
@@ -1725,7 +1728,7 @@ export type LanceLook = { sprite: SpriteAsset, sound: Sound, attack: LanceAttack
 -- hit modifier, and its spark by its element; each tick its hits resolve
 -- and spark, its first that lands ends its region, and its panel shows
 -- highlighted while the region stands.
-export type LanceAttack = { is: CollisionType, hits: CollisionType, hit_mod: number, spark: (element: Element) -> Spark }
+export type LanceAttack = { is: CollisionType, hits: CollisionType, hit_mod: HitModifier, spark: (element: Element) -> Spark }
 
 -- A row (`byte_80CF3AC`): what it is and reaches and its hit modifier; the
 -- camera shake it lands with (0 none, else the magnitude, 15 ticks); what
@@ -1734,7 +1737,7 @@ export type LanceAttack = { is: CollisionType, hits: CollisionType, hit_mod: num
 export type MeteorRow = {
     is: CollisionType,
     hits: CollisionType,
-    hit_mod: number,
+    hit_mod: HitModifier,
     shake: number,
     panel: "none" | "crack" | "crack_half" | "break",
     bug: number?,
@@ -2152,7 +2155,7 @@ export type DieThrow = {
     dimmed: boolean,
     hp: number,
     status: Status?,
-    hit_mod: number,
+    hit_mod: HitModifier,
     damage: number,
     holder: Object?,
     slot: number?,
@@ -2203,7 +2206,7 @@ export type NumberManSpec = {
     throw: Sound,
     face: NumberManFace,
     dice: Dice,
-    die: { hp: number, status: Status?, hit_mod: number },
+    die: { hp: number, status: Status?, hit_mod: HitModifier },
 }
 
 -- A game's NumberMan kind, and what makes one just spawned his chip's: the controller he reports to, his palette.
@@ -2215,7 +2218,7 @@ export type GeddonChange = { apply: (x: number, y: number) -> boolean, show: (at
 
 -- What ShadeMan's crush carries (@exelib/shademan): his figure's palette, its hits' hit modifier and status, and a
 -- NaviCust bug's code and argument (none: 0).
-export type ShadeManHit = { palette: number, hit_mod: number, status: Status?, bug: number?, bug_arg: number? }
+export type ShadeManHit = { palette: number, hit_mod: HitModifier, status: Status?, bug: number?, bug_arg: number? }
 
 -- A game's ShadeMan's crush (@exelib/shademan/crush): its kind's key, its sprite and sound, its hits' collision types
 -- (what they are and what they hit), where its figure stands from its panel's center (`place`), the ticks left when

@@ -25,7 +25,7 @@ type State = {
     target_y: number,
     -- Its hits' status and hit modifier (EXE5's +0x64, +0x68).
     status: Status?,
-    hit_mod: number,
+    hit_mod: HitModifierByte,
     -- The object waiting on it (+0x60, the flag its spawner gave it): its `busy`, cleared when it goes; or, with
     -- `slot`, its `dice[slot + 1]` (EXE5 DS's DiceBons' NumberMan's two flags).
     holder: Object?,
@@ -201,13 +201,17 @@ function dice.make(spec: DiceSpec): Dice
     local function burst(me: Object)
         local s = me.state :: State
         me.collision:set_region(nil)
-        local damage, stamina
+        local w = me.damage_word
+        local product = s.face * damage_word.damage(w)
+        local word
         if spec.keeps_top_bit then
-            damage = bit32.band(s.face * me.damage, 0x7FFF) + bit32.band(me.damage, 0x8000)
-            stamina = me.stamina
+            -- (The product's damage halfword without its doubling, and the damage's own.)
+            local doubled = damage_word.flags(w).double
+            word = damage_word.with_damage(w, product)
+            word = damage_word.with(damage_word.without(word, { double = true }), { double = doubled })
         else
-            local word = int.u32(s.face * me.damage + me.stamina * 0x10000)
-            damage, stamina = bit32.band(word, 0xFFFF), bit32.rshift(word, 16)
+            -- (The product carries into the counter byte.)
+            word = damage_word.plus(damage_word.with_damage(w, 0), product)
         end
         local box = battle.hitbox(me, {
             panel_x = me.panel_x,
@@ -218,8 +222,7 @@ function dice.make(spec: DiceSpec): Dice
             hit_effect = nil,
             target = spec.hits_navis,
             self_type = spec.attack,
-            damage = damage,
-            stamina = stamina,
+            damage = word,
             hit_mod = s.hit_mod,
             status = s.status,
         })
@@ -343,11 +346,11 @@ function dice.make(spec: DiceSpec): Dice
         local s = o.state :: State
         s.face, s.dimmed = throw.face, throw.dimmed
         s.target_x, s.target_y = throw.target_x, throw.target_y
-        s.status, s.hit_mod = throw.status, throw.hit_mod
+        s.status, s.hit_mod = throw.status, hit_modifier.byte(throw.hit_mod)
         o.hp, o.max_hp = throw.hp, throw.hp
         o.related1 = owner
         o.alliance, o.flip = owner.alliance, owner.flip
-        o:set_damage_word(throw.damage)
+        o.damage_word = throw.damage
         o.run_while_dimmed = true
         s.holder = throw.holder
         s.slot = if throw.slot then throw.slot + 1 else 0

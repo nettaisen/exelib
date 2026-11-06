@@ -428,9 +428,8 @@ function deltaray.make(spec: Spec): {
             hit_effect = nil,
             target = spec.target,
             self_type = spec.self_type,
-            damage = me.damage,
-            stamina = me.stamina,
-            hit_mod = 3,
+            damage = me.damage_word,
+            hit_mod = { flinch = true, flash = true },
         })
         if box then
             box.run_while_dimmed = true
@@ -666,7 +665,7 @@ function deltaray.make(spec: Spec): {
                 o.flip = user.flip
                 o.related1 = user
             end
-            o:set_damage_word(nspec.damage)
+            o.damage_word = nspec.damage
             local s = o.state :: State
             s.controller = controller
             s.palette = args.palette

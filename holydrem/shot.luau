@@ -30,7 +30,7 @@ export type Shot = {
 
 -- 16.16 pixels a tick; the wait before it moves.
 local SPEED, WAIT = 0x5_0000, 10
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- Its X (in pixels from the field's middle) past which it is off the field.
 local EDGE = 160
 
@@ -138,7 +138,7 @@ function shot.make(look: Look): Shot
     local function spawn(owner: Object, pos: Vec3): Object?
         local o = battle.spawn(kind, pos)
         if o then
-            o:set_damage_word(bit32.bor(owner.damage, bit32.lshift(owner.stamina, 16)))
+            o.damage_word = owner.damage_word
             o.alliance = owner.alliance
             if not look.side_only then
                 o.flip = owner.flip

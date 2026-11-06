@@ -71,7 +71,7 @@ local function blow(spec: Blow, look: TornadoBlowLook): Action
             local x, y = me.panel_x + 2 * me.facing, me.panel_y
             -- The damage word (the hit parameter in its high half), plus
             -- the Atk+ bonus.
-            local damage = me.attack_damage + me.hit_param * 0x10000 + me.extra
+            local damage = damage_word.plus(me.attack_word, me.extra)
             local single = spec.single
             if single then
                 tornado.spawn(tornado_kind, me, x, y, me.attack_element, damage, single)

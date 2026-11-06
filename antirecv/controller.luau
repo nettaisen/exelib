@@ -57,9 +57,11 @@ local function effect(me: Object, spec: Spec, POISON_OWN_PANEL: PanelChange)
         if not healer then
             error("AntiRecv's counterattack has no healer (object_subtractHP writes through a null pointer)")
         end
-        healer:subtract_hp(me.damage)
+        healer:subtract_hp(damage_word.damage(me.damage_word))
         if spec.takes_mood then
-            navi_status.lose_mood(healer.alliance, me.stamina)
+            -- (The counter strength the mood loses: the word's high half whole, the can't-counter bit and what a
+            -- carry left among it.)
+            navi_status.lose_mood(healer.alliance, damage_word.high_half(me.damage_word))
         end
         local x, y = field.center(me.panel_x, me.panel_y)
         rising_bubble.spawn(spec.bubble, Vec3.new(x + BUBBLE_DX, y, 0), BUBBLE_PALETTE)

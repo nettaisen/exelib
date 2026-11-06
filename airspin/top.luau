@@ -54,7 +54,7 @@ local CRUSHING: HitNames = {
 -- (secondary element 0x20).
 local EXTRA_SPIN_HIT: HitNames = { pushing = true }
 -- Its hit modifier, and its gust's: the ring around its panel, no spark.
-local HIT_MOD, HIT_MOD_SPIN = 0x03, 1
+local HIT_MOD, HIT_MOD_SPIN = { flinch = true, flash = true }, { flinch = true }
 -- The marker styles EXE5's draws from (RNG2's bit 2).
 local MARKER_STYLE, MARKER_STYLE_ALT = 9, 11
 -- EXE5's marker over its panel as it stands.
@@ -191,8 +191,7 @@ function top.make(look: AirSpinTopLook): AirSpinTop
             hit_effect = nil,
             target = look.gust_target,
             self_type = look.gust_self,
-            damage = me.damage,
-            stamina = me.stamina,
+            damage = me.damage_word,
             hit_mod = HIT_MOD_SPIN,
         })
         if look.gust_side then
@@ -402,7 +401,7 @@ function top.make(look: AirSpinTopLook): AirSpinTop
         if o then
             o.panel_x, o.panel_y = x, y
             o.element = element
-            o:set_damage_word(damage)
+            o.damage_word = damage
             o.alliance, o.flip = owner.alliance, owner.flip
             o.related1 = owner
             o.run_while_dimmed = true

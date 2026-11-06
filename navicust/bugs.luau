@@ -228,8 +228,7 @@ end
 -- The rules' `navi_bug`: "edited" where the stats changed (the abilities and form flags come back), "spared" where
 -- nothing may follow (not even the weapons' reload).
 local function navi_bug(game: Game, side: number, navi: Object): ("edited" | "spared")?
-    local word = navi.collision.inflicted_bugs
-    local code, arg = bit32.band(word, 0xFF), bit32.rshift(word, 8)
+    local code, arg = navi.collision.inflicted_bug, navi.collision.inflicted_bug_arg
     local s = battle.navi(side)
     if code == 0 then
         return nil

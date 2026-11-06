@@ -28,7 +28,7 @@ export type State = {
 
 local HP = 150
 -- Its collision (Param1 1): a neutral body that everything reaches, hit modifier 3, no spark.
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 local FADE_TICKS, COUNTDOWN, HIT_TICKS = 15, 60, 20
 -- Its countdown's blink (EXE5's 0x080CD08C, EXE4's 0x080D51AC): the color shader by the timer's bit 2.
 local BLINK = { [0] = 0x00, 0x12 }
@@ -108,7 +108,7 @@ function bomb.make(look: BoyBombLook): BoyBomb
         if left ~= 0 then
             return
         end
-        local word = bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
+        local word = me.damage_word
         battle.hitbox(me, {
             panel_x = me.panel_x,
             panel_y = me.panel_y,
@@ -118,8 +118,7 @@ function bomb.make(look: BoyBombLook): BoyBomb
             hit_effect = nil,
             target = look.blast.hits,
             self_type = look.blast.is,
-            damage = bit32.band(word, 0xFFFF),
-            stamina = bit32.rshift(word, 16),
+            damage = word,
             hit_mod = HIT_MOD,
         })
         battle.region_effects(me.panel_x, me.panel_y, regions.square, me.alliance, look.blast.effect, 0)
@@ -260,7 +259,7 @@ function bomb.make(look: BoyBombLook): BoyBomb
         if o then
             o.panel_x, o.panel_y = x, y
             o.element = element
-            o:set_damage_word(damage)
+            o.damage_word = damage
             o.alliance = controller.alliance
             if not look.side_only then
                 o.flip = controller.flip

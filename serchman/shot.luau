@@ -11,7 +11,7 @@ export type State = {
     -- The powered shot (its Param1 29, not 25).
     powered: boolean,
     -- Its hit modifier (its Param2: the chips' 3; EXE5 DS's SearchMan's support's 0).
-    hit_mod: number,
+    hit_mod: HitModifierByte,
 }
 
 export type Spec = {
@@ -31,7 +31,7 @@ export type Spec = {
 
 export type Shot = {
     kind: Kind,
-    spawn: (searchman: Object, x: number, y: number, powered: boolean, hit_mod: number?) -> Object?,
+    spawn: (searchman: Object, x: number, y: number, powered: boolean, hit_mod: HitModifier?) -> Object?,
 }
 
 function shot.make(spec: Spec): Shot
@@ -89,16 +89,16 @@ function shot.make(spec: Spec): Shot
 
     -- 0x080D0E1E (EXE4's 0x080D8854): a shot of `searchman` on (x, y) with his damage word, its hit modifier 3 unless
     -- said.
-    local function spawn(searchman: Object, x: number, y: number, powered: boolean, hit_mod: number?): Object?
+    local function spawn(searchman: Object, x: number, y: number, powered: boolean, hit_mod: HitModifier?): Object?
         local o = battle.spawn(kind, Vec3.zero)
         if o then
             o.panel_x, o.panel_y = x, y
-            o:set_damage_word(bit32.bor(searchman.damage, bit32.lshift(searchman.stamina, 16)))
+            o.damage_word = searchman.damage_word
             o.alliance, o.flip = searchman.alliance, searchman.flip
             o.run_while_dimmed = true
             local s = o.state :: State
             s.powered = powered
-            s.hit_mod = hit_mod or 3
+            s.hit_mod = hit_modifier.byte(hit_mod or { flinch = true, flash = true })
         end
         return o
     end

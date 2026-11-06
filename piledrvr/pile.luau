@@ -85,7 +85,7 @@ function pile.make_kind(look: Look): Kind
     local function work(me: Object)
         if me.phase_init == 0 then
             me.timer = WORK
-            local word = bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
+            local word = me.damage_word
             beam.spawn(look.beam, me, me.panel_x + me.facing, me.panel_y, me.element, word, (me.state :: State).distance)
             me.anim = 2
             me.phase_init = 4
@@ -176,7 +176,7 @@ function pile.spawn(
     if o then
         o.panel_x, o.panel_y = x, y
         o.element = element
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance, o.flip = controller.alliance, controller.flip
         local s = o.state :: State
         s.controller, s.slot, s.distance = controller, slot, distance

@@ -21,7 +21,7 @@ export type State = {
 local LIFETIME = 0x5A0
 -- Ticks between gusts.
 local GUST_INTERVAL = 0xC
-local HIT_MOD = 0
+local HIT_MOD: HitModifier = {}
 -- Where the gust blows from (`byte_80CD2A4`, by side): the fan's side's
 -- own panels.
 local OWN_PANELS: PanelCondition = { own_area = true }
@@ -281,7 +281,7 @@ function fan.make(look: FanLook): Fan
             return nil
         end
         (o.state :: State).variant = variant
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.panel_x, o.panel_y = x, y
         o.alliance, o.flip = owner.alliance, owner.flip
         o.run_while_dimmed = true

@@ -201,7 +201,7 @@ local function init(me: Object, look: ThunderBallLook)
     end
     if s.bug ~= 0 then
         -- sub_801A4D0: the bug, with argument 1.
-        c.bugs = s.bug + 0x100
+        c.bug, c.bug_arg = s.bug, 1
     end
     c:present()
     aim(me, look)
@@ -268,7 +268,7 @@ function ball.spawn(kind: Kind, owner: Object, x: number, y: number, element: El
         s.big, s.is, s.sound = spec.big or false, spec.is, spec.sound
         o.panel_x, o.panel_y = x, y
         o.element = element
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance, o.flip = owner.alliance, owner.flip
         o.related1 = nil
     end

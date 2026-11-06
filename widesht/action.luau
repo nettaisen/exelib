@@ -27,7 +27,7 @@ local ANIM_HOLD = 0xA
 local FIRST_TICKS, INTERVAL, RECOVER_TICKS = 5, 0xE, 0x14
 local WAVE_Z = 0x10_0000
 -- A wave's hit modifier by the waves left (`dword_80ED618`).
-local HIT_MODS = { [0] = 0, [1] = 3, [2] = 1, [3] = 1 }
+local HIT_MODS: { [number]: HitModifier } = { [0] = {}, [1] = { flinch = true, flash = true }, [2] = { flinch = true }, [3] = { flinch = true } }
 
 -- A wide shot, of a game's `look`.
 function widesht.action(spec: WideShotSpec, look: WideShotLook): Action
@@ -63,7 +63,7 @@ function widesht.action(spec: WideShotSpec, look: WideShotLook): Action
         -- (The game keeps it in the attack's second parameter, which the
         -- wave reads among its parameters.)
         local hit_mod = HIT_MODS[me.attack_count]
-        local damage = int.u32(me.attack_damage + me.hit_param * 0x10000 + me.extra)
+        local damage = damage_word.plus(me.attack_word, me.extra)
         wave.fire(look.wave, me, me.panel_x + me.facing, me.panel_y, z, spec.wave, me.attack_element, damage, hit_mod)
         local left = me.attack_count - 1
         me.attack_count = left

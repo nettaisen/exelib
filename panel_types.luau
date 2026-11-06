@@ -99,7 +99,7 @@ function panel_types.burn(spec: BurnSpec): (Object, boolean) -> ()
             c:add_damage("fire", damage, true)
             c:add_mood_damage(spec.mood or 0)
             -- (A hit: the hit modifiers 1 and 2, on both sides'.)
-            c:add_hit_mod(3)
+            c:add_hit_mod({ flinch = true, flash = true })
         end
         local x, y = c.panel_x, c.panel_y
         field.set_type(x, y, "normal")
@@ -185,11 +185,11 @@ end
 -- its final hit modifier (the table at 0x080133B4, five directions a side, by the move's direction; a direction past a
 -- side's row, "other", pushes nothing), which the intake reads after: a slide by the push's row, or a drag with a hit's
 -- drag bit.
-function panel_types.ice_pushes(bits: { { [MoveDirection]: number } }): (Object) -> ()
+function panel_types.ice_pushes(bits: { { [MoveDirection]: HitModifier } }): (Object) -> ()
     return function(me: Object)
         if me.collision.element.primary ~= "aqua" and not off_the_floor(me) and me.status.affected_by_ice then
             local row = bits[bit32.band(me.alliance, 1) + 1]
-            me.collision:add_final_hit_mod(row[me.collision.direction] or 0)
+            me.collision:add_final_hit_mod(row[me.collision.direction] or {})
         end
     end
 end

@@ -53,7 +53,7 @@ function action.action(spec: HyperBurstSpec, look: HyperBurstLook): Action
         battle.play_sound(look.sound)
         -- The damage word (the hit parameter in its high half), plus the
         -- Atk+ bonus.
-        local damage = me.attack_damage + me.hit_param * 0x10000 + me.extra
+        local damage = damage_word.plus(me.attack_word, me.extra)
         burst.spawn(look.burst, me, me.panel_x + me.facing, me.panel_y, me.attack_element, spec.bursts, damage)
         me.step = RECOVER
         me.step_init = 0

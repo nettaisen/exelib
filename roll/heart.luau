@@ -64,7 +64,7 @@ function heart.make(spec: Spec): Heart
             else
                 user = me.related1 :: Object
             end
-            local amount = me.damage
+            local amount = damage_word.damage(me.damage_word)
             if amount == 0 then
                 amount = user.max_hp
             end
@@ -135,7 +135,7 @@ function heart.make(spec: Spec): Heart
         local o = battle.spawn(kind, Vec3.zero)
         if o then
             o.panel_x, o.panel_y = x, y
-            o:set_damage_word(amount)
+            o.damage_word = amount
             o.alliance = user.alliance
             if not spec.heals_side_navi then
                 o.related1 = user

@@ -44,7 +44,7 @@ type RollerState = { swallowed: boolean }
 
 local SPEED = 0x3_0000
 -- Its hit modifier, no spark.
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 
 local SOLID: PanelFlags = { solid = true }
 
@@ -122,7 +122,7 @@ local function init(me: Object, look: Look)
     me.vel = Vec3.new(SPEED * me.facing, me.vel.y, me.vel.z)
     me.collision:set_hit_effect(nil)
     me.collision:present()
-    s.growth = if look.growth == "damage" then bit32.band(me.damage, 0xFFF) else look.growth :: number
+    s.growth = if look.growth == "damage" then damage_word.amount(me.damage_word) else look.growth :: number
     me:set_lifecycle("update")
 end
 
@@ -161,7 +161,7 @@ function ball.spawn(kind: Kind, owner: Object, x: number, y: number, element: El
     end
     o.pos = Vec3.new(x, y, 0)
     o.element = element
-    o:set_damage_word(damage)
+    o.damage_word = damage
     o.alliance, o.flip = owner.alliance, owner.flip
     o.run_while_dimmed = true
     return o

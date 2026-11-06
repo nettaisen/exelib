@@ -194,7 +194,7 @@ function numberman.make(look: NumbrBlNumberManLook): NumbrBlNumberMan
             o.element = controller.element
             o.related1 = controller
             o.alliance, o.flip = controller.alliance, controller.flip
-            o:set_damage_word(damage)
+            o.damage_word = damage
             local s = o.state :: State
             s.controller, s.balls = controller, balls
             ;(controller.state :: ControllerState).busy = true

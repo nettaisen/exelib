@@ -72,7 +72,7 @@ function vulcan.action(spec: VulcanSpec, look: VulcanLook): Action
         end
         s.timer = INTERVAL
         local z = HEIGHTS[bit32.band(battle.rng_positive(), 3) + 1]
-        local damage = int.u32(me.attack_damage + me.hit_param * 0x10000 + me.extra)
+        local damage = damage_word.plus(me.attack_word, me.extra)
         bullet.fire(bullet_kind, me, me.panel_x + me.facing, me.panel_y, z, spec.bullet, me.attack_element, damage)
         battle.play_sound(SOUND)
         local left = me.attack_count - 1

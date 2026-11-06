@@ -18,7 +18,7 @@ local wave = {}
 export type State = {
     variant: WaveVariant,
     -- Its hit modifier (Param2), for the variants that go through.
-    hit_mod: number,
+    hit_mod: HitModifierByte,
     -- The panel of its last hit, x | y << 8 (ExtraVars), and the count to
     -- its next afterimage (ExtraVars+4).
     hit_panel: number,
@@ -32,7 +32,7 @@ function wave.variant(v: WaveVariant): WaveVariant
     return new.record(WAVE_VARIANT, v)
 end
 
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- The rising wave's animation, and the sliding one's.
 local ANIM_RISE, ANIM_SLIDE = 0, 1
 -- A holding variant's wait after it rises.
@@ -187,7 +187,7 @@ local function init(me: Object, look: WideWaveLook)
     end
     local bug = v.bug
     if bug then
-        c.bugs = bug
+        c.bug, c.bug_arg = bug, 0
     end
     local palette = v.palette
     if palette then
@@ -242,16 +242,16 @@ function wave.fire(
     variant: WaveVariant,
     element: Element,
     damage: number,
-    hit_mod: number
+    hit_mod: HitModifier
 ): Object?
     local o = battle.spawn(kind, Vec3.new(0, 0, z))
     if o then
         local s = o.state :: State
         s.variant = variant
-        s.hit_mod = hit_mod
+        s.hit_mod = hit_modifier.byte(hit_mod)
         o.panel_x, o.panel_y = x, y
         o.element = element
-        o:set_damage_word(damage)
+        o.damage_word = damage
         if variant.holds then
             o.related1 = owner
             hold(o, HOLD_SPAWN)

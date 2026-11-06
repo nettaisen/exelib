@@ -56,7 +56,7 @@ export type State = {
 }
 
 -- Its hit modifier (EXE6's `dword_80DEA38`).
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- Where the arc's center is down, 16.16.
 local CENTER_DOWN = 0x30_0000
 -- The arc's radius (EXE6's `byte_80DEA44`), 16.16 per unit of the sine
@@ -228,7 +228,7 @@ function fire.make(look: Look, sine: (angle: number) -> number): {
         if o then
             o.panel_x, o.panel_y = x, y
             o.element = element
-            o:set_damage_word(damage)
+            o.damage_word = damage
             o.alliance, o.flip = owner.alliance, owner.flip
             o.related1 = owner
             local s = o.state :: State

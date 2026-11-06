@@ -36,7 +36,7 @@ local trap = {}
 -- Its collision (`object_setupCollisionData`: it is nothing, and reaches
 -- the other side's attacks and objects; hit modifier 0) covers the whole
 -- field.
-local HIT_MOD = 0
+local HIT_MOD: HitModifier = {}
 
 -- What springs it: damage in these elements (fire to wood; the first one
 -- that has some).
@@ -72,7 +72,7 @@ local function spring(me: Object, look: ElemTrapLook)
         if not user then
             error("ElemTrap's trap has no user (sub_80E360E reads through a null pointer)")
         end
-        local damage = bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
+        local damage = me.damage_word
         local counter = strike.spawn(look.strike_kind, user, Element.new(s.sprung_by), damage, s.bonus)
         dimming.start(user.alliance, true, counter, user, { chip = s.chip, bonus = s.bonus })
     end
@@ -181,7 +181,7 @@ function trap.spawn(kind: Kind, controller: Object, user: Object, chip: Chip?, b
     end
     o.related1 = user
     o.element = Element.null
-    o.damage, o.stamina = controller.damage, controller.stamina
+    o.damage_word = controller.damage_word
     o.alliance = controller.alliance
     local s = o.state :: State
     s.chip, s.bonus = chip, bonus

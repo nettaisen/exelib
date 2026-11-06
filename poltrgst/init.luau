@@ -76,7 +76,7 @@ function poltrgst.make(spec: Spec): Poltrgst
     local function stand(me: Object)
         local s = me.state :: StandInState
         if me.phase_init == 0 then
-            spec.poltergeist.spawn(me, int.u32(me.damage + me.stamina * 0x10000), s.nearest)
+            spec.poltergeist.spawn(me, me.damage_word, s.nearest)
             me.phase_init = 4
         end
         if s.busy then
@@ -162,7 +162,7 @@ function poltrgst.make(spec: Spec): Poltrgst
                 o.panel_x, o.panel_y = me.panel_x, me.panel_y
                 -- (The spawner stores the register holding the side as the element: side 1's is fire.)
                 o.element = Element.from_byte(me.alliance)
-                o:set_damage_word(dimming_chips.damage_plus(me, if spec.adds_bonus then s.bonus else 0))
+                o.damage_word = dimming_chips.damage_plus(me, if spec.adds_bonus then s.bonus else 0)
                 o.related1 = user
                 local ss = o.state :: StandInState
                 ss.controller, ss.nearest = me, s.nearest

@@ -89,7 +89,7 @@ local LIFETIME = 0x1770
 local APPEAR_TICKS = 3
 -- The damage the stages' statues strike with.
 local STAGE_DAMAGE = 200
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- The collision types of each side's hits (`sub_80D4FF6`: side 0's attacks, objects, bodies and other bodies,
 -- 0xAA000000; side 1's, 0x55000000), the statue's own side's and the other's.
 local OWN_HITS: HitNames = { own_attack = true, own_object = true, own_body = true, own_other_body = true }
@@ -102,7 +102,7 @@ local STRIKE_REGION: { [number]: Region } = {
     [0] = new.region { field = { enemy_navi = true }, side = 0 },
     [1] = new.region { field = { enemy_navi = true }, side = 1 },
 }
-local STRIKE_HIT_MOD = 3
+local STRIKE_HIT_MOD: HitModifier = { flinch = true, flash = true }
 local STRIKE_ANIM = 1
 -- Its appearance (animation 0) lasts 29 of its sprite's steps, its strike 36 (every game's).
 local APPEAR_STEPS, STRIKE_STEPS = 29, 36
@@ -253,8 +253,7 @@ function statue.make(look: Look): Statue
             hit_effect = nil,
             target = look.strike_hits,
             self_type = look.strike_is,
-            damage = me.damage,
-            stamina = me.stamina,
+            damage = me.damage_word,
             hit_mod = STRIKE_HIT_MOD,
         })
         if h then
@@ -393,7 +392,7 @@ function statue.make(look: Look): Statue
         local s = o.state :: State
         s.staged = owner == nil
         o.panel_x, o.panel_y = x, y
-        o:set_damage_word(damage)
+        o.damage_word = damage
         if owner then
             o.alliance, o.flip = owner.alliance, owner.flip
         else

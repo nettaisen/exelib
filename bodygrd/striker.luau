@@ -13,7 +13,7 @@ local shuriken = require("./shuriken")
 local striker = {}
 
 local EVERY, STRIKES = 0x14, 0xB
-local HIT_MOD = 1
+local HIT_MOD: HitModifier = { flinch = true }
 
 -- Gone: out of the field-object registry, freed next update.
 local function leave(me: Object)
@@ -79,7 +79,7 @@ function striker.make_kind(look: BodyGuardStrikerLook): Kind
             leave(me)
             return
         end
-        local damage = bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
+        local damage = me.damage_word
         shuriken.spawn(look.shuriken, me, x, y, me.element, HIT_MOD, damage)
         battle.play_sound(look.throw_sound)
         me.timer = EVERY
@@ -131,7 +131,7 @@ function striker.spawn(kind: Kind, user: Object, element: Element, damage: numbe
     end
     o.element = element
     o.alliance = user.alliance
-    o:set_damage_word(damage)
+    o.damage_word = damage
     obstacle.register(o, user.alliance, "one_a_side")
     return o
 end

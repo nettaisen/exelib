@@ -22,7 +22,7 @@ export type Look = TankShellLook
 
 export type State = {
     -- The hit modifier its own hit carries (a row of `byte_80CB6F0`: 0x4B for TankCan's kind 0, 0x63 for kind 1).
-    hit_mod: number,
+    hit_mod: HitModifierByte,
     -- The edge blast cracks its panels (its second parameter); its damage is the shell's shifted right this far
     -- (its third).
     cracks: boolean,
@@ -34,7 +34,7 @@ export type State = {
 -- Ticks it waits on a panel after the one it enters on (Timer2).
 local WAIT = 1
 -- The edge blast's hit modifier, and the explosions' wait, interval and height (16.16).
-local BLAST_HIT_MOD = 3
+local BLAST_HIT_MOD: HitModifier = { flinch = true, flash = true }
 local FIRST_EXPLOSION, EXPLOSION_INTERVAL, EXPLOSION_Z = 0xE, 4, 0x6_0000
 
 -- Done: off its panels, and freed at the next update.
@@ -50,7 +50,7 @@ local function blast(me: Object, look: Look, s: State, x: number, y: number)
     battle.play_sound(look.hit_sound)
     local cx, cy = field.center(x, y)
     battle.effect(Vec3.new(cx, cy, 0), look.blast, me.facing_side)
-    local word = int.lsr(int.u32(me.damage + me.stamina * 0x10000), s.shift)
+    local word = int.lsr(me.damage_word, s.shift)
     battle.hitbox(me, {
         panel_x = x,
         panel_y = y,
@@ -59,8 +59,7 @@ local function blast(me: Object, look: Look, s: State, x: number, y: number)
         hit_effect = nil,
         target = look.hits,
         self_type = look.blast_is,
-        damage = bit32.band(word, 0xFFFF),
-        stamina = bit32.rshift(word, 16),
+        damage = word,
         hit_mod = BLAST_HIT_MOD,
     })
     if s.cracks then
@@ -200,12 +199,12 @@ function shell.fire(kind: Kind, owner: Object, x: number, y: number, z: number, 
     local o = battle.spawn(kind, Vec3.new(0, 0, z))
     if o then
         local s = o.state :: State
-        s.hit_mod = spec.hit_mod
+        s.hit_mod = hit_modifier.byte(spec.hit_mod)
         s.cracks = spec.cracks
         s.shift = spec.shift
         o.panel_x, o.panel_y = x, y
         o.element = Element.null
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance, o.flip = owner.alliance, owner.flip
     end
     return o

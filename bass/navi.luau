@@ -66,10 +66,6 @@ local SHOT_COOLDOWN = 0x16
 -- His stance (animation 0) comes round every 38 of his sprite's steps (every game's).
 local STANCE_STEPS = 38
 
-local function damage_word(me: Object): number
-    return bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
-end
-
 -- `sub_80C3C2C`: the columns ahead, from the third (or his own, if further), that hold a panel of the other
 -- side's; the first, or 0.
 local function find_columns(me: Object): number
@@ -162,7 +158,7 @@ function bass.make(spec: Spec): Bass
         local x, y = px :: number, py :: number
         local s = me.state :: State
         s.cooldowns[(y - 1) * 6 + x] = SHOT_COOLDOWN
-        spec.shoot(me, x, y, damage_word(me))
+        spec.shoot(me, x, y, me.damage_word)
         -- sub_80C3CA0: the flash 20 pixels ahead of him and 34 up, jittered.
         local p = me.pos
         local pos = battle.jitter(spec.flash_jitter or 0xF, Vec3.new(p.x + me.facing * 0x14_0000, p.y, p.z + 0x22_0000))
@@ -335,7 +331,7 @@ function bass.make(spec: Spec): Bass
         o.panel_x, o.panel_y = nspec.panel_x, nspec.panel_y
         o.element = nspec.element
         o.alliance, o.flip = user.alliance, user.flip
-        o:set_damage_word(nspec.damage)
+        o.damage_word = nspec.damage
         local s = o.state :: State
         s.controller = controller
         return o

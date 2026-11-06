@@ -27,7 +27,7 @@ export type State = {
     dy: number,
 }
 
-local HIT_MOD = 0x01
+local HIT_MOD: HitModifier = { flinch = true }
 -- Where it starts: 80 pixels behind its panel, 160 up; how it swoops.
 local BEHIND, HEIGHT = 0x50, 0xA0
 local SWOOP_X, SWOOP_Z, SWOOP_TICKS = 0x4_0000, -0x8_0000, 0x14
@@ -317,7 +317,7 @@ function whirl.make(look: SeekingWhirlLook): { kind: Kind, sender: AirSpinSender
         if o then
             o.panel_x, o.panel_y = x, y
             o.element = element
-            o:set_damage_word(damage)
+            o.damage_word = damage
             o.alliance, o.flip = owner.alliance, owner.flip
             o.related1 = owner
         end

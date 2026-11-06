@@ -86,14 +86,14 @@ function dimming_chips.spawn(kind: Kind, user: Object, spec: DimmingChipSpec, si
     if not side_only then
         o.flip = user.flip
     end
-    o:set_damage_word(spec.damage)
+    o.damage_word = spec.damage
     return o
 end
 
 -- The controller's damage word (damage | counter byte << 16) plus `n`,
 -- added to the whole word, as the effects' spawns add the bonus.
 function dimming_chips.damage_plus(me: Object, n: number): number
-    return int.u32(bit32.bor(me.damage, bit32.lshift(me.stamina, 16)) + n)
+    return damage_word.plus(me.damage_word, n)
 end
 
 return dimming_chips

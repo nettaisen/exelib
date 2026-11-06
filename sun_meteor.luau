@@ -50,7 +50,7 @@ function sun_meteor.variant(v: SunMeteor): SunMeteor
     return new.record(SUN_METEOR, v)
 end
 
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 
 -- How far ahead and lower it starts (16.16), and how long it falls.
 local START = 0x14_0000
@@ -203,7 +203,7 @@ function sun_meteor.make(look: Look): SunMeteors
             s.variant = variant
             o.panel_x, o.panel_y = x, y
             o.element = element
-            o:set_damage_word(damage)
+            o.damage_word = damage
             o.alliance = owner.alliance
             o.run_while_dimmed = true
         end
