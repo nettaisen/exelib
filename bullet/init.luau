@@ -75,7 +75,7 @@ local function tick(me: Object, look: BulletLook)
     local c = me.collision
     c:remove()
     me:hit_spark()
-    if c.hit_flags ~= 0 and not me:status("dead") then
+    if c.hit and not me:status("dead") then
         me:set_status("dead", true)
         me.action = 4
         me.phase, me.phase_init = 0, 0

@@ -32,7 +32,7 @@ export type DollLook = {
     hit_mod: number,
     spark: Spark,
     set_down: { is: CollisionType, hits: CollisionType, hit_mod: number }?,
-    breaking_hits: number?,
+    breaking_hits: { HitName }?,
     landing_panel: PanelType,
     landing_sound: Sound,
     puff: Effect,
@@ -344,7 +344,7 @@ function doll.make(look: DollLook): Doll
         me:hit_spark()
         obstacle.tick_lifetime(me)
         local c = me.collision
-        local broke = look.breaking_hits ~= nil and bit32.btest(c.hit_flags, look.breaking_hits)
+        local broke = look.breaking_hits ~= nil and c:hit_any(look.breaking_hits)
         local taken = if broke then 0 else c.final_damage
         if broke or taken ~= 0 then
             me.hp = 0

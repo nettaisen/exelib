@@ -21,8 +21,8 @@ export type State = {
 }
 
 -- What the effect looks for (`off_80CFEB8`, by the user's side): the other
--- side's navis and objects.
-local TARGETS = { [0] = 0x04000000, [1] = 0x08000000 }
+-- side's bodies.
+local TARGETS = "enemy_body"
 
 -- The strike (`dword_80CFEC0`): one panel, the fire spark, an attack that
 -- hits navis.
@@ -145,10 +145,9 @@ end
 -- `sub_80CFE5C`: a fist on column `at` of each row where column `probe` has
 -- one of the other side's; how many.
 local function strike_column(user: Object, probe: number, at: number, hit_mod: number, spec: InstantChipSpec, kind: Kind): number
-    local targets = TARGETS[user.alliance]
     local n = 0
     for y = 1, 3 do
-        if bit32.btest(field.flags(probe, y), targets) then
+        if field.any(probe, y, TARGETS, user.alliance) then
             fist.spawn(kind, user, at, y, spec.element, spec.z, hit_mod, spec.damage)
             n += 1
         end

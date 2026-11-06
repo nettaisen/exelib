@@ -89,7 +89,7 @@ function ball.make(look: NumberBallLook): NumberBall
         local c = me.collision
         c:remove()
         me:hit_spark()
-        if c.hit_flags ~= 0 then
+        if c.hit then
             battle.effect(me.pos, look.explosion)
             battle.play_sound(look.hit_sound)
             c:set_region(nil)

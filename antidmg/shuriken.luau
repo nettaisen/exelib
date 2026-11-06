@@ -105,7 +105,7 @@ local ACTIONS: { [number]: (Object, Look) -> () } = { [0] = start, [4] = fly, [8
 local function tick(me: Object, look: Look)
     local c = me.collision
     c:remove()
-    if c.hit_flags ~= 0 then
+    if c.hit then
         c:set_region(nil)
     end
     if battle.over() then

@@ -22,33 +22,46 @@ local rush = {}
 
 -- `byte_80C34A8` (EXE5's 0x080C2494, the same words): what his navi's
 -- panel must be for him to appear there, by side (else at his side's
--- middle), where the game's look says nothing else.
+-- middle), where the game's look says nothing else: on the field and his
+-- side's.
 local STAND: RushStand = {
-    [0] = { require = 0x0001_0000, forbid = 0x20 },
-    [1] = { require = 0x0001_0020, forbid = 0 },
+    [0] = { require = { "on_field", "own_area" } },
+    [1] = { require = { "on_field", "own_area" } },
 }
 
--- A side's row of `stand` as the other side's mirror image: the side-1
--- panel bit (0x20) required where it was forbidden, and the other way.
-local function mirrored(c: { require: number, forbid: number }): { require: number, forbid: number }
-    return {
-        require = bit32.bor(bit32.band(c.require, bit32.bnot(0x20)), bit32.band(c.forbid, 0x20)),
-        forbid = bit32.bor(bit32.band(c.forbid, bit32.bnot(0x20)), bit32.band(c.require, 0x20)),
-    }
+-- Names with a side's area turned to the other side's.
+local function turned(flags: PanelFlags?): PanelFlags?
+    if flags == nil then
+        return nil
+    end
+    local list: { string } = if type(flags) == "string" then { flags } else table.clone(flags :: { string })
+    for i, n in list do
+        list[i] = if n == "own_area" then "enemy_area" elseif n == "enemy_area" then "own_area" else n
+    end
+    return list
 end
 
 -- `sub_80C3460` (EXE5's 0x080C244C): on his navi's panel if it will do
--- (`stand`), else at (1 or 6, 2); on the ground. (The other side's than
--- the canonical reads the canonical side's row mirrored: EXE5's and
--- EXE6's rows are mirror images, EXE4's misread ones aren't, side 1's
--- asking a side-1 panel and side 0's any: docs/engine/side-symmetry.md.)
-local function place(me: Object, stand: RushStand)
+-- (`stand`, and none of the types the look's `not_on` names), else at (1 or
+-- 6, 2); on the ground. (The other side's than the canonical reads the
+-- canonical side's row with its area turned and the rest as the canonical
+-- side's, of that side: EXE5's and EXE6's rows are mirror images, EXE4's
+-- misread ones aren't, side 1's asking a side-1 panel and side 0's any:
+-- docs/engine/side-symmetry.md.)
+local function place(me: Object, stand: RushStand, not_on: { PanelType }?)
     local navi = battle.player(me.alliance)
-    local cond = if field.side_sign(me.alliance) > 0
-        then stand[me.alliance]
-        else mirrored(stand[field.canonical_side()])
+    local canonical = field.canonical_side()
+    local row = stand[canonical]
+    local require, forbid = row.require, row.forbid
+    if field.side_sign(me.alliance) < 0 then
+        require, forbid = turned(require), turned(forbid)
+    end
     local x, y = me.alliance * 5 + 1, 2
-    if navi and field.check(navi.panel_x, navi.panel_y, cond.require, cond.forbid) then
+    if
+        navi
+        and field.check(navi.panel_x, navi.panel_y, require, forbid, canonical)
+        and not (not_on and table.find(not_on, (field.panel(navi.panel_x, navi.panel_y) :: Panel).kind))
+    then
         x, y = navi.panel_x, navi.panel_y
     end
     me.panel_x, me.panel_y = x, y
@@ -207,7 +220,7 @@ function rush.make(look: RushLook): SupportActor
         sprite:set_animation(0)
         sprite:set_flip(bit32.bxor(me.alliance, me.flip))
         me.visible = true
-        place(me, look.stand or STAND)
+        place(me, look.stand or STAND, look.not_on)
         battle.play_sound(look.appear_sound)
         me.element = 0
         me.damage, me.stamina = 0, 0

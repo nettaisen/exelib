@@ -98,8 +98,15 @@ local deltaray = {}
 
 -- What he looks for (by side, EXE6's `off_80C2F2C`: an enemy navi's body),
 -- and a panel he can stand on: solid, and none of these (by side).
-local ENEMY_NAVI = { [0] = 0x0400_0000, 0x0800_0000 }
-local STAND_FORBID = { [0] = 0x0788_0080, 0x0B88_0080 }
+local ENEMY_NAVI = "enemy_body"
+local STAND_FORBID: { PanelFlag } = {
+    "reserved",
+    "enemy_body",
+    "own_other_body",
+    "enemy_other_body",
+    "neutral",
+    "blocker",
+}
 
 -- The delta's steps from one corner to the next, x toward his front
 -- (EXE6's `byte_80C2F20`), by strike.
@@ -211,7 +218,7 @@ function deltaray.make(spec: Spec): {
         if left > 0 then
             return
         end
-        if not field.check(me.panel_x, me.panel_y, 0x10, 0) then
+        if not field.solid(me.panel_x, me.panel_y) then
             me:set_lifecycle("destroy")
             return
         end
@@ -235,7 +242,7 @@ function deltaray.make(spec: Spec): {
 
     -- A panel he can stand on.
     local function can_stand(me: Object, x: number, y: number): boolean
-        return field.check(x, y, 0x10, STAND_FORBID[me.alliance])
+        return field.check(x, y, "solid", STAND_FORBID, me.alliance)
     end
 
     -- His target found: the enemy navi's panel (FuturePanel, the delta's
@@ -263,7 +270,7 @@ function deltaray.make(spec: Spec): {
         local x = if spec.first_column then spec.first_column(me) else me.panel_x + f
         while true do
             for y = 1, 3 do
-                if field.check(x, y, ENEMY_NAVI[me.alliance], 0) then
+                if field.check(x, y, ENEMY_NAVI, nil, me.alliance) then
                     local cx, cy = spec.candidate_x(x, f), y - 1
                     if s.first_found == 0 then
                         s.first_found = cx

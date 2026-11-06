@@ -92,14 +92,12 @@ end
 -- `sub_800FAF6`: the ticks of recovery after a shot, by the Rapid stat and
 -- the open panels from (x, y) forward, counting (x, y) itself, at most 5
 -- (a Rapid past the table is an error: the original reads on into what
--- follows it). What stops the count is the game's (the look's `closed`, by
--- the shooter's side).
-local function recovery(RECOVERY: { { number } }, CLOSED: { [number]: number }, navi: Object, x: number, y: number): number
-    local closed = CLOSED[navi.alliance]
+-- follows it). What stops the count is off the field and the game's (the
+-- look's `closed`, of the shooter's side).
+local function recovery(RECOVERY: { { number } }, closed: PanelFlags, navi: Object, x: number, y: number): number
     local open = 0
     while true do
-        local f = field.flags(x, y)
-        if f == 0 or bit32.btest(f, closed) then
+        if not field.check(x, y, nil, closed, navi.alliance) then
             break
         end
         open += 1

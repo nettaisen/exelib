@@ -153,7 +153,7 @@ local function tick(me: Object, look: Look)
     me:hit_spark()
     if battle.over() then
         finish(me)
-    elseif c.hit_flags ~= 0 then
+    elseif c.hit then
         hit(me, look, s.variant)
         finish(me)
     else

@@ -36,7 +36,8 @@ local countdown = {}
 local HIT_MOD = 3
 -- Where it can stand once it is up: a solid panel on the field with
 -- nothing on it (`allows_bodies`: bodies are fine).
-local STANDS, OCCUPIED, OCCUPIED_BUT_BODIES = 0x10010, 0x0F88_0080, 0x0388_0080
+local STANDS: { PanelFlag } = { "solid", "on_field" }
+local OCCUPIED_BUT_BODIES: { PanelFlag } = { "reserved", "own_other_body", "enemy_other_body", "neutral", "blocker" }
 -- The countdown: three steps of 60 ticks showing 3, 2 and 1 (the sprite
 -- parts left hidden), then 30 more.
 local STEP_TICKS, LAST_TICKS, SHORT_TICKS = 0x3C, 0x1E, 0xF
@@ -118,7 +119,7 @@ function countdown.make_kind(id: string, look: CountdownLook): Kind
             return
         end
         local v = variant(me)
-        local forbid = if v.allows_bodies then OCCUPIED_BUT_BODIES else OCCUPIED
+        local forbid = if v.allows_bodies then OCCUPIED_BUT_BODIES else "occupied"
         if not field.check(me.panel_x, me.panel_y, STANDS, forbid) then
             local p = me.pos
             battle.effect(Vec3.new(p.x, p.y, p.z + 0x8_0000), look.puff)

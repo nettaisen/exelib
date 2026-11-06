@@ -119,7 +119,8 @@ type Scanned = { x: number, y: number }
 local function scan(me: Object, s: Scanned): boolean
     local side = me.alliance
     local step = 2 * side - 1
-    local require, forbid = if side == 0 then 0x20 else 0, if side == 0 then 0 else 0x20
+    -- (A side but 0 tests as side 1.)
+    local of = if side == 0 then 0 else 1
     local x, y = s.x, s.y + 1
     for pass = 1, 2 do
         while true do
@@ -129,7 +130,7 @@ local function scan(me: Object, s: Scanned): boolean
                 if x < 1 or x > 6 then
                     break
                 end
-            elseif field.check(x, y, require, forbid) then
+            elseif field.check(x, y, "enemy_area", nil, of) then
                 s.x, s.y = x, y
                 return true
             else

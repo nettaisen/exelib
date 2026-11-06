@@ -51,11 +51,9 @@ function protoman.make(kind_spec: ProtoManKind): {
     local FADE_GRAY = 0x1F
 
     -- What he looks for (`off_80C2904`: an enemy navi's body), what a panel
-    -- he lands on must be (solid) and be free of (as words).
-    local ENEMY_NAVI = { [0] = 0x0400_0000, 0x0800_0000 }
-    local SOLID = 0x10
-    local OCCUPIED = { [0] = 0x0F80_0000, 0x0F80_0000 }
-    local occupied = spec.occupied or OCCUPIED
+    -- he lands on must be (solid) and be free of.
+    local ENEMY_NAVI = "enemy_body"
+    local occupied = spec.occupied or "any_body"
     local user_panel_free = spec.user_panel_free ~= false
     local slash_at_once = spec.slash_at_once == true
 
@@ -108,7 +106,7 @@ function protoman.make(kind_spec: ProtoManKind): {
         if not countdown(me, 0x1E) then
             return
         end
-        if not field.check(me.panel_x, me.panel_y, SOLID, 0) then
+        if not field.solid(me.panel_x, me.panel_y) then
             me:set_lifecycle("destroy")
             return
         end
@@ -129,7 +127,7 @@ function protoman.make(kind_spec: ProtoManKind): {
         if user and lx == user.panel_x and y == user.panel_y then
             return true
         end
-        return field.check(lx, y, SOLID, occupied[me.alliance])
+        return field.check(lx, y, "solid", occupied, me.alliance)
     end
 
     -- Action 4 (`sub_80C2854`): the slashes.
@@ -139,7 +137,6 @@ function protoman.make(kind_spec: ProtoManKind): {
         local s = me.state :: State
         local x, y = me.future_panel_x, me.future_panel_y
         if field.valid(x, y) then
-            local enemy = ENEMY_NAVI[me.alliance]
             if s.fresh ~= 0 then
                 y = 1
             else
@@ -147,7 +144,7 @@ function protoman.make(kind_spec: ProtoManKind): {
             end
             while true do
                 while y <= 3 do
-                    if field.check(x, y, enemy, 0) and can_land(me, x, y) then
+                    if field.check(x, y, ENEMY_NAVI, nil, me.alliance) and can_land(me, x, y) then
                         me.future_panel_x, me.future_panel_y = x, y
                         s.fresh = 0
                         me.phase, me.phase_init = 4, 0

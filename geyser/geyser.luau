@@ -216,7 +216,7 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
             me:set_lifecycle("destroy")
             return
         end
-        if me.collision.hit_flags ~= 0 then
+        if me.collision.hit then
             me.collision:set_region(nil)
         end
         local a = me.action

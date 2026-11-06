@@ -62,12 +62,10 @@ export type Statue = {
 
 -- It drops from 160 pixels, 8 a tick.
 local HEIGHT, FALL_SPEED = 0xA0_0000, 0x8_0000
--- Where it can stand: a solid panel with nothing on it.
-local SOLID, OCCUPIED = 0x10, 0x0F88_0080
 local HIT_MOD = 3
 -- A bubble every 16 ticks, on one of the other side's panels but its own (`byte_80CF364`, by side), in palette 1.
 local BUBBLE_EVERY = 0x10
-local OTHER_SIDE: { [number]: { number } } = { [0] = { 0x20, 0 }, [1] = { 0, 0x20 } }
+local OTHER_SIDE = "enemy_area"
 -- The drain (`byte_80CF31C`, by side): the other side's whole area, the silent element 5, 1 damage that can't
 -- counter (0x81), hitting by what it is alone (the look's drain, target row 0), no spark, hit modifier 0.
 local DRAIN_ELEMENT, DRAIN_DAMAGE, DRAIN_COUNTER = 5, 1, 0x81
@@ -91,7 +89,8 @@ function statue.make(look: Look): Statue
         me.pos = Vec3.new(p.x, p.y, 0)
         if field.solid(me.panel_x, me.panel_y) then
             battle.shake_camera(2, 0x1E)
-            if field.check(me.panel_x, me.panel_y, SOLID, OCCUPIED) then
+            -- (Where it can stand: a solid panel with nothing on it.)
+            if field.check(me.panel_x, me.panel_y, "solid", "occupied") then
                 me.collision:set_region(regions.single)
                 battle.play_sound(look.sounds.land)
                 -- (EXE5's action table has no frozen or bubbled rows: its drain is its action 6.)
@@ -107,14 +106,13 @@ function statue.make(look: Look): Statue
     -- `sub_80CF332`: one of the other side's panels but its own (from the bottom right), picked by a draw; nil
     -- when there is none.
     local function bubble_panel(me: Object): (number?, number?)
-        local rule = OTHER_SIDE[me.alliance]
-        if not rule then
+        if me.alliance > 1 then
             error(string.format("the Anubis statue's side %d reads past byte_80CF364", me.alliance))
         end
         local panels = {}
         for y = 3, 1, -1 do
             for x = 6, 1, -1 do
-                if field.check(x, y, rule[1], rule[2]) and not (x == me.panel_x and y == me.panel_y) then
+                if field.check(x, y, OTHER_SIDE, nil, me.alliance) and not (x == me.panel_x and y == me.panel_y) then
                     table.insert(panels, bit32.bor(x, bit32.lshift(y, 4)))
                 end
             end

@@ -56,8 +56,6 @@ local TIMER = 0x1770
 local HIT_MOD = 3
 -- The palette of the debris it breaks into.
 local DEBRIS_PALETTE = 0
--- A panel of side 1's.
-local SIDE_1 = 0x20
 -- The header flags the spawner (EXE6's `sub_80D2430`, EXE5's 0x080D3A3E) leaves. It means to add the pause and
 -- dimming bits (0x14) to the new object's flags, but reads the flags through the panel's column instead of the
 -- object: an address in the console's BIOS, which game code can't read. What comes back is a byte of the
@@ -219,7 +217,8 @@ function boulder.make(look: Look): Kind
             o.panel_x, o.panel_y = x, y
             o:set_damage_word(look.damage)
             o.element = 0
-            o.alliance = if bit32.btest(field.flags(x, y), SIDE_1) then 1 else 0
+            -- (Side 1's on a panel of side 1's area.)
+            o.alliance = if field.check(x, y, "own_area", nil, 1) then 1 else 0
             -- (The original reads by the column as it is: a boulder on column 3 is in use and shown, one on column
             -- 4, side 1's front, isn't. nettai reads the other side's than the canonical by the mirrored column, so
             -- a boulder on either side's front column is as the canonical side's: docs/engine/side-symmetry.md.)

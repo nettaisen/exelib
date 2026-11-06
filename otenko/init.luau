@@ -61,13 +61,9 @@ local APPEAR_TICKS, EVERY = 5, 5
 local BLESSING_ANIM = 1
 -- Each hand entry gains at most this much.
 local MOST = 50
--- Where it can stand: a solid panel without a body.
-local SOLID, BODIES = 0x10, 0x0F80_0000
 local HIT_MOD = 3
--- The controller's wait, and where it places the statue (`byte_80E76C4`, both sides'): a solid panel with nothing
--- on it.
+-- The controller's wait.
 local WAIT = 0x3C
-local OCCUPIED = 0x0F88_0080
 
 function otenko.make(look: Look): Otenko
     local absorbed = look.absorbed
@@ -75,7 +71,8 @@ function otenko.make(look: Look): Otenko
     -- `sub_80DB198`: if its panel is solid without a body, it takes it after 5 ticks; else it breaks.
     local function appear(me: Object)
         if me.phase_init == 0 then
-            if not field.check(me.panel_x, me.panel_y, SOLID, BODIES) then
+            -- (Where it can stand: a solid panel without a body.)
+            if not field.check(me.panel_x, me.panel_y, "solid", "any_body") then
                 me:set_action(2)
                 return
             end
@@ -267,7 +264,8 @@ function otenko.make(look: Look): Otenko
     local function effect(me: Object)
         if me.phase_init == 0 then
             local x, y = me.panel_x + me.facing, me.panel_y
-            if field.check(x, y, SOLID, OCCUPIED) then
+            -- (Where it places the statue, `byte_80E76C4`, both sides': a solid panel with nothing on it.)
+            if field.check(x, y, "solid", "occupied") then
                 local damage = bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
                 spawn(me.related1 :: Object, x, y, damage)
             end

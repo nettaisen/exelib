@@ -89,8 +89,8 @@ regions.big_square = new.region {
 -- A side's area: side 0's (region 0x81, the panels without flag 0x20) and
 -- side 1's (0x82, with it).
 regions.area = {
-    [0] = new.region { field = { require = 0x00000000, forbid = 0x00000020 } },
-    [1] = new.region { field = { require = 0x00000020, forbid = 0x00000000 } },
+    [0] = new.region { field = { require = { "own_area" } }, side = 0 },
+    [1] = new.region { field = { require = { "own_area" } }, side = 1 },
 }
 
 -- The other side's area: side 0's target (region 0x82) and side 1's (0x81)
@@ -98,30 +98,38 @@ regions.area = {
 regions.other_area = { [0] = regions.area[1], [1] = regions.area[0] }
 
 -- Every panel (region 0x80: Silence).
-regions.field = new.region { field = { require = 0x00000000, forbid = 0x00000000 } }
+regions.field = new.region { field = {} }
 
 -- Every solid panel (region 0x83: Timpani).
-regions.solid = new.region { field = { require = 0x00000010, forbid = 0x00000000 } }
+regions.solid = new.region { field = { require = { "solid" } } }
 
 -- The panels of the other side's player navi: side 0's target (region
 -- 0x85) and side 1's (0x84) (Discord).
 regions.other_navi = {
-    [0] = new.region { field = { require = 0x00200000, forbid = 0x00000000 } },
-    [1] = new.region { field = { require = 0x00400000, forbid = 0x00000000 } },
+    [0] = new.region { field = { require = { "enemy_navi" } }, side = 0 },
+    [1] = new.region { field = { require = { "enemy_navi" } }, side = 1 },
 }
 
 -- The four around the anchor (region 0x0A).
 regions.neighbors = new.region { panels = { { 0, -1 }, { 0, 1 }, { 1, 0 }, { -1, 0 } } }
 
 -- `GetRandomRelativePanelFiltered`: of region `r`'s panels around (x, y),
--- dx stepping by `dir`, one whose flags have every `require` bit and no
--- `forbid` bit, at random (one `rng_positive` draw, only when there is
--- one); nil if none.
-function regions.random_panel(x: number, y: number, r: Region, dir: number, require: number, forbid: number): (number?, number?)
+-- dx stepping by `dir`, one that meets (require, forbid) (`field.check`:
+-- side-relative flags of side `of`), at random (one `rng_positive` draw,
+-- only when there is one); nil if none.
+function regions.random_panel(
+    x: number,
+    y: number,
+    r: Region,
+    dir: number,
+    require: PanelFlags?,
+    forbid: PanelFlags?,
+    of: number?
+): (number?, number?)
     local found: { number } = {}
     for _, p in r.panels or {} do
         local px: number, py: number = x + p[1] * dir, y + p[2]
-        if field.check(px, py, require, forbid) then
+        if field.check(px, py, require, forbid, of) then
             local packed: number = px + py * 0x10
             table.insert(found, packed)
         end
@@ -150,7 +158,8 @@ function regions.effects_on_panels(x: number, y: number, effect: Effect, r: Regi
     if cond then
         for py = 3, 1, -1 do
             for px = 6, 1, -1 do
-                if field.check(px, py, cond.require, cond.forbid) then
+                -- (Its names of the region's side, where it gives one.)
+                if field.check(px, py, cond.require, cond.forbid, r.side) then
                     local cx, cy = field.center(px, py)
                     battle.effect(Vec3.new(cx, cy, 0), effect)
                 end
@@ -237,10 +246,10 @@ regions.region_2d = new.region { panels = { { 0, 0 }, { 0, -2 }, { 0, -1 }, { 0,
 -- Region 0x2E.
 regions.region_2e = new.region { panels = { { 0, -2 }, { 0, -1 }, { 0, 1 }, { 0, 2 } } }
 -- Region 0x86: the field's panels with every `require` bit and no `forbid` bit.
-regions.field_no_navi = new.region { field = { require = 0x00000000, forbid = 0x00600000 } }
+regions.field_no_navi = new.region { field = { forbid = { "own_navi", "enemy_navi" } } }
 -- Region 0x87: the field's panels with every `require` bit and no `forbid` bit.
-regions.field_solid_left = new.region { field = { require = 0x00000010, forbid = 0x00000020 } }
+regions.field_solid_left = new.region { field = { require = { "solid", "own_area" } }, side = 0 }
 -- Region 0x88: the field's panels with every `require` bit and no `forbid` bit.
-regions.field_solid_right = new.region { field = { require = 0x00000030, forbid = 0x00000000 } }
+regions.field_solid_right = new.region { field = { require = { "solid", "own_area" } }, side = 1 }
 
 return regions

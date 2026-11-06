@@ -26,20 +26,18 @@ local strike = {}
 local WAIT = 0x3C
 
 -- `byte_80E36E4`: the panels struck, by side: any with the enemy's navi,
--- other bodies or neutral objects (flags 0x01A00000 for side 0,
--- 0x02C00000 for side 1).
-local STRUCK: { [number]: number } = { [0] = 0x01A0_0000, [1] = 0x02C0_0000 }
+-- other bodies or neutral objects.
+local STRUCK: { PanelFlag } = { "enemy_other_body", "neutral", "enemy_navi" }
 
 -- The bursts go over the whole field, one every 2 ticks.
 local BURST_INTERVAL = 2
 
 -- The panels struck (`byte_80E36E4`'s mask over the field, in its order).
 local function struck(me: Object): { { x: number, y: number } }
-    local mask = STRUCK[me.alliance]
     local list: { { x: number, y: number } } = {}
     for x = 1, 6 do
         for y = 1, 3 do
-            if bit32.btest(field.flags(x, y), mask) then
+            if field.any(x, y, STRUCK, me.alliance) then
                 table.insert(list, { x = x, y = y })
             end
         end

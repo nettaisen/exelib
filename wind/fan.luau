@@ -24,9 +24,7 @@ local GUST_INTERVAL = 0xC
 local HIT_MOD = 0
 -- Where the gust blows from (`byte_80CD2A4`, by side): the fan's side's
 -- own panels.
-local OWN_PANELS: { [number]: { number } } = { [0] = { 0, 0x20 }, [1] = { 0x20, 0 } }
--- Another obstacle on the panel: no gust.
-local NEUTRAL_OBJECT = 0x0080_0000
+local OWN_PANELS = "own_area"
 
 -- A fan's variant.
 function fan.variant(v: FanVariant): FanVariant
@@ -41,21 +39,21 @@ function fan.make(look: FanLook): Fan
     local function push_column(me: Object, row: number): number
         local back = bit32.bxor(me.alliance, me.flip)
         local step = if back == 0 then -1 else 1
-        local rule = OWN_PANELS[me.alliance]
-        if not rule then
+        if me.alliance > 1 then
             error(string.format("the fan's side %d reads past byte_80CD2A4", me.alliance))
         end
         local x = 6 - 5 * back
         local found = 0
         while field.valid(x, row) do
-            if field.check(x, row, rule[1], rule[2]) then
+            if field.check(x, row, OWN_PANELS, nil, me.alliance) then
                 found = x
                 break
             end
             x += step
         end
         x = found + me.facing
-        if bit32.btest(field.flags(x, row), NEUTRAL_OBJECT) then
+        -- (Another obstacle on the panel, a neutral object: no gust.)
+        if field.any(x, row, "neutral") then
             return 0
         end
         return x
@@ -67,9 +65,9 @@ function fan.make(look: FanLook): Fan
     local function pull_column(me: Object, row: number): number
         local x = bit32.bxor(bit32.bxor(me.alliance, me.flip), 1) * 5 + 1
         if look.far_column_only then
-            return if bit32.btest(field.flags(x, row), NEUTRAL_OBJECT) then 0 else x
+            return if field.any(x, row, "neutral") then 0 else x
         end
-        while bit32.btest(field.flags(x, row), NEUTRAL_OBJECT) do
+        while field.any(x, row, "neutral") do
             x -= me.facing
             if x == 0 or x == 7 then
                 return 0

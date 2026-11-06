@@ -52,7 +52,6 @@ export type SearchMan = {
 local navi = {}
 
 local FADE_GRAY = 0x1F
-local SOLID = 0x10
 
 function navi.make(spec: Spec): SearchMan
     -- Action 0, phase 0 (0x080C1294): he fades in from gray 31, 2 a tick, flickering.
@@ -93,7 +92,7 @@ function navi.make(spec: Spec): SearchMan
         if left > 0 then
             return
         end
-        if field.check(me.panel_x, me.panel_y, SOLID, 0) then
+        if field.check(me.panel_x, me.panel_y, "solid") then
             me:set_action(4)
         else
             me:set_lifecycle("destroy")

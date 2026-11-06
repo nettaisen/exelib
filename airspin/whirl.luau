@@ -35,7 +35,7 @@ local SWOOP_X, SWOOP_Z, SWOOP_TICKS = 0x4_0000, -0x8_0000, 0x14
 local STEP_TICKS, MAX_HITS, REGROW = 6, 3, 8
 -- The enemy's bodies on a panel's flags word, by its side
 -- (`byte_80E02EC`).
-local ENEMY_BODIES = { [0] = 0x05800000, [1] = 0x0A800000 }
+local ENEMY_BODIES: { PanelFlag } = { "enemy_body", "enemy_other_body", "neutral" }
 
 -- The actions.
 local SWOOP, MOVE, HOLD, BLOW_AWAY = 0x0, 0x4, 0x8, 0xC
@@ -44,7 +44,7 @@ local SWOOP, MOVE, HOLD, BLOW_AWAY = 0x0, 0x4, 0x8, 0xC
 function whirl.make(look: SeekingWhirlLook): { kind: Kind, sender: AirSpinSender }
     -- `sub_80E02AC`: a visible enemy navi stands on (x, y) (a status of the look's `hidden` makes one unseen).
     local function enemy_on(me: Object, x: number, y: number): boolean
-        if not bit32.btest(field.flags(x, y), ENEMY_BODIES[me.alliance]) then
+        if not field.any(x, y, ENEMY_BODIES, me.alliance) then
             return false
         end
         -- sub_800AE54: the other side's first combatant on (x, y).
@@ -207,7 +207,7 @@ function whirl.make(look: SeekingWhirlLook): { kind: Kind, sender: AirSpinSender
         local c = me.collision
         local s = me.state :: State
         c:remove()
-        if c.hit_flags ~= 0 then
+        if c.hit then
             c:set_region(nil)
             s.hits += 1
             s.regrow = REGROW
@@ -294,14 +294,13 @@ function whirl.make(look: SeekingWhirlLook): { kind: Kind, sender: AirSpinSender
     -- side's (`object_getFirstPanelInDirectionFiltered` with `byte_80E029C`);
     -- a seeking whirlwind for `owner` onto it (`sub_80E0248`), if any. Its
     -- position is the spawner's registers (the panel Y, the element, and the
-    -- filter's forbidden bits) until its init places it.
+    -- filter's forbidden bits: side 1's area bit, 0x20, for a side but 0,
+    -- else none) until its init places it.
     local function send(owner: Object, x: number, y: number, element: number, damage: number): Object?
         local dir = owner.facing
-        local require, forbid = 0x20, 0
-        if owner.alliance ~= 0 then
-            require, forbid = 0, 0x20
-        end
-        while not field.check(x, y, require, forbid) do
+        -- (A side but 0 tests as side 1.)
+        local side = if owner.alliance ~= 0 then 1 else 0
+        while not field.check(x, y, "enemy_area", nil, side) do
             x += dir
             if not field.valid(x, y) then
                 return nil
@@ -312,7 +311,7 @@ function whirl.make(look: SeekingWhirlLook): { kind: Kind, sender: AirSpinSender
         if x == 0 then
             return nil
         end
-        local o = battle.spawn(kind, Vec3.new(y, element, forbid))
+        local o = battle.spawn(kind, Vec3.new(y, element, side * 0x20))
         if o then
             o.panel_x, o.panel_y = x, y
             o.element = element

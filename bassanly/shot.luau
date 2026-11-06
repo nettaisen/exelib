@@ -71,12 +71,25 @@ local TURN_Y, TURN_X = 0x7_8000, 0xC_8000
 -- What homing 2 looks for, by side (EXE6's `off_80DD6BC`): an enemy navi's
 -- body; and where, along the slant (`byte_80DD6E8` going down,
 -- `byte_80DD6ED` going up).
-local ENEMY_NAVI = { [0] = 0x0400_0000, 0x0800_0000 }
+local ENEMY_NAVI = "enemy_body"
 local LOOK_DOWN = { { 1, -1 }, { 2, -2 } }
 local LOOK_UP = { { 1, 1 }, { 2, 2 } }
 
--- What a hit must include to take its region off (as one word).
-local HIT_MASK = 0x1E80_0000
+-- What a hit must include to take its region off: one word for either side, 0x1E800000 (side 1's objects, both
+-- sides' bodies, side 0's other bodies, neutral objects), by side.
+local HIT_MASK = {
+    [0] = { "enemy_object", "own_body", "enemy_body", "own_other_body", "neutral" },
+    [1] = { "own_object", "own_body", "enemy_body", "enemy_other_body", "neutral" },
+}
+
+-- Its own side's panel, as `sub_80DD5E2` asks it: the panel's flags word has its side's area bit alone (side 1's set,
+-- side 0's clear), so off the field, where the word is 0, any panel is side 0's.
+local function own_side_panel(x: number, y: number, side: number): boolean
+    if not field.any(x, y, "on_field") then
+        return side == 0
+    end
+    return side <= 1 and field.check(x, y, "own_area", nil, side)
+end
 
 -- Its hit's modifier.
 local HIT_MOD = 3
@@ -193,7 +206,7 @@ function shot.make_kind(look: Look): Kind
         if mode ~= "diagonal" then
             if battle.over() then
                 -- On its own side's panels it keeps going.
-                if bit32.band(field.flags(x, y), 0x20) == me.alliance * 0x20 then
+                if own_side_panel(x, y, me.alliance) then
                     return
                 end
             else
@@ -203,7 +216,7 @@ function shot.make_kind(look: Look): Kind
                 local dir = 1 - 2 * me.alliance
                 local found = 0
                 for _, o in looks do
-                    if field.check(x + o[1] * dir, y + o[2], ENEMY_NAVI[me.alliance], 0) then
+                    if field.check(x + o[1] * dir, y + o[2], ENEMY_NAVI, nil, me.alliance) then
                         found += 1
                     end
                 end
@@ -217,8 +230,8 @@ function shot.make_kind(look: Look): Kind
             return
         end
         -- "diagonal": toward the enemy navi on a diagonal, once level with or
-        -- past its column.
-        if bit32.band(field.flags(x, y), 0x20) ~= 0 then
+        -- past its column; not on side 1's panels.
+        if field.check(x, y, "own_area", nil, 1) then
             return
         end
         local ex, ey = x, y
@@ -310,7 +323,7 @@ function shot.make_kind(look: Look): Kind
             return burst(me)
         end
         local s = me.state :: State
-        if bit32.band(c.hit_flags, HIT_MASK) ~= 0 then
+        if c:hit_any(HIT_MASK[me.alliance]) then
             c:set_region(nil)
             s.hit_panel = bit32.bor(me.panel_x, bit32.lshift(me.panel_y, 8))
         end

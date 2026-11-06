@@ -38,7 +38,7 @@ type State = {
 }
 
 -- What blows it up (EXE5's 0x080C507C, EXE4's 0x080CDB24): the other side's bodies and objects, by its side.
-local ENEMY = { [0] = 0x0580_0000, 0x0A80_0000 }
+local ENEMY: { HitName } = { "enemy_body", "enemy_other_body", "neutral" }
 local RISE, GRAVITY = 0x4_0000, -0x3000
 local LOW = 0x19
 local SHOW = 0x3C
@@ -247,7 +247,7 @@ function dice.make(spec: DiceSpec): Dice
             go(me)
             return
         end
-        if me:take_damage(0) < 0 or bit32.btest(c.hit_flags, ENEMY[me.alliance]) then
+        if me:take_damage(0) < 0 or c:hit_any(ENEMY) then
             battle.effect(me.pos, explosion(s))
             battle.play_sound(spec.blow_up)
             go(me)

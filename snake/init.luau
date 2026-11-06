@@ -29,10 +29,10 @@ local RISE_STEPS, LEAP_STEPS = 30, 9
 -- ---- The nest's scan (`sub_80D2CBE`, `sub_80D2D40`: both games' the same code) ---------------------------------
 
 -- A hole on each side's area (`byte_80D2D30`): the side's own panel, not solid, with nothing on it or reserved.
-local HOLE = { [0] = { require = 0x00, forbid = 0x0F8800B0 }, [1] = { require = 0x20, forbid = 0x0F880090 } }
+local HOLE = { require = "own_area", forbid = { "occupied", "solid" } }
 -- The panels a snake aims at (`byte_80D2E28`, any of them): the other side's bodies and other bodies, or a neutral
 -- object.
-local TARGET = { [0] = 0x05800000, [1] = 0x0A800000 }
+local TARGET: { PanelFlag } = { "enemy_body", "enemy_other_body", "neutral" }
 
 -- A nest's scan: where it is (Param3, Param4: bytes, the column stepping off the field when the scan ends).
 export type Scan = SnakeScan
@@ -44,7 +44,6 @@ export type Scan = SnakeScan
 -- `best_row_slip`, the best's distance in columns from the hole reads its row (0x080D8014). (EXE4's walk goes on past
 -- the field's edge, to column 7 or -1, where no panel holds a target.)
 function snake.target(me: Object, hx: number, hy: number, best_row_slip: boolean?): (number, number)
-    local mask = TARGET[me.alliance]
     local candidates: { { number } } = {}
     local x = hx + me.facing
     while true do
@@ -54,7 +53,7 @@ function snake.target(me: Object, hx: number, hy: number, best_row_slip: boolean
                 stop = true
                 break
             end
-            if bit32.btest(field.flags(x, y), mask) then
+            if field.any(x, y, TARGET, me.alliance) then
                 table.insert(candidates, { x, y })
             end
         end
@@ -94,7 +93,7 @@ end
 -- resumes past it. The scan gives up once its column, plus one, passes 7 (a side 0 nest scans columns 6 to 1, then
 -- 0 and 0xFF off the field; side 1's, 1 to 6). nil when none, else the hole and its target.
 function snake.next_hole(me: Object, s: Scan, best_row_slip: boolean?): (number?, number, number, number)
-    local cond = HOLE[me.alliance]
+    local cond = HOLE
     local step = -me.facing
     local found = false
     local hx, hy = 0, 0
@@ -102,7 +101,7 @@ function snake.next_hole(me: Object, s: Scan, best_row_slip: boolean?): (number?
         if found then
             break
         end
-        if field.check(s.scan_x, s.scan_y, cond.require, cond.forbid) then
+        if field.check(s.scan_x, s.scan_y, cond.require, cond.forbid, me.alliance) then
             found, hx, hy = true, s.scan_x, s.scan_y
         end
         s.scan_y += 1

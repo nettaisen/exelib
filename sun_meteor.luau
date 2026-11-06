@@ -55,7 +55,7 @@ local START = 0x14_0000
 local FALL_TICKS = 0x10
 
 -- What a landing panel must have one of to burst (a solid or occupied panel: as one word).
-local HOLDS = 0x0F80_0010
+local HOLDS: { PanelFlag } = { "any_body", "solid" }
 
 local function record(me: Object): SunMeteor
     return (me.state :: State).variant
@@ -123,7 +123,7 @@ function sun_meteor.make(look: Look): SunMeteors
         local p = me.pos
         me.pos = Vec3.new(p.x, p.y, 0)
         local x, y = me.panel_x, me.panel_y
-        if bit32.band(field.flags(x, y), HOLDS) == 0 then
+        if not field.any(x, y, HOLDS) then
             field.break_panel(x, y)
         else
             battle.effect(me.pos, look.burst)

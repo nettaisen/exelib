@@ -113,7 +113,7 @@ function falling.make_kind(look: Look): Kind
     local function update(me: Object)
         me.collision:remove()
         me:hit_spark()
-        if me.collision.hit_flags ~= 0 then
+        if me.collision.hit then
             shatter(me)
             me.collision:set_region(nil)
             me:set_lifecycle("destroy")

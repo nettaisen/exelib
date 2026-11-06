@@ -88,7 +88,7 @@ function flame.make_kind(look: Look): ElemFlame
         local owner = me.related1
         local ended = t == 0 or (owner ~= nil and not owner.active)
         if not ended then
-            if c.hit_flags ~= 0 then
+            if c.hit then
                 s.hit = true
                 me.timer2 = 0
                 c.hit_mod_base = 3

@@ -73,9 +73,9 @@ export type ControllerState = {
 local FALL, PANEL_TICKS = 0x1_9999, 15
 local HIT_MOD = 1
 
--- The enemy's area (EXE5's 0x080D63AC, EXE4's 0x080DD214: the panels a side's flock looks for, require and forbid),
--- the column EXE5's starts from (0x080D63BC, by side and flip) and EXE4's (0x080DD224, by side).
-local AREA = { [0] = { 0x20, 0 }, [1] = { 0, 0x20 } }
+-- The enemy's area (EXE5's 0x080D63AC, EXE4's 0x080DD214: the panels a side's flock looks for), the column EXE5's
+-- starts from (0x080D63BC, by side and flip) and EXE4's (0x080DD224, by side).
+local AREA = "enemy_area"
 local START = { [0] = 4, [1] = 3 }
 local START_BY_COLUMN = { [0] = 4, [1] = 1 }
 local MAX_PERCHES = 3
@@ -185,7 +185,7 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
         local c = me.collision
         c:remove()
         me:hit_spark()
-        if c.hit_flags ~= 0 then
+        if c.hit then
             me.visible = false
             c:set_region(nil)
             me:set_lifecycle("destroy")
@@ -248,9 +248,8 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
     end
 
     local function has_area(me: Object, x: number): boolean
-        local area = AREA[me.alliance]
         for y = 1, 3 do
-            if field.check(x, y, area[1], area[2]) then
+            if field.check(x, y, AREA, nil, me.alliance) then
                 return true
             end
         end

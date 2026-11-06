@@ -57,8 +57,8 @@ export type Look = {
     -- game places one (EXE4's).
     stage_damage: number?,
     -- What on the panel it appears on breaks it (none: bodies, neutral objects, blockers and reservations,
-    -- 0x0F880080; EXE4's bodies and blockers, 0x0F800000).
-    occupied: number?,
+    -- `occupied`; EXE4's any body, 0x0F800000).
+    occupied: PanelFlags?,
     -- Its action table by the framework's numbers, given its appearing, leaving and standing (EXE4's 0x080D8ABC);
     -- none: EXE6's `off_80CFA48`.
     actions: ((appear: (Object) -> (), destroyed: (Object) -> (), standing: (Object) -> ()) -> { [number]: (Object) -> () })?,
@@ -83,7 +83,7 @@ export type Rock = {
 local LIFETIME = 6000
 -- Where it can stand (`object_checkPanelParameters`): a solid panel with nothing on it (bodies, neutral objects,
 -- blockers, reservations).
-local SOLID, OCCUPIED = 0x10, 0x0F880080
+local OCCUPIED = "occupied"
 local HIT_MOD = 3
 -- Falling from 160 pixels up, 0.25 pixels a tick faster each tick.
 local FALL_HEIGHT, GRAVITY = 0xA0_0000, 0x4000
@@ -154,7 +154,7 @@ function rock.make(look: Look): Rock
         if entrance == "rise" and me.sprite.steps < RISE_STEPS then
             return
         end
-        if not field.check(me.panel_x, me.panel_y, SOLID, occupied) then
+        if not field.check(me.panel_x, me.panel_y, "solid", occupied) then
             me:set_action(DESTROYED)
             return
         end

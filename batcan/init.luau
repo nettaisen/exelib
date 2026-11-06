@@ -72,7 +72,7 @@ function batcan.make(look: Look): BatCan
         local c = me.collision
         c:remove()
         me:hit_spark()
-        if battle.over() or c.hit_flags ~= 0 then
+        if battle.over() or c.hit then
             finish(me)
         else
             if me.phase_init == 0 then

@@ -45,23 +45,22 @@ export type Curse = { kind: Kind, telop: DimmingTelop, spawn: (doll: Object, dam
 local MARK, WAIT, HIT = 0x0, 0x4, 0x8
 local MARK_TICKS, WAIT_TICKS, HIT_TICKS = 0x3C, 0xA, 0x1E
 local HIT_MOD = 1
--- Where the other side's combatants stand (EXE5's 0x080E629C, EXE4's 0x080E7974, by the controller's side: require,
--- forbid 0).
-local OTHER_SIDE: { [number]: number } = { [0] = 0x0020_0000, [1] = 0x0040_0000 }
--- Who stands on the hit panel (EXE5's 0x080E7356, EXE4's 0x080E89BA): its table is EXE6's `byte_80E74C4`
--- (0x00200000, 0x00400000), but the code indexes it by the side unscaled, so side 1 reads the word one byte in (an
--- unaligned load: the first word rotated, 0x00002000).
-local OCCUPANT: { [number]: number } = { [0] = 0x0020_0000, [1] = 0x0000_2000 }
+-- Where the other side's combatants stand (EXE5's 0x080E629C, EXE4's 0x080E7974, by the controller's side: the
+-- other side's player navi).
+local OTHER_SIDE = "enemy_navi"
+-- Who stands on the hit panel (EXE5's 0x080E7356, EXE4's 0x080E89BA), by side: its table is EXE6's `byte_80E74C4`
+-- (the other side's player navi), but the code indexes it by the side unscaled, so side 1 reads the word one byte in
+-- (an unaligned load: the first word rotated, 0x00002000), which is holy's type flag.
+local OCCUPANT: { [number]: PanelFlags } = { [0] = "enemy_navi", [1] = "holy" }
 -- The sparkles' length (`dword_80E19F0`'s row 2, the curse's first parameter to them).
 local SPARKLES_TICKS = 0x20
 
 -- One of the panels the other side's combatants stand on (bottom right first), at random; none, the aim stays.
 local function pick_target(me: Object, s: State)
-    local rule = OTHER_SIDE[me.alliance]
-    if not rule then
+    if me.alliance > 1 then
         error(string.format("the curse's side %d reads past its table", me.alliance))
     end
-    local list = panels.filtered(rule, 0)
+    local list = panels.filtered(OTHER_SIDE, nil, me.alliance)
     if #list == 0 then
         return
     end
@@ -73,20 +72,13 @@ end
 -- side's word.
 local function occupant(x: number, y: number, side: number): Object?
     -- (Side 1's misread word asks a flag no combatant sets, so the original's side-1 curse sparkles over nobody.
-    -- nettai reads the canonical side's word for either side, the other side's mirrored: the two sides' combatant
-    -- flags, 0x00200000 and 0x00400000, traded. docs/engine/side-symmetry.md.)
-    local canonical = OCCUPANT[field.canonical_side()]
-    local flags = if field.side_sign(side) > 0
-        then OCCUPANT[side]
-        else bit32.bor(
-            bit32.band(canonical, bit32.bnot(0x0060_0000)),
-            if bit32.btest(canonical, 0x0020_0000) then 0x0040_0000 else 0,
-            if bit32.btest(canonical, 0x0040_0000) then 0x0020_0000 else 0
-        )
-    if not flags then
+    -- nettai reads the canonical side's names for either side, of that side: the other side's mirrored, its
+    -- player navi the canonical side's other one. docs/engine/side-symmetry.md.)
+    local canonical = field.canonical_side()
+    if field.side_sign(side) > 0 and side ~= canonical then
         error(string.format("the curse's side %d reads past its occupant table", side))
     end
-    if not field.check(x, y, flags, 0) then
+    if not field.check(x, y, OCCUPANT[canonical], nil, bit32.band(side, 1)) then
         return nil
     end
     for s = 0, 1 do

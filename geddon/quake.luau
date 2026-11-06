@@ -62,10 +62,6 @@ export type Quake = {
     poison: (x: number, y: number) -> boolean,
 }
 
--- Every row's panels (`byte_80E2588` +4, +8): solid ones. (Every row
--- lists the whole field, `sub_80E269A`; the row builder `sub_80E26D8`,
--- its own row's, is in no row.)
-local SOLID = 0x10
 -- Ticks between the changes, the first on the quake's eighth update.
 local PERIOD = 8
 local BUBBLE_PALETTE = 1
@@ -102,7 +98,10 @@ function quake.make(look: Look): Quake
     local function init(me: Object)
         local s = me.state :: State
         -- (Shuffled from its side's order: docs/engine/side-symmetry.md.)
-        local list = panels.filtered(SOLID, 0, bit32.band(me.alliance, 1))
+        -- (Every row's panels, `byte_80E2588` +4, +8: solid ones. Every row
+        -- lists the whole field, `sub_80E269A`; the row builder `sub_80E26D8`,
+        -- its own row's, is in no row.)
+        local list = panels.filtered("solid", nil, nil, bit32.band(me.alliance, 1))
         if #list > 0 then
             panels.shuffle(list, #list, #list)
         end

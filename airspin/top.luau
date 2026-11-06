@@ -38,15 +38,15 @@ export type State = {
 local SPEED, MAX_PANELS = 0x4_0000, 4
 -- Its field-object class.
 local CLASS = 1
--- Panel flags: solid (0x10); where EXE6's can't be set down (bodies:
--- 0x3800000); what stops its rolling (bodies and neutral objects:
--- 0xF800000).
-local SOLID, BODIES, BLOCKERS = 0x10, 0x03800000, 0x0F800000
--- Hits that break it at once: bodies, neutral objects, type 2.
-local CRUSHING = 0x0F800002
--- Hits that make EXE6's spin once more: hit flag 0x800, or a wind hit
+-- Panel flags: where EXE6's can't be set down (other bodies and neutral
+-- objects); what stops its rolling (any body).
+local BODIES: { PanelFlag } = { "own_other_body", "enemy_other_body", "neutral" }
+-- Hits that break it at once: bodies, neutral objects, a break.
+local CRUSHING: { HitName } = { "own_body", "enemy_body", "own_other_body", "enemy_other_body", "neutral", "break" }
+-- Hits that make EXE6's spin once more: a pushing hit, or a wind hit
 -- (secondary element 0x20).
-local EXTRA_SPIN_HIT, WIND = 0x800, 0x20
+local WIND = 0x20
+local EXTRA_SPIN_HIT = "pushing"
 -- Its hit modifier, and its gust's: the ring around its panel, no spark.
 local HIT_MOD, HIT_MOD_SPIN = 0x03, 1
 -- The marker styles EXE5's draws from (RNG2's bit 2).
@@ -60,8 +60,7 @@ local ROLL, STAND, SPIN, BLOW_AWAY, REMOVED = 0x0, 0x4, 0x8, 0xC, 0x10
 -- `sub_80D8C10` (EXE5's 0x080DA1AA): it can roll onto (x, y): on the field,
 -- solid, nothing standing there.
 local function open(x: number, y: number): boolean
-    local f = field.flags(x, y)
-    return f ~= 0 and not bit32.btest(f, BLOCKERS) and bit32.btest(f, SOLID)
+    return field.check(x, y, "solid", "any_body")
 end
 
 -- `sub_80D8BBC`: the next panel forward is where it rolls, and its center
@@ -281,13 +280,13 @@ function top.make(look: AirSpinTopLook): AirSpinTop
     local function tick(me: Object)
         local c = me.collision
         c:remove()
-        local broken = me:take_damage(0) < 0 or bit32.btest(c.hit_flags, CRUSHING)
+        local broken = me:take_damage(0) < 0 or c:hit_any(CRUSHING)
         if broken then
             battle.effect(me.pos, look.explosion)
             battle.play_sound(look.sounds.hit_bomb)
             leave(me)
         else
-            local wind_hit = bit32.btest(c.hit_flags, EXTRA_SPIN_HIT) or bit32.btest(c.damage_elements, WIND)
+            local wind_hit = c:hit_any(EXTRA_SPIN_HIT) or bit32.btest(c.damage_elements, WIND)
             if look.extra_spins and wind_hit then
                 local s = me.state :: State
                 s.spins += 1
@@ -322,8 +321,7 @@ function top.make(look: AirSpinTopLook): AirSpinTop
         local p = me.pos
         me.pos = Vec3.new(p.x, p.y, 0)
         if look.set_down_check then
-            local f = field.flags(me.panel_x, me.panel_y)
-            if not bit32.btest(f, SOLID) or bit32.btest(f, BODIES) then
+            if not field.check(me.panel_x, me.panel_y, "solid", BODIES) then
                 puff(me, 0x10)
                 obstacle.unregister(me)
                 me:free()

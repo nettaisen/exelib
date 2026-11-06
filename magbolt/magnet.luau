@@ -61,7 +61,7 @@ local function tick(me: Object)
     c:remove()
     me:hit_spark()
     local owner = me.related1 :: Object
-    if battle.over() or c.hit_flags ~= 0 or not slot.occupied(owner, "related") then
+    if battle.over() or c.hit or not slot.occupied(owner, "related") then
         leave(me, false)
         return
     end

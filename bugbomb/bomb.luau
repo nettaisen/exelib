@@ -37,7 +37,15 @@ local HIT_MOD = 0
 -- The burst: ticks it sits (61).
 local SIT_TICKS = 0x3C
 -- What in its hits ends it at once.
-local CRUSHED = 0x3F800000
+local CRUSHED: { HitName } = {
+    "own_object",
+    "enemy_object",
+    "own_body",
+    "enemy_body",
+    "own_other_body",
+    "enemy_other_body",
+    "neutral",
+}
 
 -- Pick one of `choices` (indices) at random, one RNG draw, or of `all` when there are none.
 function bomb.pick(choices: { number }, all: { number }): number
@@ -93,7 +101,7 @@ end
 
 -- `sub_80D9F2C` (EXE4's 0x080DC238): sit; then burst (EXE4's at once on a crushing hit).
 local function sit(me: Object, look: Look)
-    local crushed = look.crushing_hit == "bursts" and bit32.btest(me.collision.hit_flags, CRUSHED)
+    local crushed = look.crushing_hit == "bursts" and me.collision:hit_any(CRUSHED)
     if not crushed then
         if me.phase_init == 0 then
             me.timer = SIT_TICKS
@@ -126,7 +134,7 @@ local function tick(me: Object, look: Look)
         finish(me)
         return
     end
-    local crushed = look.crushing_hit == "explodes" and bit32.btest(me.collision.hit_flags, CRUSHED)
+    local crushed = look.crushing_hit == "explodes" and me.collision:hit_any(CRUSHED)
     if me:take_damage(0) < 0 or crushed then
         battle.effect(me.pos, look.crushed)
         battle.play_sound(look.crushed_sound)

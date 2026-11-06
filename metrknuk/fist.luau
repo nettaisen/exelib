@@ -49,7 +49,6 @@ local FALL, FORWARD, GRAVITY = 0xE_0000, 0x11_8000, 0xD200
 local HIT_MOD = 3
 -- The bounce: 7 ticks, moving back for the last 4.
 local BOUNCE, BOUNCE_MOVES = 7, 4
-local SOLID = 0x10
 
 -- EXE4's burst: three pixels left of the fist.
 local BURST_LEFT = 0x3_0000
@@ -96,9 +95,10 @@ function fist.make(look: Look): {
         if h then
             h.run_while_dimmed = me.run_while_dimmed
         end
-        local flags = field.flags(px, py)
+        -- (Whether it was solid before the crack.)
+        local solid = field.solid(px, py)
         field.crack(px, py)
-        if bit32.btest(flags, SOLID) then
+        if solid then
             battle.shake_camera(1, 5)
         end
         me.pos = Vec3.new(x, p.y, 0)

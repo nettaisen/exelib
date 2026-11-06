@@ -60,7 +60,7 @@ function shot.make(spec: Spec): Shot
         local c = me.collision
         c:remove()
         me:hit_spark()
-        if c.hit_flags == 0 then
+        if not c.hit then
             local flip = bit32.band(battle.rng_positive(), 2)
             battle.effect(battle.jitter(0xF, me.pos), spec.miss, flip, 0, 0)
         end

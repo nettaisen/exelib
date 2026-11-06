@@ -49,7 +49,7 @@ local WATCH, SPRING = 0, 4
 -- `sub_80CE0A4`: sparkles on the enemy navi's panels, first to last, each console's turned to its own side.
 local function sparkle(me: Object, look: ElemTrapLook)
     local marked = regions.other_navi[me.alliance].field :: PanelCondition
-    local list = panels.filtered(marked.require, marked.forbid)
+    local list = panels.filtered(marked.require, marked.forbid, me.alliance)
     for i = #list, 1, -1 do
         local p = list[i]
         local x, y = field.center(panels.x(p), panels.y(p))

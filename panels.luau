@@ -19,22 +19,23 @@ function panels.y(p: number): number
     return bit32.rshift(p, 4)
 end
 
--- `object_getPanelsFiltered`: every panel whose flags meet (require,
--- forbid), from (6, 3) back to (1, 1): rows 3 to 1, columns 6 to 1. With
--- `side`, in that side's order: the original's for the canonical side, its
--- mirror image (columns 1 to 6) for the other, where the order counts (a
--- list gone through in order, its first entry taken, a shuffle's start;
--- docs/engine/side-symmetry.md). A single pick from it (one draw modulo its
--- length) gives either side each panel alike and keeps the original's order.
-function panels.filtered(require: number, forbid: number, side: number?): { number }
+-- `object_getPanelsFiltered`: every panel that meets (require, forbid)
+-- (`field.check`: side-relative flags of side `of`), from (6, 3) back to
+-- (1, 1): rows 3 to 1, columns 6 to 1. With `order`, in that side's order:
+-- the original's for the canonical side, its mirror image (columns 1 to 6)
+-- for the other, where the order counts (a list gone through in order, its
+-- first entry taken, a shuffle's start; docs/engine/side-symmetry.md). A
+-- single pick from it (one draw modulo its length) gives either side each
+-- panel alike and keeps the original's order.
+function panels.filtered(require: PanelFlags?, forbid: PanelFlags?, of: number?, order: number?): { number }
     local list = {}
     local first, last, step = 6, 1, -1
-    if side ~= nil and field.side_sign(side) < 0 then
+    if order ~= nil and field.side_sign(order) < 0 then
         first, last, step = 1, 6, 1
     end
     for y = 3, 1, -1 do
         for x = first, last, step do
-            if field.check(x, y, require, forbid) then
+            if field.check(x, y, require, forbid, of) then
                 table.insert(list, panels.pack(x, y))
             end
         end
@@ -43,16 +44,22 @@ function panels.filtered(require: number, forbid: number, side: number?): { numb
 end
 
 -- `object_getPanelsExceptCurrentFiltered`: the same, without `me`'s panel;
--- with `side`, in that side's order.
-function panels.filtered_except(me: Object, require: number, forbid: number, side: number?): { number }
+-- with `order`, in that side's order.
+function panels.filtered_except(
+    me: Object,
+    require: PanelFlags?,
+    forbid: PanelFlags?,
+    of: number?,
+    order: number?
+): { number }
     local list = {}
     local first, last, step = 6, 1, -1
-    if side ~= nil and field.side_sign(side) < 0 then
+    if order ~= nil and field.side_sign(order) < 0 then
         first, last, step = 1, 6, 1
     end
     for y = 3, 1, -1 do
         for x = first, last, step do
-            if field.check(x, y, require, forbid) and not (x == me.panel_x and y == me.panel_y) then
+            if field.check(x, y, require, forbid, of) and not (x == me.panel_x and y == me.panel_y) then
                 table.insert(list, panels.pack(x, y))
             end
         end
@@ -82,13 +89,14 @@ end
 
 -- `object_getClosestPanelMatchingRowFiltered` (EXE6's, EXE5's, EXE4's
 -- 0x0800A1AE): in row `y`, from the far edge of `side`'s field (column 6
--- for side 0, 1 for side 1) back toward `side`'s, the first panel whose
--- flags meet (require, forbid); 0 when it walks off the field.
-function panels.closest_in_row(side: number, y: number, require: number, forbid: number): number
+-- for side 0, 1 for side 1) back toward `side`'s, the first panel that
+-- meets (require, forbid) (`field.check`: side-relative flags of side
+-- `of`); 0 when it walks off the field.
+function panels.closest_in_row(side: number, y: number, require: PanelFlags?, forbid: PanelFlags?, of: number?): number
     local x = 6 - 5 * side
     local step = 2 * side - 1
     while true do
-        if field.check(x, y, require, forbid) then
+        if field.check(x, y, require, forbid, of) then
             return x
         end
         x += step
@@ -99,13 +107,13 @@ function panels.closest_in_row(side: number, y: number, require: number, forbid:
 end
 
 -- `sub_800D190` (EXE4's 0x0800A1E4): across the rows, the front-most of
--- `side`'s panels whose flags meet (require, forbid): each row's
+-- `side`'s panels that meet (require, forbid) (of side `of`): each row's
 -- `closest_in_row`, the greatest of them for side 0, the least for side 1;
 -- 0 without one.
-function panels.front_most(side: number, require: number, forbid: number): number
+function panels.front_most(side: number, require: PanelFlags?, forbid: PanelFlags?, of: number?): number
     local found: { number } = {}
     for y = 1, 3 do
-        local x = panels.closest_in_row(side, y, require, forbid)
+        local x = panels.closest_in_row(side, y, require, forbid, of)
         if x ~= 0 then
             table.insert(found, x)
         end
@@ -183,8 +191,7 @@ function panels.area_front(side: number, flip: number, y: number): number
         end
         x -= dir
     end
-    local require, forbid = if side == 1 then 0x20 else 0, if side == 1 then 0 else 0x20
-    while not field.check(x, y, require, forbid) do
+    while not field.check(x, y, "own_area", nil, side) do
         x -= dir
         if not field.valid(x, y) then
             return 0
@@ -194,22 +201,24 @@ function panels.area_front(side: number, flip: number, y: number): number
 end
 
 -- `GetRandomRelativePanelFiltered`: of region `region`'s panels around
--- (x, y), dx toward `dir`, one with every `require` bit and no `forbid`
--- bit, at random (one draw of the RNG, only when there is one); nil if
--- none (a whole-field region has no panels around a point).
+-- (x, y), dx toward `dir`, one that meets (require, forbid) (`field.check`:
+-- side-relative flags of side `of`), at random (one draw of the RNG, only
+-- when there is one); nil if none (a whole-field region has no panels
+-- around a point).
 function panels.random_in_region(
     x: number,
     y: number,
-    require: number,
-    forbid: number,
+    require: PanelFlags?,
+    forbid: PanelFlags?,
     region: Region,
-    dir: number
+    dir: number,
+    of: number?
 ): (number?, number?)
     local shape: { { number } } = region.panels or {}
     local found: { number } = {}
     for _, p in shape do
         local px, py = x + p[1] * dir, y + p[2]
-        if field.check(px, py, require, forbid) then
+        if field.check(px, py, require, forbid, of) then
             -- The game keeps them as bytes: x in the low 3 bits, y above.
             table.insert(found, bit32.bor(bit32.band(px, 0xFF), bit32.lshift(bit32.band(py, 0xFF), 4)))
         end
@@ -222,10 +231,18 @@ function panels.random_in_region(
 end
 
 -- `GetRandomRelativePanelFiltered` with a region definition: of `r`'s
--- panels around (x, y), dx toward `dir`, one with every `require` bit and
--- no `forbid` bit, at random (one draw of the RNG, only when there is
--- one); nil if none.
-function panels.random_in(x: number, y: number, require: number, forbid: number, r: Region, dir: number): (number?, number?)
+-- panels around (x, y), dx toward `dir`, one that meets (require, forbid)
+-- (of side `of`), at random (one draw of the RNG, only when there is one);
+-- nil if none.
+function panels.random_in(
+    x: number,
+    y: number,
+    require: PanelFlags?,
+    forbid: PanelFlags?,
+    r: Region,
+    dir: number,
+    of: number?
+): (number?, number?)
     local shape = r.panels
     if shape == nil then
         error("GetRandomRelativePanelFiltered takes a region of panels, not a whole-field one")
@@ -233,7 +250,7 @@ function panels.random_in(x: number, y: number, require: number, forbid: number,
     local found: { number } = {}
     for _, p in shape do
         local px, py = x + p[1] * dir, y + p[2]
-        if field.check(px, py, require, forbid) then
+        if field.check(px, py, require, forbid, of) then
             -- The game keeps them as bytes: x in the low 3 bits, y above.
             table.insert(found, bit32.bor(bit32.band(px, 0xFF), bit32.lshift(bit32.band(py, 0xFF), 4)))
         end
@@ -245,38 +262,35 @@ function panels.random_in(x: number, y: number, require: number, forbid: number,
     return bit32.band(pick, 7), bit32.band(bit32.rshift(pick, 4), 0xF)
 end
 
--- `off_8109784`: an enemy of each side stands there (the other side's
--- body bit).
-local ENEMY_BODY = { [0] = 0x0400_0000, 0x0800_0000 }
-
 -- `sub_8109708`: a random panel of region `region` around (x, y), forward
--- for `me`'s side, that an enemy of `me` stands on; nil if none.
+-- for `me`'s side, that an enemy of `me` stands on (`off_8109784`: the
+-- other side's body); nil if none.
 function panels.random_enemy_panel(me: Object, x: number, y: number, region: Region): (number?, number?)
-    return panels.random_in_region(x, y, ENEMY_BODY[me.alliance], 0, region, panels.side_direction(me.alliance))
+    return panels.random_in_region(x, y, "enemy_body", nil, region, panels.side_direction(me.alliance), me.alliance)
 end
 
 -- `object_getPanelsInColumnFiltered`: the panels of column x (y 1 to 3)
--- that pass `field.check`.
-function panels.in_column(x: number, require: number, forbid: number): { number }
+-- that meet (require, forbid) (`field.check`: side-relative flags of side
+-- `of`).
+function panels.in_column(x: number, require: PanelFlags?, forbid: PanelFlags?, of: number?): { number }
     local list = {}
     for y = 1, 3 do
-        if field.check(x, y, require, forbid) then
+        if field.check(x, y, require, forbid, of) then
             table.insert(list, panels.pack(x, y))
         end
     end
     return list
 end
 
--- An enemy's body on a panel, while dimmed too, by `me`'s side
--- (`byte_80ED080`).
-local ENEMY_COLUMN = { [0] = 0x0401_0000, [1] = 0x0801_0000 }
+-- An enemy's body on a panel (`byte_80ED080`: the other side's body, and
+-- the flag every panel on the field has).
+local ENEMY_COLUMN: { PanelFlag } = { "enemy_body", "on_field" }
 
 -- `sub_80ED040` (MachGun's, the dragons'): from the column ahead of `me`
 -- forward, the first with an enemy's body in some row, and true; with
 -- none, the last column ahead, and false.
 function panels.enemy_column(me: Object): (number, boolean)
     local dir, x = me.facing, me.panel_x
-    local enemy = ENEMY_COLUMN[me.alliance]
     while true do
         x += dir
         if x == 0 or x >= 7 then
@@ -286,7 +300,7 @@ function panels.enemy_column(me: Object): (number, boolean)
             error("sub_80ED040 searches off the field's left edge (it would run on for 2^31 columns)")
         end
         for y = 1, 3 do
-            if field.check(x, y, enemy, 0) then
+            if field.check(x, y, ENEMY_COLUMN, nil, me.alliance) then
                 return x, true
             end
         end
@@ -312,19 +326,21 @@ function panels.highlight_region(x: number, y: number, n: Region, facing: number
 end
 
 -- `object_getPanelRegion`: region `n`'s panels around (x, y), dx along
--- `direction`, that pass `field.check`.
+-- `direction`, that meet (require, forbid) (`field.check`: side-relative
+-- flags of side `of`).
 function panels.region(
     x: number,
     y: number,
     n: Region,
     direction: number,
-    require: number,
-    forbid: number
+    require: PanelFlags?,
+    forbid: PanelFlags?,
+    of: number?
 ): { number }
     local list = {}
     for _, o in region_shape(n) do
         local px, py = x + o[1] * direction, y + o[2]
-        if field.check(px, py, require, forbid) then
+        if field.check(px, py, require, forbid, of) then
             table.insert(list, panels.pack(px, py))
         end
     end

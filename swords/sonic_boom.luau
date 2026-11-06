@@ -25,7 +25,15 @@ type Look = SonicBoomLook
 -- Its speed (16.16 pixels a tick) as its throwers set it.
 sonic_boom.SPEED = 0x8_0000
 -- The hits that stop it (or that it goes through).
-local HITS = 0x3F800000
+local HITS: { HitName } = {
+    "own_object",
+    "enemy_object",
+    "own_body",
+    "enemy_body",
+    "own_other_body",
+    "enemy_other_body",
+    "neutral",
+}
 
 local function finish(me: Object)
     me.collision:set_region(nil)
@@ -56,7 +64,7 @@ local function tick(me: Object)
         finish(me)
         return
     end
-    if bit32.band(c.hit_flags, HITS) ~= 0 then
+    if c:hit_any(HITS) then
         if not s.pierces then
             finish(me)
             return

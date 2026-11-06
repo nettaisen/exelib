@@ -57,12 +57,14 @@ end
 -- A game's gust kind, keyed `id`, of `look`.
 function gust.make_kind(id: string, look: GustLook): Kind
     -- (EXE6's `sub_80CD414`, EXE5's 0x080CEB30): blow on; end on a stopping hit, off the field, or (unless unseen) on
-    -- a panel it can't blow over (the game's table by side: the other side's panels; a side of 2, a turned navi's
-    -- side shifted by its flip, reads the code after the table).
+    -- a panel it can't blow over (the game's table by side: the other side's panels). A side of 2, a turned navi's
+    -- side shifted by its flip, reads the code after the table as its row: in each game words no panel meets
+    -- (EXE6's require 0xB427B500, EXE5's and EXE4's too: poison, grass, lava, holy and missing at once, which are
+    -- each a type of their own), so such a gust ends at its first panel.
     local function blow(me: Object)
         local s = me.state :: State
         local c = me.collision
-        local ends = bit32.btest(c.hit_flags, look.stopped_by)
+        local ends = look.stopped_by ~= nil and c:hit_any(look.stopped_by)
         if not ends then
             local p = me.pos
             me.pos = Vec3.new(p.x + me.vel.x, p.y, p.z)
@@ -73,12 +75,12 @@ function gust.make_kind(id: string, look: GustLook): Kind
                 ends = true
             elseif s.unseen then
                 return
+            elseif me.alliance == 2 then
+                ends = true
+            elseif me.alliance > 2 then
+                error(string.format("gust side %d reads past its panel table (sub_80CD414)", me.alliance))
             else
-                local rule = look.panels[me.alliance]
-                if rule == nil then
-                    error(string.format("gust side %d reads past its panel table (sub_80CD414)", me.alliance))
-                end
-                ends = not field.check(x, y, rule[1], rule[2])
+                ends = not field.check(x, y, look.panels.require, look.panels.forbid, me.alliance)
             end
         end
         if ends then
@@ -93,7 +95,7 @@ function gust.make_kind(id: string, look: GustLook): Kind
         local s = me.state :: State
         local c = me.collision
         c:remove()
-        if s.stop_on_hit and c.hit_flags ~= 0 then
+        if s.stop_on_hit and c.hit then
             return finish(me)
         end
         if not tracked(s) then

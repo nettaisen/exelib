@@ -57,11 +57,11 @@ export type Bass = {
     summon: (user: Object, controller: Object, spec: NaviChipSpec) -> Object?,
 }
 
--- The columns he shoots at, by side (`byte_80C3C90`: the other side's panels), and the panels his shots prefer
--- (`off_80C3BB0`: an enemy navi's body), as {require, forbid}; otherwise any panel with 0x10000.
-local COLUMN_FILTER = { [0] = { 0x20, 0 }, { 0, 0x20 } }
-local ENEMY_NAVI = { [0] = { 0x0400_0000, 0 }, { 0x0800_0000, 0 } }
-local ANY_PANEL = 0x1_0000
+-- The columns he shoots at, of his side (`byte_80C3C90`: the other side's panels), and the panels his shots prefer
+-- (`off_80C3BB0`: an enemy navi's body); otherwise any panel on the field.
+local COLUMN_FILTER = "enemy_area"
+local ENEMY_NAVI = "enemy_body"
+local ANY_PANEL = "on_field"
 local SHOT_COOLDOWN = 0x16
 -- His stance (animation 0) comes round every 38 of his sprite's steps (every game's).
 local STANCE_STEPS = 38
@@ -84,11 +84,10 @@ local function find_columns(me: Object): number
         x = 4
     end
     local last = if facing_right then 6 else 1
-    local filter = COLUMN_FILTER[me.alliance]
     local n = 0
     while x ~= last do
         x += me.facing
-        if #panels.in_column(x, filter[1], filter[2]) ~= 0 then
+        if #panels.in_column(x, COLUMN_FILTER, nil, me.alliance) ~= 0 then
             n += 1
             s.columns[n] = x
         end
@@ -97,17 +96,18 @@ local function find_columns(me: Object): number
     return s.columns[1]
 end
 
--- `sub_80C3BC0`: a random panel of his columns, rows 3 to 1, whose flags have every `require` bit and no `forbid`
--- bit and that isn't cooling down (one RNG draw when there is any).
-local function pick(me: Object, require: number, forbid: number): (number?, number?)
+-- `sub_80C3BC0`: a random panel of his columns, rows 3 to 1, that meets (require, forbid) (of his side) and isn't
+-- cooling down (one RNG draw when there is any).
+local function pick(me: Object, require: PanelFlags?, forbid: PanelFlags?): (number?, number?)
     local s = me.state :: State
     local found = {}
     local i = 1
     while s.columns[i] ~= 0 do
         local x = s.columns[i]
         for y = 3, 1, -1 do
-            local f = field.flags(x, y)
-            if bit32.band(f, forbid) == 0 and bit32.band(f, require) == require and s.cooldowns[(y - 1) * 6 + x] == 0 then
+            -- (Its test asks the flags word for no more than its bits; off the field, where the word is 0, the same, as
+            -- each of its `require`s has one.)
+            if field.check(x, y, require, forbid, me.alliance) and s.cooldowns[(y - 1) * 6 + x] == 0 then
                 table.insert(found, bit32.bor(bit32.lshift(y, 4), x))
             end
         end
@@ -151,11 +151,10 @@ function bass.make(spec: Spec): Bass
         end
         local px: number?, py: number? = nil, nil
         if bit32.band(battle.rng_positive(), 7) >= 3 then
-            local f = ENEMY_NAVI[me.alliance]
-            px, py = pick(me, f[1], f[2])
+            px, py = pick(me, ENEMY_NAVI, nil)
         end
         if not px then
-            px, py = pick(me, ANY_PANEL, 0)
+            px, py = pick(me, ANY_PANEL, nil)
         end
         if not px or not py then
             return

@@ -20,8 +20,9 @@ export type State = {
     bonus: number,
 }
 
--- The panel flag that says something of the other side's stands there (`byte_80E4618`, by the controller's side).
-local OCCUPIED = { [0] = 0x0020_0000, [1] = 0x0040_0000 }
+-- The panel flag that says something of the other side's stands there (`byte_80E4618`, by the controller's side):
+-- its player navi.
+local OCCUPIED = "enemy_navi"
 local BETWEEN, WAIT, WARN_UNTIL = 0x0A, 0x5A, 0x14
 local HIT_MOD = 3
 -- What the gauge loses in the operation battle: all of it.
@@ -31,12 +32,11 @@ local FULL_GAUGE = 0x4000
 function controller.make(look: JealousyLook): (user: Object, spec: DimmingChipSpec) -> Object?
     -- `sub_80E459C`: a hit on each panel the other side stands on, columns 6 to 1, rows 3 to 1; how many.
     local function hit_all(me: Object): number
-        local flag = OCCUPIED[me.alliance]
         local word = dimming_chips.damage_plus(me, (me.state :: State).bonus)
         local n = 0
         for x = 6, 1, -1 do
             for y = 3, 1, -1 do
-                if field.check(x, y, flag, 0) then
+                if field.check(x, y, OCCUPIED, nil, me.alliance) then
                     -- `sub_80C53A6`: a hit that runs while dimmed.
                     local box = battle.hitbox(me, {
                         panel_x = x,

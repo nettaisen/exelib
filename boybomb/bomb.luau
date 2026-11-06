@@ -32,9 +32,6 @@ local HIT_MOD = 3
 local FADE_TICKS, COUNTDOWN, HIT_TICKS = 15, 60, 20
 -- Its countdown's blink (EXE5's 0x080CD08C, EXE4's 0x080D51AC): the color shader by the timer's bit 2.
 local BLINK = { [0] = 0x00, 0x12 }
--- Where it may stand: solid, without what its side's entry forbids.
-local SOLID = 0x10
-
 -- The actions, by the framework's numbers.
 local APPEAR, DESTROYED, IDLE = 0, 2, 8
 
@@ -46,7 +43,9 @@ end
 function bomb.make(look: BoyBombLook): BoyBomb
     -- EXE5's 0x080CD29C: whether it may stand where it is (else it breaks: Param2).
     local function may_stand(me: Object): boolean
-        local ok = field.check(me.panel_x, me.panel_y, SOLID, look.stand_forbid[bit32.band(me.alliance, 1)])
+        -- (Where it may stand: solid, without what its side's entry forbids.)
+        local side = bit32.band(me.alliance, 1)
+        local ok = field.check(me.panel_x, me.panel_y, "solid", look.stand_forbid[side], side)
         if not ok then
             state(me).doomed = true
         end

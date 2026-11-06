@@ -11,8 +11,8 @@ local navi_left = require("./left")
 
 local navi_chips = {}
 
--- The panel flags a navi needs to stay where he appeared (as one word).
-local CAN_STAND = 0x10010
+-- The panel flags a navi needs to stay where he appeared.
+local CAN_STAND: { PanelFlag } = { "solid", "on_field" }
 
 -- A navi of `kind` for `user`, on the panel the controller picked, with
 -- the chip's element and damage word (each navi's spawner, `sub_80BC0DA`
@@ -51,7 +51,7 @@ end
 
 -- Whether his panel holds him (a field panel no one else stands on).
 function navi_chips.has_footing(me: Object): boolean
-    return bit32.band(field.flags(me.panel_x, me.panel_y), CAN_STAND) == CAN_STAND
+    return field.check(me.panel_x, me.panel_y, CAN_STAND)
 end
 
 -- An action's timer: on phase 0, phase 4 with `ticks` (and Timer2 cleared

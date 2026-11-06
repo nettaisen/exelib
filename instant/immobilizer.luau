@@ -105,12 +105,10 @@ end
 -- immobilizer of `kind` on every panel with an enemy body (`off_8015AF8`,
 -- by the user's side); each running while the battle is dimmed where
 -- `while_dimmed` (EXE5 DS's spawn, 0x0220AF44).
-local ENEMY_BODY = { [0] = 0x04000000, [1] = 0x08000000 }
 function immobilizer.ahead(kind: Kind, user: Object, x: number, y: number, while_dimmed: boolean?)
     local ahead = user.facing
-    local enemy = ENEMY_BODY[user.alliance]
     while field.valid(x, y) do
-        if bit32.btest(field.flags(x, y), enemy) then
+        if field.any(x, y, "enemy_body", user.alliance) then
             local o = immobilizer.spawn(kind, user, x, y)
             if o and while_dimmed then
                 o.run_while_dimmed = true

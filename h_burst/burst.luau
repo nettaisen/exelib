@@ -110,7 +110,7 @@ function burst.make_kind(id: string, look: HyperBurstShotLook): Kind
         local c = me.collision
         c:remove()
         local s = me.state :: State
-        if c.hit_flags ~= 0 and not s.bursting then
+        if c.hit and not s.bursting then
             s.bursting = true
             me.action = BURSTING
             me.phase = 0

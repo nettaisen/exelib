@@ -30,9 +30,6 @@ export type Spec = {
     side_only: boolean?,
 }
 
--- The panel a point leaves from: solid, with nothing on it.
-local SOLID, OCCUPIED = 0x10, 0x0F88_0080
-
 -- EXE6's and EXE5's front of row `y` (`sub_80E650A`): the front column of the user's area as it faces (`sub_800D4D0`,
 -- found from the other side's), on the field, if the user may lose that panel (`sub_800D668`, which the original tests
 -- after the panel itself, which fails off the field: no test changes anything, so the order is the original's in
@@ -57,7 +54,7 @@ function controller.make(spec: Spec): { kind: Kind, hook: (p: ColorPoint) -> (us
         local slot = 1
         for y = 1, 3 do
             local x = front(me, y)
-            if x ~= 0 and field.check(x, y, SOLID, OCCUPIED) then
+            if x ~= 0 and field.check(x, y, "solid", "occupied") then
                 spec.point(me, x, y, s.point, slot)
                 slot += 1
             end

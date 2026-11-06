@@ -24,10 +24,10 @@ export type State = {
 -- first saw no one (EXE4's 0x080E9DC6 does; EXE5's 0x080E89AC doesn't).
 export type Spec = { id: string, pile: Kind, second_alone: boolean }
 
--- A pile's panel: solid (0x10), with nothing on it (0x0F880080).
-local SOLID, TAKEN = 0x10, 0x0F88_0080
--- The other side's bodies, by the side looking.
-local BODIES = { [0] = 0x0580_0000, [1] = 0x0A80_0000 }
+-- A pile's panel: solid, with nothing on it.
+local TAKEN = "occupied"
+-- The other side's bodies, of the side looking.
+local BODIES: { PanelFlag } = { "enemy_body", "enemy_other_body", "neutral" }
 -- No one in the row (0xFF), and the nearest the first pile may see someone from.
 local NONE, REACH = 0xFF, 4
 
@@ -39,12 +39,11 @@ end
 -- How many panels past (x, y), looking `alliance` and `flip`'s way, the first panel with one of that side's
 -- opponents' bodies on it is (0 for the next one); NONE if the field ends first.
 local function distance(x: number, y: number, alliance: number, flip: number): number
-    local bodies = BODIES[alliance]
     local step = direction(alliance, flip)
     local n = 0
     x += step
     while field.valid(x, y) do
-        if bit32.btest(field.flags(x, y), bodies) then
+        if field.any(x, y, BODIES, alliance) then
             return n
         end
         n += 1
@@ -60,13 +59,13 @@ type Piles = { x: number, y: number, distance: number, x2: number, y2: number, d
 -- left) if that is another panel; each one where a pile can stand. Nil for no piles.
 local function find(me: Object, second_alone: boolean): Piles?
     local x, y = me.panel_x + me.facing, me.panel_y
-    if not field.check(x, y, SOLID, TAKEN) then
+    if not field.check(x, y, "solid", TAKEN) then
         return nil
     end
     local found: Piles = { x = x, y = y, distance = 0, x2 = 0, y2 = 0, distance2 = 0 }
     local far = 6 - 5 * bit32.bxor(me.alliance, me.flip)
     -- (In the first's row, so another panel if another column.)
-    if field.check(far, y, SOLID, TAKEN) and far ~= x then
+    if field.check(far, y, "solid", TAKEN) and far ~= x then
         found.x2, found.y2 = far, y
     end
     found.distance = distance(x, y, me.alliance, me.flip)

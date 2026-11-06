@@ -82,7 +82,7 @@ function controller.make(spec: Spec): { kind: Kind }
         panels = "own",
         flicker = true,
         ticks = 0x40,
-        sides = { [0] = { require = 0x0, forbid = 0x8020 }, [1] = { require = 0x20, forbid = 0x8000 } },
+        condition = { require = "own_area", forbid = "missing" },
         tick_sound = spec.tick_sound,
         change_sound = spec.poison_sound,
     }

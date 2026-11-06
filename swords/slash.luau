@@ -39,10 +39,6 @@ slash.STATE = { timer = "u16", turned = "u32" }
 -- The phases, on the attack's step.
 local START, SET_UP, SWING, STEP_BACK, RECOVER = 0x0, 0x4, 0x8, 0xC, 0x10
 
--- The panel a step sword steps to: on the field (every panel type's flag
--- 0x10000), with no body on it.
-local PANEL_EXISTS, BODIES = 0x10000, 0x0F800000
-
 -- The afterimages' color shader.
 local AFTERIMAGE_SHADER = 0xFFE0
 
@@ -163,7 +159,7 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
             s.turned = 0
             -- sub_8015B00: two panels ahead.
             x, y = me.panel_x + 2 * me.facing, me.panel_y
-            if not field.check(x, y, PANEL_EXISTS, BODIES) then
+            if not field.check(x, y, "on_field", "any_body") then
                 x, y = nil, nil
             end
         end

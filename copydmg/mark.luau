@@ -31,7 +31,7 @@ local mark = {}
 -- The attach point the mark sits at, on the marked navi.
 local MARK_POINT = 0x1B
 -- A panel with a player navi on it (either side's player bit).
-local PLAYERS = 0x60_0000
+local PLAYERS: { PanelFlag } = { "own_navi", "enemy_navi" }
 -- The probe's element: the sixth slot, which no hit's element names.
 local SIXTH_ELEMENT = 5
 -- EXE5's hit in the own-gauges mode: 50, hit modifier 3.
@@ -58,7 +58,7 @@ end
 -- its source.
 local function mark_navi(me: Object): boolean
     local x, y = me.panel_x, me.panel_y
-    if not bit32.btest(field.flags(x, y), PLAYERS) then
+    if not field.any(x, y, PLAYERS) then
         return false
     end
     local target = actor_at(x, y, 1 - me.alliance)
@@ -83,7 +83,7 @@ function mark.make(look: CopyDamageMarkLook): CopyDamageMark
     local function fly(me: Object)
         local c = me.collision
         c:remove()
-        if c.hit_flags ~= 0 then
+        if c.hit then
             battle.play_sound(look.sound)
             c:set_region(nil)
             if mark_navi(me) then

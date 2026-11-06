@@ -135,7 +135,7 @@ local function tick(me: Object, look: WideWaveLook)
         finish(me)
         return
     end
-    if c.hit_flags ~= 0 then
+    if c.hit then
         if not v.pierces then
             finish(me)
             return

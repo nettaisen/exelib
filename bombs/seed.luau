@@ -73,7 +73,7 @@ end
 local function burst(me: Object)
     local v = (me.state :: State).variant
     me.collision:set_region(nil)
-    local r = if me.collision.hit_flags ~= 0 then regions.single else regions.square
+    local r = if me.collision.hit then regions.single else regions.square
     local x, y = me.panel_x, me.panel_y
     -- (The game passes the side and flip halfword as the side, unmasked,
     -- so a flipped seed's dx lands far off the field.)

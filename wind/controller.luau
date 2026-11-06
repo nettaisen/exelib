@@ -11,15 +11,14 @@ local controller = {}
 export type State = { variant: FanVariant }
 
 local WAIT = 0x1E
--- Where the fan goes: a solid panel with nothing on it.
-local SOLID, OCCUPIED = 0x10, 0x0F88_0080
 
 function controller.make(look: WindControllerLook): WindController
     -- `sub_80E30E0`: the fan, then 31 ticks.
     local function effect(me: Object)
         if me.phase_init == 0 then
             local x, y = me.panel_x + me.facing, me.panel_y
-            if field.check(x, y, SOLID, OCCUPIED) then
+            -- (Where the fan goes: a solid panel with nothing on it.)
+            if field.check(x, y, "solid", "occupied") then
                 local damage = bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
                 look.spawn_fan(me, (me.state :: State).variant, x, y, damage)
             end

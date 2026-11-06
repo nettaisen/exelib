@@ -77,10 +77,6 @@ function grab.column_to_grab(me: Object): number?
     return x
 end
 
--- The panel filter that finds the user's side's panels (`byte_800D52C`,
--- by side): side 1's have the owner bit (0x20), side 0's don't.
-local OWN_SIDE = { [0] = { require = 0, forbid = 0x20 }, [1] = { require = 0x20, forbid = 0 } }
-
 -- `object_getEdgePanelMatchingRow` (`sub_800D4D0`): in the controller's
 -- row, the first panel past the user's side's front (nil if none). EXE6's
 -- and EXE5's PanelGrab panel.
@@ -100,9 +96,8 @@ function grab.edge_panel(me: Object): (number?, number?)
         x -= front
     end
     -- object_getFirstPanelInDirectionFiltered: on back to the user's
-    -- side's first panel.
-    local own = OWN_SIDE[side]
-    while not field.check(x, y, own.require, own.forbid) do
+    -- side's first panel (`byte_800D52C`).
+    while not field.check(x, y, "own_area", nil, side) do
         x -= front
         if not field.valid(x, y) then
             return nil, nil

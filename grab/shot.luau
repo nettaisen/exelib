@@ -40,13 +40,9 @@ local STOLEN_TICKS = 0x708
 local FALL_STEPS = 8
 
 -- The panels it takes: the other side's, with nothing on them
--- (`byte_80C6514`, by its side): the owner bit (0x20) and everything that
--- occupies a panel (bodies, neutral objects, blockers, reservations).
-local ALLIANCE_1, OCCUPIED = 0x20, 0x0F880080
-local TAKES = {
-    [0] = { require = ALLIANCE_1, forbid = OCCUPIED },
-    [1] = { require = 0, forbid = bit32.bor(OCCUPIED, ALLIANCE_1) },
-}
+-- (`byte_80C6514`, by its side): bodies, neutral objects, blockers,
+-- reservations.
+local TAKES = { require = "enemy_area", forbid = "occupied" }
 
 -- `sub_80C64A0`: fall; on landing, hit the panel and take it.
 local function fall(me: Object, look: Look)
@@ -74,10 +70,9 @@ local function fall(me: Object, look: Look)
     if hit then
         hit.run_while_dimmed = true
     end
-    local takes = TAKES[me.alliance]
     local victim = bit32.bxor(me.alliance, 1)
     local spared = if look.spares == "back_column" then x == victim * 5 + 1 else not panels.can_take(x, y, victim)
-    if field.check(x, y, takes.require, takes.forbid) and not spared then
+    if field.check(x, y, TAKES.require, TAKES.forbid, me.alliance) and not spared then
         -- (The original takes the side from its first parameter, which its
         -- spawn sets to its side.)
         field.set_alliance(x, y, me.alliance)

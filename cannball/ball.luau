@@ -74,7 +74,7 @@ function ball.make(look: CannonballLook, aim: Trajectory): Cannonball
             me:set_lifecycle("destroy")
             return
         end
-        if me.collision.hit_flags ~= 0 then
+        if me.collision.hit then
             me.collision:set_region(nil)
             me:set_lifecycle("destroy")
             return

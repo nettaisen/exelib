@@ -79,7 +79,7 @@ function drill.make_kind(
         me:hit_spark()
         local done = not held(me)
         if not done then
-            if c.hit_flags ~= 0 then
+            if c.hit then
                 c:set_region(nil)
                 battle.shake_camera(0, 0xC)
             end

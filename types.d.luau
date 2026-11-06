@@ -53,8 +53,8 @@ export type BusterLook = {
     arm: AttachmentLook,
     navi_arm: AttachmentLook,
     recovery: { { number } },
-    -- The panel flags that stop a shot's panel count, by the shooter's side (0 and 1).
-    closed: { [number]: number },
+    -- The panel flags that stop a shot's panel count, of the shooter's side.
+    closed: PanelFlags,
     attachment: Kind,
 }
 
@@ -267,9 +267,9 @@ export type ProtoManKind = {
     -- EXE4's (nil: EXE6's and EXE5's). His spawner (0x080C721A) keeps neither his user, nor its facing, nor the element,
     -- and his height is his side, which his init keeps.
     summoned_alone: boolean?,
-    -- What a panel he lands on must be free of, by his side (0x0F80_0000 for both), and whether his user's panel counts
-    -- as free anyway (true).
-    occupied: { [number]: number }?,
+    -- What a panel he lands on must be free of, of his side (any body), and whether his user's panel counts as free
+    -- anyway (true).
+    occupied: PanelFlags?,
     user_panel_free: boolean?,
     -- His slash (0x080C713E, 0x080C71AA): the sword, the hit and its effect as it starts (EXE6's and EXE5's hit 10
     -- ticks in), the sword away as it ends (theirs at his blink out and as he goes).
@@ -356,16 +356,16 @@ export type PuckVariant = { steps: number, own_side: number, ticks: number, trai
 -- weaker push; `unseen` hides it and lets it blow through any panel.
 export type GustHow = { pulls: boolean?, unseen: boolean? }
 
--- A game's gust (@exelib/gust/gust): its sprite, what it is and reaches, the hit flags that stop it (EXE6's wind
--- stoppers; EXE5's none, 0), whether an unseen gust pushes weaker too (EXE5's: any first parameter), and the panels it
--- blows over by side (require, forbid; side 2 reads the code after the table).
+-- A game's gust (@exelib/gust/gust): its sprite, what it is and reaches, the hits that stop it (EXE6's wind
+-- stoppers, a neutral object's; EXE5's none), whether an unseen gust pushes weaker too (EXE5's: any first parameter),
+-- and the panels it blows over (of its side).
 export type GustLook = {
     sprite: SpriteAsset,
     is: CollisionType,
     hits: CollisionType,
-    stopped_by: number,
+    stopped_by: (HitName | { HitName })?,
     weak_when_unseen: boolean,
-    panels: { [number]: { number } },
+    panels: PanelCondition,
 }
 
 -- A game's hockey puck: its sprite (the trail's too), its sound and the bounce's, what it is and reaches, its hits'
@@ -827,7 +827,7 @@ export type BoyBombLook = {
     broken: Effect,
     break_sound: Sound,
     removed: Effect?,
-    stand_forbid: { [number]: number },
+    stand_forbid: { [number]: PanelFlags },
     push: ObstaclePush,
     actions: { [number]: (Object) -> () },
     reserves_panel: boolean?,
@@ -1400,7 +1400,8 @@ export type AnubisVariant = {
 
 -- A panel change (objects/panel_changer, a row of the original's
 -- `byte_80E272C`): which panels (all, the changer's row, the panel in
--- front of it, its own) meeting its side's condition become `panel` (on
+-- front of it, its own) meeting its condition (of the changer's side; the
+-- row's words by side are each other's mirror) become `panel` (on
 -- side 1 `side1_panel` if set: the roads point the other way) after
 -- `ticks`, showing as it meanwhile (every tick, or with `flicker` every
 -- other four), with a tick sound every fourth tick and a sound as they
@@ -1411,7 +1412,7 @@ export type PanelChange = {
     panels: "all" | "row" | "front" | "own",
     flicker: boolean,
     ticks: number,
-    sides: { [number]: PanelCondition },
+    condition: PanelCondition,
     -- The sound as it starts (EXE4's changes to holes: 0x080E4390), every fourth tick, and as the panels change.
     start_sound: Sound?,
     tick_sound: Sound?,
@@ -1840,14 +1841,16 @@ export type RushLook = {
     status: Status,
     spared: Chip?,
     lost_target: "unbalances" | "skips",
-    -- What his navi's panel must be for him to appear there, by side (nil: EXE6's `byte_80C34A8`); `pixel_nudge`
-    -- false: he comes up under the opponent without EXE6's pixel down and up (EXE4's).
+    -- What his navi's panel must be for him to appear there, by side (nil: EXE6's `byte_80C34A8`), and the panel types
+    -- it mustn't be (EXE4's rows test the type's number); `pixel_nudge` false: he comes up under the opponent without
+    -- EXE6's pixel down and up (EXE4's).
     stand: RushStand?,
+    not_on: { PanelType }?,
     pixel_nudge: boolean?,
 }
 
--- Where Rush may appear by side: the panel flags required and forbidden.
-export type RushStand = { [number]: { require: number, forbid: number } }
+-- Where Rush may appear by side: each side's row, its side-relative names of that side.
+export type RushStand = { [number]: PanelCondition }
 
 -- A game's supports' controller (@exelib/supports/controller): its kind's key, the supports it sends, and the game's
 -- warp of the host, given the controller (nil: the navi warp, `navi_chip.warp`).
@@ -2277,8 +2280,7 @@ export type SunMeteor = {
     panel: "none" | "crack" | "break",
 }
 
--- Where a thrower's fists go (@exelib/metrknuk/targets: MetrKnuk's, EXE4's Duo's): the panels an enemy stands on (by
--- the thrower's side, the flags a panel must have and must not), and whether, with no enemy standing, the enemy's
--- area stands in (EXE6's).
-export type FistTargetTest = { [number]: { require: number, forbid: number } }
+-- Where a thrower's fists go (@exelib/metrknuk/targets: MetrKnuk's, EXE4's Duo's): the panels an enemy stands on (of
+-- the thrower's side), and whether, with no enemy standing, the enemy's area stands in (EXE6's).
+export type FistTargetTest = PanelCondition
 export type FistTargets = { body: FistTargetTest, area_fallback: boolean }

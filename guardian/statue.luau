@@ -31,8 +31,9 @@ export type State = {
     quiet: boolean,
     -- Its strike's dimming says strike now (the original's third parameter).
     strike: boolean,
-    -- What hit it when it broke (the collision's hit flags; the object's +0x60): which side strikes back.
-    attackers: number,
+    -- Which side strikes back, by what hit it when it broke (the original keeps the hits, the object's +0x60;
+    -- `sub_80D4FF6` reads them as it strikes): a side, or NONE.
+    avenger: number,
 }
 
 export type Strike = {
@@ -86,19 +87,20 @@ export type Statue = {
 local LIFETIME = 0x1770
 -- It takes its panel on its third update.
 local APPEAR_TICKS = 3
--- Where it can stand: a solid panel with nothing on it.
-local SOLID, OCCUPIED = 0x10, 0x0F88_0080
 -- The damage the stages' statues strike with.
 local STAGE_DAMAGE = 200
 local HIT_MOD = 3
--- The collision types of each side's hits (`sub_80D4FF6`): side 0's attacks, objects and bodies are the bits
--- 0xAA000000, side 1's 0x55000000.
-local SIDE0_HITS, SIDE1_HITS = 0xAA00_0000, 0x5500_0000
+-- The collision types of each side's hits (`sub_80D4FF6`: side 0's attacks, objects, bodies and other bodies,
+-- 0xAA000000; side 1's, 0x55000000), the statue's own side's and the other's.
+local OWN_HITS: { HitName } = { "own_attack", "own_object", "own_body", "own_other_body" }
+local ENEMY_HITS: { HitName } = { "enemy_attack", "enemy_object", "enemy_body", "enemy_other_body" }
+-- No side strikes back.
+local NONE = 0xFF
 -- The strike (`byte_80D4EB4`, by the side it strikes for): every panel with the other side's player navi, a burst
 -- on each, the camera shaking, and the statue in its striking animation. Its hit: hit modifier 3, no spark.
 local STRIKE_REGION: { [number]: Region } = {
-    [0] = new.region { field = { require = 0x0020_0000, forbid = 0 } },
-    [1] = new.region { field = { require = 0x0040_0000, forbid = 0 } },
+    [0] = new.region { field = { require = { "enemy_navi" } }, side = 0 },
+    [1] = new.region { field = { require = { "enemy_navi" } }, side = 1 },
 }
 local STRIKE_HIT_MOD = 3
 local STRIKE_ANIM = 1
@@ -111,12 +113,13 @@ local APPEAR, STANDING, STRIKE_BACK = 0, 8, 9
 
 -- `sub_80D4FF6`: the side that strikes back: the one opposite the only side whose hits broke it (nil: both sides'
 -- or neither's).
-local function avenging_side(hits: number): number?
-    local by0, by1 = bit32.btest(hits, SIDE0_HITS), bit32.btest(hits, SIDE1_HITS)
-    if by1 and not by0 then
-        return 0
-    elseif by0 and not by1 then
-        return 1
+local function avenging_side(me: Object): number?
+    local c = me.collision
+    local own, enemy = c:hit_any(OWN_HITS), c:hit_any(ENEMY_HITS)
+    if enemy and not own then
+        return me.alliance
+    elseif own and not enemy then
+        return 1 - me.alliance
     end
     return nil
 end
@@ -178,9 +181,9 @@ function statue.make(look: Look): Statue
         end
         local s = me.state :: State
         if me.hp == 0 and not s.quiet then
-            local hits = me.collision.hit_flags
-            s.attackers = hits
-            if hits ~= 0 and (look.strikes_on_any_hit or avenging_side(hits)) then
+            local side = avenging_side(me)
+            s.avenger = side or NONE
+            if me.collision.hit and (look.strikes_on_any_hit or side) then
                 me.action, me.phase, me.phase_init = obstacle.action_byte(me, STRIKE_BACK), 0, 0
                 return
             end
@@ -195,7 +198,8 @@ function statue.make(look: Look): Statue
         if t ~= 0 then
             return
         end
-        if not field.check(me.panel_x, me.panel_y, SOLID, OCCUPIED) then
+        -- (Where it can stand: a solid panel with nothing on it.)
+        if not field.check(me.panel_x, me.panel_y, "solid", "occupied") then
             destroyed(me)
             return
         end
@@ -215,7 +219,7 @@ function statue.make(look: Look): Statue
         end
         me.prevent_anim = 0
         local s = me.state :: State
-        local side = if battle.over() then nil else avenging_side(s.attackers)
+        local side = if battle.over() or s.avenger == NONE then nil else s.avenger
         if not side or not look.keeps_region_striking then
             me.collision:set_region(nil)
         end
@@ -406,7 +410,7 @@ function statue.make(look: Look): Statue
     kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { staged = "bool", quiet = "bool", strike = "bool", attackers = "u32" },
+        state = { staged = "bool", quiet = "bool", strike = "bool", avenger = "u8" },
         -- `sub_80D4C84`.
         update = function(me: Object)
             local l = me.lifecycle

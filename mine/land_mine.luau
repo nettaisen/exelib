@@ -49,12 +49,9 @@ local LIFETIME = 0x1770
 local HOP_TICKS, HOPS = 2, 0x3C
 -- The shuffle's rounds.
 local SHUFFLE_SWAPS = 0x14
--- Where it hops (`byte_80CDF50`, by side): a free solid enemy panel
--- (side 0: flags 0x30, not 0x0F8C0080; side 1: 0x10, not 0x0F8C00A0).
-local TARGETS: { [number]: PanelCondition } = {
-    [0] = { require = 0x30, forbid = 0x0F8C_0080 },
-    [1] = { require = 0x10, forbid = 0x0F8C_00A0 },
-}
+-- Where it hops (`byte_80CDF50`, by side): a free solid enemy panel, no
+-- mine on it (a mine's type reaches the objects set down).
+local TARGETS: PanelCondition = { require = { "solid", "enemy_area" }, forbid = { "occupied", "reaches_set_objects" } }
 -- Its collision's hit modifier (it is a mine, and reaches what stands on
 -- either side).
 local HIT_MOD = 3
@@ -103,7 +100,7 @@ end
 local function armed(me: Object)
     if
         me.hp ~= 0
-        and me.collision.hit_flags == 0
+        and not me.collision.hit
         and field.solid(me.panel_x, me.panel_y)
         and not battle.over()
     then
@@ -160,9 +157,9 @@ end
 -- `sub_80CDF18`: the enemy's free panels, shuffled; the first one (nil:
 -- none).
 local function first_panel(me: Object): (number?, number?)
-    local cond = TARGETS[me.alliance]
+    local cond = TARGETS
     -- (Shuffled from its side's order: docs/engine/side-symmetry.md.)
-    local list = panels.filtered_except(me, cond.require, cond.forbid, bit32.band(me.alliance, 1))
+    local list = panels.filtered_except(me, cond.require, cond.forbid, me.alliance, bit32.band(me.alliance, 1))
     local n = #list
     if n == 0 then
         return nil, nil

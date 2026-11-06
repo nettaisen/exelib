@@ -41,7 +41,7 @@ export type Spec = {
 local INTERVAL, AFTER = 0x1E, 0x3C
 -- Where the hands go (`byte_80E2E24`, by side): the other side's player
 -- navi's panels.
-local TARGETS: { [number]: { number } } = { [0] = { 0x0020_0000, 0 }, [1] = { 0x0040_0000, 0 } }
+local TARGETS = "enemy_navi"
 
 -- `sub_80E2D98`: each of the side's own panels the other side holds
 -- (`sub_800D618`) comes back when the dimming is over (its column's return
@@ -65,15 +65,14 @@ end
 -- `sub_80E2DE0`: a hand on every enemy navi's panel (from the far column's
 -- bottom back); how many.
 local function strike(me: Object, hand_kind: Kind): number
-    local rule = TARGETS[me.alliance]
-    if not rule then
+    if me.alliance > 1 then
         error(string.format("GrabBnsh's side %d reads past byte_80E2E24", me.alliance))
     end
     local damage = dimming_chips.damage_plus(me, (me.state :: State).bonus)
     local n = 0
     for x = 6, 1, -1 do
         for y = 3, 1, -1 do
-            if field.check(x, y, rule[1], rule[2]) then
+            if field.check(x, y, TARGETS, nil, me.alliance) then
                 hand.spawn(hand_kind, me, x, y, me.element, damage, n == 0)
                 n += 1
             end

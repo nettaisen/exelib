@@ -33,11 +33,6 @@ local panel_bursts = {}
 -- into its sprite.
 local CAPACITY = 28
 
--- A hit region's panels count when they are on the field
--- (`object_checkPanelParameters` with bit 0x10000, set on every refreshed
--- panel).
-local ON_FIELD = 0x10000
-
 -- `sub_80E3038`: the panels of a hit region around (x, y), the offsets' x
 -- toward `side`'s front, that are on the field.
 local function region_panels(offsets: { { number } }, x: number, y: number, side: number): { number }
@@ -45,7 +40,7 @@ local function region_panels(offsets: { { number } }, x: number, y: number, side
     local list: { number } = {}
     for _, d in offsets do
         local px: number, py: number = d[1] * dir + x, d[2] + y
-        if field.check(px, py, ON_FIELD, 0) then
+        if field.check(px, py, "on_field") then
             list[#list + 1] = panels.pack(px, py)
         end
     end
@@ -140,7 +135,8 @@ function panel_bursts.spawn(
     local cond = region.field
     if cond then
         o.panel_x, o.panel_y = 0, 0
-        list = panels.filtered_except(o, cond.require, cond.forbid)
+        -- (Its names of the region's side, where it gives one.)
+        list = panels.filtered_except(o, cond.require, cond.forbid, region.side)
     else
         list = region_panels(region.panels or {}, x or 0, y or 0, spawner.alliance)
     end

@@ -131,7 +131,7 @@ function fire.make(look: Look, sine: (angle: number) -> number): {
         c:remove()
         me:hit_spark()
         c:set_region(nil)
-        if c.hit_flags ~= 0 then
+        if c.hit then
             if look.hit_shakes then
                 battle.shake_camera(SHAKE_MAGNITUDE, SHAKE_TICKS)
             end

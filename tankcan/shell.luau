@@ -132,7 +132,7 @@ local function tick(me: Object, look: Look)
     c:remove()
     me:hit_spark()
     if c.region ~= nil then
-        if c.hit_flags ~= 0 then
+        if c.hit then
             battle.play_sound(look.hit_sound)
             battle.effect(me.pos, look.burst)
             finish(me)

@@ -45,7 +45,6 @@ type RollerState = { swallowed: boolean }
 local SPEED = 0x3_0000
 -- Its hit modifier, no spark.
 local HIT_MOD = 3
-local SOLID = 0x10
 
 -- `sub_80DBA7C`: grow if the roller swallowed something last tick; roll
 -- on, hitting again in a new column; gone where the panel isn't solid or
@@ -53,7 +52,7 @@ local SOLID = 0x10
 local function roll(me: Object, look: Look)
     local s = me.state :: State
     local c = me.collision
-    if c.hit_flags ~= 0 then
+    if c.hit then
         c:set_region(nil)
     end
     local r = me.related2
@@ -74,7 +73,7 @@ local function roll(me: Object, look: Look)
     if me.panel_x ~= x then
         c:set_region(regions.single)
     end
-    if not bit32.btest(field.flags(me.panel_x, me.panel_y), SOLID) or not field.valid(me.panel_x, me.panel_y) then
+    if not field.any(me.panel_x, me.panel_y, "solid") or not field.valid(me.panel_x, me.panel_y) then
         c:set_region(nil)
         me:set_lifecycle("destroy")
     end

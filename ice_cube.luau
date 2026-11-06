@@ -54,9 +54,8 @@ local FORMED = 2
 -- Look 0's forming (animation 0) lasts 10 of its sprite's steps (every game's).
 local FORMING_STEPS = 10
 -- What bursts it: bodies and neutral objects.
-local BURSTS_ON = 0x0C80_0000
+local BURSTS_ON: { HitName } = { "own_body", "enemy_body", "neutral" }
 local HIT_MOD = 3
-local SOLID = 0x10
 local AQUA = 2
 
 function ice_cube.make(look: Look): IceCube
@@ -93,7 +92,7 @@ function ice_cube.make(look: Look): IceCube
         -- sub_800E258: the panel under it, taken only if solid.
         local ox, oy = me.panel_x, me.panel_y
         me:set_panel_from_coordinates()
-        if bit32.btest(field.flags(me.panel_x, me.panel_y), SOLID) then
+        if field.any(me.panel_x, me.panel_y, "solid") then
             me:update_collision_panels()
             return
         end
@@ -112,7 +111,7 @@ function ice_cube.make(look: Look): IceCube
         local c = me.collision
         c:remove()
         me:hit_spark()
-        if not bit32.btest(c.hit_flags, BURSTS_ON) then
+        if not c:hit_any(BURSTS_ON) then
             local action = ACTIONS[me.action]
             if not action then
                 error(string.format("the ice cube's action %#x reads past its table (off_80D9924)", me.action))

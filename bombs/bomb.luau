@@ -95,7 +95,7 @@ local function tick(me: Object, look: BombLook)
         return
     end
     if not battle.dimmed() then
-        if me.collision.hit_flags ~= 0 then
+        if me.collision.hit then
             finish(me)
             return
         end

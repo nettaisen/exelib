@@ -46,7 +46,7 @@ local VANISH_ANIM = 4
 local HIT_MOD = 1
 local HEIGHT = 0xA0_0000
 -- An enemy's body (`byte_8016290`, by side).
-local ENEMY_BODY: { [number]: number } = { [0] = 0x0400_0000, [1] = 0x0800_0000 }
+local ENEMY_BODY = "enemy_body"
 -- The rows `sub_8016218` looks at, by the navi's row (`byte_8016298`).
 local ROWS: { [number]: { number } } = { [1] = { 1, 2, 3 }, [2] = { 2, 1, 3 }, [3] = { 3, 1, 2 } }
 
@@ -86,11 +86,10 @@ local function nearest_enemy(me: Object): (number?, number?)
     if not rows then
         error(string.format("sub_8016218 reads past byte_8016298 for row %d", me.panel_y))
     end
-    local body = ENEMY_BODY[me.alliance]
     local x = me.panel_x + me.facing
     while field.valid(x, 2) do
         for _, y in rows do
-            if bit32.btest(field.flags(x, y), body) then
+            if field.any(x, y, ENEMY_BODY, me.alliance) then
                 return x, y
             end
         end

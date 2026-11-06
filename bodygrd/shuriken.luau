@@ -97,7 +97,7 @@ end
 local function tick(me: Object, look: Look)
     local c = me.collision
     c:remove()
-    if c.hit_flags ~= 0 then
+    if c.hit then
         c:set_region(nil)
     end
     if battle.over() then

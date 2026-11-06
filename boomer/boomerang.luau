@@ -46,11 +46,17 @@ local TOP, BOTTOM = 0x4_0000, 0x34_0000
 -- hits are the game's: EXE6's an attack that hits navis.)
 local HIT_MOD, STRONG_HIT_MOD = 1, 3
 -- A hit registered by something (`dword_80CA540`).
-local HIT = 0xFF800000
-
--- The panel flags `sub_80CA510` reads: a panel that can grow grass, and
--- the side 1 bit.
-local CAN_GROW, SIDE_1 = 0x10, 0x20
+local HIT: { HitName } = {
+    "own_attack",
+    "enemy_attack",
+    "own_object",
+    "enemy_object",
+    "own_body",
+    "enemy_body",
+    "own_other_body",
+    "enemy_other_body",
+    "neutral",
+}
 
 -- The legs.
 local OUT, ACROSS, BACK = 0, 1, 2
@@ -61,17 +67,16 @@ function boomerang.variant(v: Variant): Variant
 end
 
 -- `sub_80CA510`: a grass boomerang turns the other side's panel it is on
--- to grass, if the panel can grow it.
+-- to grass, if the panel can grow it (solid).
 local function grow_grass(me: Object, s: State)
     if not s.variant.grass then
         return
     end
     local x, y = me.panel_x, me.panel_y
-    local f = field.flags(x, y)
-    if not bit32.btest(f, CAN_GROW) then
+    if not field.solid(x, y) then
         return
     end
-    if bit32.band(f, SIDE_1) == me.alliance * SIDE_1 then
+    if field.check(x, y, "own_area", nil, me.alliance) then
         return
     end
     field.set_type(x, y, "grass")
@@ -179,7 +184,7 @@ local function tick(me: Object, s: State)
         me:set_lifecycle("destroy")
         return
     end
-    if bit32.btest(c.hit_flags, HIT) then
+    if c:hit_any(HIT) then
         c:set_region(nil)
         s.hit_panel = panel_word(me)
     end

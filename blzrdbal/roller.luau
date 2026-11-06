@@ -34,7 +34,6 @@ local START_AHEAD, AHEAD = 4, 20
 -- How many of the objects it touched it looks through (`sub_801A4DC`'s
 -- room: four).
 local LOOKS_AT = 4
-local SOLID = 0x10
 
 -- Its X: the ball's whole pixels plus `px` toward its front (the
 -- fraction its own).
@@ -76,7 +75,7 @@ local function roll(me: Object)
     local s = me.state :: State
     s.swallowed = false
     local c = me.collision
-    if c.hit_flags ~= 0 then
+    if c.hit then
         local found: Object? = nil
         for i, o in c:hit_by() do
             if i > LOOKS_AT then
@@ -103,7 +102,7 @@ local function roll(me: Object)
     if me.panel_x ~= x then
         c:set_region(regions.single)
     end
-    if not bit32.btest(field.flags(me.panel_x, me.panel_y), SOLID) or not field.valid(me.panel_x, me.panel_y) then
+    if not field.any(me.panel_x, me.panel_y, "solid") or not field.valid(me.panel_x, me.panel_y) then
         leave(me)
     end
 end

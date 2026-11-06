@@ -42,9 +42,19 @@ export type State = {
 }
 
 -- Hits that end it: bodies, neutral objects, attacks.
-local ENDING = 0xFF800000
--- The enemy bodies it looks for, by its side.
-local TARGETS = { [0] = 0x04000000, [1] = 0x08000000 }
+local ENDING: { HitName } = {
+    "own_attack",
+    "enemy_attack",
+    "own_object",
+    "enemy_object",
+    "own_body",
+    "enemy_body",
+    "own_other_body",
+    "enemy_other_body",
+    "neutral",
+}
+-- The enemy bodies it looks for, of its side.
+local TARGETS = "enemy_body"
 -- Speeds (16.16 per tick) and ticks a panel: normal and fast.
 local ROW_SPEED, FAST_ROW_SPEED = 0xAAAB, 0x1_0000
 local COLUMN_SPEED, FAST_COLUMN_SPEED = 0x6666, 0x999A
@@ -61,10 +71,9 @@ local function search(me: Object, dir: number): (number, number)
     if (dir > 0 and x >= stop) or (dir < 0 and x == stop) then
         error(string.format("thunder ball: a target search from column %d never ends", x))
     end
-    local targets = TARGETS[me.alliance]
     while x ~= stop do
         for y = 3, 1, -1 do
-            if bit32.btest(field.flags(x, y), targets) then
+            if field.any(x, y, TARGETS, me.alliance) then
                 return x, y
             end
         end
@@ -149,7 +158,7 @@ local function tick(me: Object, look: ThunderBallLook)
     local c = me.collision
     c:remove()
     me:hit_spark()
-    if battle.over() or bit32.btest(c.hit_flags, ENDING) then
+    if battle.over() or c:hit_any(ENDING) then
         return finish(me)
     end
     if me.action ~= 0 then

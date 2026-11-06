@@ -68,11 +68,10 @@ function panel_chips.make(spec: Spec): PanelChips
     return { kind = kind, hook = hook }
 end
 
--- The conditions most changes use: a side's own area (side 0's: not
--- missing, not side 1's; side 1's: side 1's, not missing), and any panel
--- that isn't missing.
-panel_chips.OWN_AREA = { [0] = { require = 0x0, forbid = 0x8020 }, [1] = { require = 0x20, forbid = 0x8000 } }
-panel_chips.OTHER_AREA = { [0] = { require = 0x20, forbid = 0x8000 }, [1] = { require = 0x0, forbid = 0x8020 } }
-panel_chips.ANY = { [0] = { require = 0x0, forbid = 0x8000 }, [1] = { require = 0x0, forbid = 0x8000 } }
+-- The conditions most changes use: a side's own area, the other side's,
+-- and any panel, none missing.
+panel_chips.OWN_AREA = { require = "own_area", forbid = "missing" } :: PanelCondition
+panel_chips.OTHER_AREA = { require = "enemy_area", forbid = "missing" } :: PanelCondition
+panel_chips.ANY = { forbid = "missing" } :: PanelCondition
 
 return panel_chips

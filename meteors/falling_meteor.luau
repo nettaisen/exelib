@@ -35,7 +35,7 @@ local ANIM = 0
 local START, SPEED = 0x100_0000, 0x10_0000
 local WAIT, FALL = 0x1E, 0x10
 -- It bursts where the panel is solid or holds a body.
-local BURSTS_ON = 0x0F80_0010
+local BURSTS_ON: { PanelFlag } = { "any_body", "solid" }
 -- The camera shake's ticks.
 local SHAKE_TICKS = 0xF
 
@@ -71,7 +71,7 @@ function falling_meteor.make_kind(id: string, look: MeteorLook): Kind
         end
         me:set_coordinates_from_panel()
         me.pos = Vec3.new(me.pos.x, me.pos.y, 0)
-        if bit32.btest(field.flags(me.panel_x, me.panel_y), BURSTS_ON) then
+        if field.any(me.panel_x, me.panel_y, BURSTS_ON) then
             battle.effect(me.pos, look.burst)
             battle.play_sound(look.sounds.land)
             local shake = row_of(me).shake

@@ -224,7 +224,7 @@ local function tick(me: Object, look: Look)
     if battle.over() then
         return burst(me, look)
     end
-    if c.hit_flags ~= 0 then
+    if c.hit then
         c:set_region(nil)
     end
     local was_x, was_y = c.panel_x, c.panel_y

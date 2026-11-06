@@ -17,7 +17,6 @@
 
 local wave = {}
 
-local SOLID = 0x10
 local HIT_MOD = 3
 -- Out of sight: 240 pixels to the right.
 local GONE_X = 240
@@ -96,11 +95,11 @@ function wave.make(look: GuardWaveLook): GuardWaveSpawn
         local c = me.collision
         c:remove()
         me:hit_spark()
-        if battle.over() or not field.check(me.panel_x, me.panel_y, SOLID, 0) then
+        if battle.over() or not field.check(me.panel_x, me.panel_y, "solid") then
             finish(me)
             return
         end
-        if c.hit_flags ~= 0 then
+        if c.hit then
             c:set_region(nil)
         end
         local a = me.action
@@ -118,7 +117,7 @@ function wave.make(look: GuardWaveLook): GuardWaveSpawn
     -- EXE5's 0x080C73C0, EXE4's 0x080CFBD4: on a solid panel, its look and timing; its panel marked; its collision;
     -- the sound.
     local function init(me: Object)
-        if not field.check(me.panel_x, me.panel_y, SOLID, 0) then
+        if not field.check(me.panel_x, me.panel_y, "solid") then
             me:free()
             return
         end
