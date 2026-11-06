@@ -26,7 +26,7 @@ export type Look = {
     spark: Spark,
     wave_is: CollisionType,
     -- The fist's element, and whether the landing's hits take it (else none).
-    element: number,
+    element: Element,
     waves_take_element: boolean,
     -- The effects it leaves (the game's lib/effects).
     effects: { explosion: Effect, burst: Effect, puff: Effect },
@@ -34,7 +34,7 @@ export type Look = {
 
 export type Strike = {
     kind: Kind,
-    spawn: (owner: Object, x: number, y: number, element: number, z: number, damage: number) -> Object?,
+    spawn: (owner: Object, x: number, y: number, element: Element, z: number, damage: number) -> Object?,
     -- The chip's `instant` hook.
     instant: (user: Object, spec: InstantChipSpec) -> (),
 }
@@ -79,7 +79,7 @@ function strike.make(look: Look): Strike
             error("JustcOne's fist without a collision slot (sub_80DB324 doesn't check)")
         end
         me:setup_collision(look.is, look.hits, HIT_MOD)
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me:set_coordinates_from_panel()
         local facing = me.facing
         me.vel = Vec3.new(facing * SPEED, me.vel.y, SPEED)
@@ -97,7 +97,7 @@ function strike.make(look: Look): Strike
     local function land(me: Object)
         battle.shake_camera(3, 0x2D)
         local damage = bit32.band(me.damage, 0xF000) + WAVE_DAMAGE
-        local element = if look.waves_take_element then me.element else 0
+        local element = if look.waves_take_element then me.element else Element.null
         for _, region in WAVES do
             local box = battle.hitbox(me, {
                 panel_x = me.panel_x,
@@ -210,8 +210,8 @@ function strike.make(look: Look): Strike
 
     -- `sub_80DB474` and `sub_801155A`: the fist of `owner`'s on (x, y), with the damage word `damage`. (It spawns
     -- at the registers' values, which its init replaces.)
-    local function spawn(owner: Object, x: number, y: number, element: number, z: number, damage: number): Object?
-        local o = battle.spawn(kind, Vec3.new(y, element, z))
+    local function spawn(owner: Object, x: number, y: number, element: Element, z: number, damage: number): Object?
+        local o = battle.spawn(kind, Vec3.new(y, element.byte, z))
         if o then
             o.panel_x, o.panel_y = x, y
             o.element = element
@@ -224,7 +224,7 @@ function strike.make(look: Look): Strike
 
     -- `sub_80DB4B4`: the other side's middle panel, with the look's element.
     local function instant(user: Object, spec: InstantChipSpec)
-        local x = 5 - bit32.bxor(user.alliance, user.flip) * 3
+        local x = 5 - user.facing_side * 3
         spawn(user, x, 2, look.element, spec.z, spec.damage)
     end
 

@@ -63,7 +63,7 @@ function wind.make(spec: {
                 me.anim, me.anim_loaded = 0, 0
                 sprite:set_animation(0)
                 sprite.palette = 0
-                sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+                sprite:face(me)
                 me.vel = Vec3.new(me.facing * STREAK_SPEED, me.vel.y, STREAK_RISE)
                 me.timer = STREAK_TICKS
                 me.lifecycle = "update"
@@ -82,7 +82,7 @@ function wind.make(spec: {
     local function streak(me: Object)
         local r = int.u32(battle.rng())
         local x = bit32.band(r, 0x1F) - 0x98
-        if bit32.bxor(me.alliance, me.flip) ~= 0 then
+        if me.facing_side ~= 0 then
             x += 0x110
         end
         local y = bit32.rshift(r, 25) - 0x40

@@ -57,7 +57,7 @@ local function hold(me: Object, word: number)
     local owner = me.related1
     if owner then
         owner.step, owner.step_init = word, 0
-        owner.attack_element = 0
+        owner.attack_element = Element.null
     end
 end
 
@@ -117,7 +117,7 @@ local function trail(me: Object, look: WideWaveLook, s: State)
     battle.afterimage(me, me.pos, {
         sprite = s.variant.trail_sprite or look.trail_sprite,
         anim = TRAIL_ANIM,
-        flip = bit32.bxor(me.alliance, me.flip),
+        facing = me.facing_side,
         lifetime = TRAIL_TICKS,
         color_shader = TRAIL_SHADER,
     })
@@ -168,7 +168,7 @@ local function init(me: Object, look: WideWaveLook)
     me.visible = true
     me.anim, me.anim_loaded = ANIM_RISE, ANIM_RISE
     sprite:set_animation(ANIM_RISE)
-    sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+    sprite:face(me)
     me.vel = Vec3.new(me.facing * v.speed, me.vel.y, me.vel.z)
     me.panel_x = me.panel_x - me.facing
     me:set_coordinates_from_panel()
@@ -240,7 +240,7 @@ function wave.fire(
     y: number,
     z: number,
     variant: WaveVariant,
-    element: number,
+    element: Element,
     damage: number,
     hit_mod: number
 ): Object?

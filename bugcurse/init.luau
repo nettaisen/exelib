@@ -121,7 +121,7 @@ function bugcurse.make(look: BugCurseLook): (user: Object, spec: DimmingChipSpec
         sprite:set_animation(0)
         sprite:step()
         me.visible = true
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me:set_coordinates_from_panel()
         battle.play_sound(look.sound)
         me:set_lifecycle("update")
@@ -149,8 +149,8 @@ function bugcurse.make(look: BugCurseLook): (user: Object, spec: DimmingChipSpec
 
     -- EXE5's 0x080D6654: a curse on (x, y) with `element` and the damage word, of `controller`'s side, which waits on
     -- it; running while dimmed. (Its position is the spawner's registers: the row, the element and 0.)
-    local function spawn(controller: Object, x: number, y: number, element: number, damage: number): Object?
-        local o = battle.spawn(curse, Vec3.new(y, element, 0))
+    local function spawn(controller: Object, x: number, y: number, element: Element, damage: number): Object?
+        local o = battle.spawn(curse, Vec3.new(y, element.byte, 0))
         if o then
             o.panel_x, o.panel_y = x, y
             o.element = element
@@ -176,7 +176,7 @@ function bugcurse.make(look: BugCurseLook): (user: Object, spec: DimmingChipSpec
     local function effect(me: Object)
         local s = me.state :: ControllerState
         if me.phase_init == 0 then
-            local enemy = battle.player(bit32.bxor(me.alliance, 1))
+            local enemy = battle.player(battle.other_side(me.alliance))
             if enemy and not untouched(enemy) then
                 if spawn(me, enemy.panel_x, enemy.panel_y, me.element, bit32.bor(me.damage, bit32.lshift(me.stamina, 16))) then
                     s.waiting = true

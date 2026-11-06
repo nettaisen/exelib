@@ -7,14 +7,14 @@
 export type AttachmentOptions = { anim: number?, while_dimmed: boolean?, palette_add: number? }
 
 -- A game's sonic boom (@exelib/swords/sonic_boom): its sprite, its height, its palette when it goes through, else by
--- its element (`element_mask` of its element byte indexing `palettes`), its collision types (what it is, and what it
--- hits).
+-- its primary element (`palettes`; with `whole_byte`, an element with a secondary element has none: the game reads
+-- the whole byte), its collision types (what it is, and what it hits).
 export type SonicBoomLook = {
     sprite: SpriteAsset,
     z: number,
     piercing_palette: number,
-    palettes: { [number]: number },
-    element_mask: number,
+    palettes: { [PrimaryElement]: number },
+    whole_byte: boolean,
     is: CollisionType,
     hits: CollisionType,
 }
@@ -387,7 +387,7 @@ export type MagnetLook = {
     id: string,
     attack: CollisionType,
     hits: CollisionType,
-    spark_of: (element: number) -> Spark,
+    spark_of: (element: Element) -> Spark,
     paralysis: Status,
     watches: boolean,
 }
@@ -398,7 +398,7 @@ export type MagnetSpawn = (
     owner: Object,
     dx: number,
     dy: number,
-    element: number,
+    element: Element,
     paralyzes: boolean,
     damage: number
 ) -> Object?
@@ -446,7 +446,7 @@ export type SnakeLook = {
     rise_sound: Sound,
     leap_sound: Sound,
     wait: number,
-    strike_element: number,
+    strike_element: Element,
     strike_spark: Spark,
     strike_hit_mod: number,
     is: CollisionType,
@@ -509,7 +509,7 @@ export type SeedLook = {
     is: CollisionType,
     hits: CollisionType,
     hit_mod: number,
-    spark: ((element: number) -> Spark)?,
+    spark: ((element: Element) -> Spark)?,
     splash: Effect,
     puff: Effect,
 }
@@ -648,7 +648,7 @@ export type FolderRules = {
 -- whirlwind top that rolls and spins there (its palette, its spins), EXE6's
 -- seeking whirlwind no chip sends, or EXE5's AqWhirl whirlpool.
 export type AirSpinSender = {
-    send: (user: Object, x: number, y: number, element: number, damage: number) -> Object?,
+    send: (user: Object, x: number, y: number, element: Element, damage: number) -> Object?,
     palette: number?,
     spins: number?,
 }
@@ -701,7 +701,7 @@ export type AirSpinTopLook = {
 -- A whirlwind top made for a game (@exelib/airspin/top).
 export type AirSpinTop = {
     kind: Kind,
-    spawn: (owner: Object, x: number, y: number, element: number, palette: number, spins: number, damage: number) -> Object?,
+    spawn: (owner: Object, x: number, y: number, element: Element, palette: number, spins: number, damage: number) -> Object?,
     sender: (palette: number, spins: number) -> AirSpinSender,
 }
 
@@ -731,7 +731,7 @@ export type ZSaverLook = {
     is: CollisionType,
     hits: CollisionType,
     effects: { Effect },
-    boom: (owner: Object, x: number, y: number, element: number, damage: number, boom: SonicBoom) -> Object?,
+    boom: (owner: Object, x: number, y: number, element: Element, damage: number, boom: SonicBoom) -> Object?,
     step: StepSword?,
     a_held_window: boolean,
 }
@@ -757,7 +757,7 @@ export type NumberBallLook = {
     explosion: Effect,
     is: CollisionType,
     hits: CollisionType,
-    hidden_parts: number?,
+    hidden_parts: HiddenParts?,
 }
 
 -- A NumbrBl ball made for a game (@exelib/numbrbl/ball).
@@ -842,7 +842,7 @@ export type BoyBombLook = {
 -- BoyBomb's bomb made for a game (@exelib/boybomb/bomb): its kind, and its spawn for a controller on (x, y).
 export type BoyBomb = {
     kind: Kind,
-    spawn: (controller: Object, x: number, y: number, element: number, damage: number) -> Object?,
+    spawn: (controller: Object, x: number, y: number, element: Element, damage: number) -> Object?,
 }
 
 -- A game's NumbrBl NumberMan (@exelib/numbrbl/numberman): his kind's id, sprite and palette, his appearing sound, his
@@ -900,11 +900,10 @@ export type PatchCardEffect = {
 
 -- What a game's patch cards' application (@exelib/patch_cards/apply) reads of the game: its kinds in the order they
 -- apply (the original's effect numbers), the kinds whose choice is part of what the effect is (and the choice's
--- field), the element bytes of the bodies and the hit statuses' bytes.
+-- field), and the hit statuses' bytes.
 export type PatchCardsGame = {
     rank: { [string]: number },
     choice: { [string]: string },
-    bodies: { [string]: number },
     hit_status: { [string]: number },
 }
 
@@ -915,7 +914,7 @@ export type CopyDamageSpec = {
     id: string?,
     sound: Sound,
     raise_arm: (me: Object) -> (),
-    shot: (owner: Object, x: number, y: number, element: number, damage: number) -> Object?,
+    shot: (owner: Object, x: number, y: number, element: Element, damage: number) -> Object?,
 }
 
 -- A game's CopyDmg mark (@exelib/copydmg/mark): its kind's id, sprite and
@@ -938,12 +937,27 @@ export type CopyDamageMarkLook = {
     own_gauges_hit: { spark: Spark, is: CollisionType, hits: CollisionType }?,
 }
 
--- A VarSwrd-like chip's action (@exelib/varswrd/action): its sequences by the
--- navi's direction flip, as joypad words with A held, each ending in 0; what
--- they give, in order, and what the countdown or A let go gives.
+-- Buttons held, each by name (a step of a sequence: `{ a = true, down = true }`).
+export type KeySet = {
+    a: boolean?,
+    b: boolean?,
+    select: boolean?,
+    start: boolean?,
+    right: boolean?,
+    left: boolean?,
+    up: boolean?,
+    down: boolean?,
+    r: boolean?,
+    l: boolean?,
+}
+
+-- A VarSwrd-like chip's action (@exelib/varswrd/action): its sequences for a
+-- navi not turned and turned (none: a turned navi's read past the tables),
+-- each a list of steps, the buttons held (A among them); what they give, in
+-- order, and what the countdown or A let go gives.
 export type VarSwordSpec = {
     id: string?,
-    sequences: { [number]: { { number } } },
+    sequences: { unturned: { { KeySet } }, turned: { { KeySet } }? },
     picks: { Chip },
     sword: Chip,
 }
@@ -993,7 +1007,7 @@ export type BlackBombLook = {
 -- A CopyDmg mark made for a game (@exelib/copydmg/mark).
 export type CopyDamageMark = {
     kind: Kind,
-    spawn: (owner: Object, x: number, y: number, element: number, damage: number) -> Object?,
+    spawn: (owner: Object, x: number, y: number, element: Element, damage: number) -> Object?,
 }
 
 -- A Wind's or Fan's fan (@exelib/wind/fan): its palette; `pulls`: it blows
@@ -1037,7 +1051,7 @@ export type FanLook = {
     is: CollisionType,
     hits: CollisionType,
     -- The game's gust (`sub_80CD488`).
-    spawn_gust: (x: number, y: number, alliance: number, flip: number, how: GustHow, damage: number, holder: Object?,
+    spawn_gust: (x: number, y: number, alliance: number, flip: boolean, how: GustHow, damage: number, holder: Object?,
         slot: number) -> Object?,
     -- The sides' wind slots, in the game's rules' state (@exelib/wind/registry), the fan its side's while it blows.
     wind: WindSlots,
@@ -1107,8 +1121,8 @@ export type ProjectileVariant = {
     id: string?,
     collision: { is: CollisionType, hits: CollisionType },
     hit_mod: number,
-    element: string,
-    secondary: { string }?,
+    element: ElementName,
+    secondary: SecondaryElements?,
     spark: Spark?,
     sprite: SpriteAsset?,
     anim: number?,
@@ -1283,7 +1297,7 @@ export type BombVariant = {
 -- A thrown seed (lib/bombs/seed): its element and palette, the panels it
 -- grows, the effect on each and its sound.
 export type SeedVariant = {
-    element: number,
+    element: Element,
     palette: number,
     panel: PanelType,
     effect: Effect,
@@ -1349,7 +1363,7 @@ export type RockVariant = {
     id: string?,
     anim: number,
     hp: number,
-    element: string,
+    element: ElementName,
     debris_palette: number,
     break_sound: Sound,
     -- What it is taken for (none: EXE4's, whose init writes no NameID).
@@ -1420,8 +1434,8 @@ export type PanelChange = {
 }
 
 -- A barrier (lib/barriers): `sub_801A7CC`'s row (how it behaves, its HP,
--- the damage a hit must reach to wear it, its timer (0xFFFF: none), the
--- element that breaks it), and its visual (`byte_80E0A14`'s look: sprite,
+-- the damage a hit must reach to wear it, its timer (none: it never runs
+-- out), the element that breaks it), and its visual (`byte_80E0A14`'s look: sprite,
 -- animation, palette, the owner's attach point it sits at, the sprite
 -- parts it hides; LifeAur's aura hides part 6 but for the local MegaMan),
 -- with its sounds as it rises (and grows back) and as it goes down.
@@ -1431,8 +1445,8 @@ export type Barrier = {
     behavior: BarrierBehavior,
     hp: number,
     threshold: number,
-    timer: number,
-    weak: string?,
+    timer: number?,
+    weak: PrimaryElement?,
     -- Its visual: its sheet and animation (the next, its going down), palette, attach point and hidden parts; how
     -- many of its sprite's steps its animation comes round in (it loops), and its going down lasts.
     look: {
@@ -1440,7 +1454,7 @@ export type Barrier = {
         anim: number,
         palette: number,
         attach_point: number,
-        hidden_parts: number,
+        hidden_parts: HiddenParts,
         up_steps: number,
         down_steps: number,
     },
@@ -1540,7 +1554,7 @@ export type TornadoLook = {
     is: CollisionType,
     bug_is: CollisionType?,
     target: CollisionType,
-    spark: (element: number) -> Spark,
+    spark: (element: Element) -> Spark,
 }
 
 -- What a tornado is spawned with: its variant, the status its hits
@@ -1593,7 +1607,7 @@ export type ElemTrapStrike = { sound: Sound?, spark: Spark, hit_mod: number, sta
 -- (EXE4's sets the other side's mood to 1, 0x0800F4DE), and where its bursts
 -- go (none: the whole field; EXE4's the other side's area, 0x080E531F).
 export type ElemTrapStrikeLook = {
-    strikes: { [number]: ElemTrapStrike },
+    strikes: { [PrimaryElement]: ElemTrapStrike },
     self_type: CollisionType,
     target: CollisionType,
     bursts: Kind,
@@ -1711,7 +1725,7 @@ export type LanceLook = { sprite: SpriteAsset, sound: Sound, attack: LanceAttack
 -- hit modifier, and its spark by its element; each tick its hits resolve
 -- and spark, its first that lands ends its region, and its panel shows
 -- highlighted while the region stands.
-export type LanceAttack = { is: CollisionType, hits: CollisionType, hit_mod: number, spark: (element: number) -> Spark }
+export type LanceAttack = { is: CollisionType, hits: CollisionType, hit_mod: number, spark: (element: Element) -> Spark }
 
 -- A row (`byte_80CF3AC`): what it is and reaches and its hit modifier; the
 -- camera shake it lands with (0 none, else the magnitude, 15 ticks); what
@@ -1731,7 +1745,7 @@ export type MeteorRow = {
 export type MeteorLook = {
     sprite: SpriteAsset,
     sounds: { fall: Sound, land: Sound },
-    spark: (element: number) -> Spark,
+    spark: (element: Element) -> Spark,
     -- Its landing's burst, and its panel marker's kind.
     burst: Effect,
     marker: Kind,
@@ -1978,7 +1992,7 @@ export type Lockon = LockonDef
 export type NaviChipSpec = {
     panel_x: number,
     panel_y: number,
-    element: number,
+    element: Element,
     damage: number,
 }
 
@@ -2040,14 +2054,14 @@ export type ElemFlameLook = {
     attack: CollisionType,
     attack_480: CollisionType,
     hits: CollisionType,
-    spark: (element: number) -> Spark,
+    spark: (element: Element) -> Spark,
 }
 
 -- A game's element flame kind and its spawn: a flame on (x, y) with its state, the element, height and damage word,
 -- of `owner`'s side and facing, of no owner.
 export type ElemFlame = {
     kind: Kind,
-    spawn: (owner: Object, x: number, y: number, element: number, z: number, s: ElemFlameState, damage: number) -> Object?,
+    spawn: (owner: Object, x: number, y: number, element: Element, z: number, s: ElemFlameState, damage: number) -> Object?,
 }
 
 -- A soul's navi's image as MegaMan unites with it (@exelib/souls/image: EXE5's actor object 0x2A, EXE4's effect object

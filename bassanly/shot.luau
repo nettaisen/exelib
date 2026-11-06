@@ -129,7 +129,7 @@ function shot.make_kind(look: Look): Kind
         me.anim_loaded = ANIM
         sprite:set_animation(ANIM)
         sprite.palette = 0
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         if not me:create_collision() then
             me:free()
             return
@@ -163,7 +163,7 @@ function shot.make_kind(look: Look): Kind
             battle.afterimage(me, me.pos, {
                 sprite = look.sprite,
                 anim = me.anim,
-                flip = bit32.bxor(me.alliance, me.flip),
+                facing = me.facing_side,
                 color_shader = TRAIL_SHADER,
                 lifetime = TRAIL_TICKS,
             })
@@ -239,7 +239,7 @@ function shot.make_kind(look: Look): Kind
             return
         end
         local ex, ey = x, y
-        local enemy = battle.player(bit32.bxor(me.alliance, 1))
+        local enemy = battle.player(battle.other_side(me.alliance))
         if enemy then
             ex, ey = enemy.panel_x, enemy.panel_y
         end
@@ -395,12 +395,12 @@ function shot.spawn(
     owner: Object,
     x: number,
     y: number,
-    element: number,
+    element: Element,
     what: DarkBall,
     damage: number,
     z: number
 ): Object?
-    local o = battle.spawn(kind, Vec3.new(y, element, z))
+    local o = battle.spawn(kind, Vec3.new(y, element.byte, z))
     if o then
         local s = o.state :: State
         s.slant = what.slant

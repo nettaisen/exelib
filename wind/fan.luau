@@ -42,7 +42,7 @@ function fan.make(look: FanLook): Fan
     -- column back); none if another obstacle stands there. (With no panel of
     -- its side on the row it starts a column past the field's edge.)
     local function push_column(me: Object, row: number): number
-        local back = bit32.bxor(me.alliance, me.flip)
+        local back = me.facing_side
         local step = if back == 0 then -1 else 1
         if me.alliance > 1 then
             error(string.format("the fan's side %d reads past byte_80CD2A4", me.alliance))
@@ -68,7 +68,7 @@ function fan.make(look: FanLook): Fan
     -- first panel toward the fan without another obstacle on it; none if that
     -- leaves the field.
     local function pull_column(me: Object, row: number): number
-        local x = bit32.bxor(bit32.bxor(me.alliance, me.flip), 1) * 5 + 1
+        local x = battle.other_side(me.facing_side) * 5 + 1
         if look.far_column_only then
             return if field.any(x, row, NEUTRAL) then 0 else x
         end
@@ -236,11 +236,11 @@ function fan.make(look: FanLook): Fan
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
         sprite:step()
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me:set_coordinates_from_panel()
         me.pos = Vec3.new(me.pos.x, me.pos.y, 0)
         me.future_panel_x, me.future_panel_y = me.panel_x, me.panel_y
-        me.element = 0
+        me.element = Element.null
         me.identity = v.identity
         me.hp, me.max_hp = v.hp, v.hp
         me.timer = LIFETIME

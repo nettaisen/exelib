@@ -13,7 +13,6 @@
 -- Callers fire it with lib/projectile.luau. See
 -- docs/engine/objects-and-player.md §B8.
 
-local element = require("../element")
 local regions = require("../regions")
 
 local projectile = {}
@@ -180,7 +179,7 @@ local function init(me: Object, look: Look)
         me.anim = v.anim or 0
         me.anim_loaded = 0xFF
     end
-    me.element = element.byte(v.element, v.secondary)
+    me.element = Element.new(v.element, v.secondary)
     me:set_coordinates_from_panel()
     climb(me, v)
     me.timer2 = WAIT

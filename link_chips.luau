@@ -49,11 +49,6 @@ function link_chips.go(me: Object, step: number)
     me.step_init = 0
 end
 
--- `object_getFlip`: the flip value the sprite and effects take.
-function link_chips.flip(me: Object): number
-    return bit32.bxor(me.alliance, me.flip)
-end
-
 -- `sub_800E258`: the panel under a position (the BIOS divisions), as `side`
 -- has it (field.panel_at: a line between columns is in the one toward the other side, for either side).
 function link_chips.panel_at(x: number, y: number, side: number): (number, number)

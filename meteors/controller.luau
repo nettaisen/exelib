@@ -64,7 +64,7 @@ end
 -- none.
 local function list(me: Object, s: Listed): number
     local step = -me.facing
-    local x = 6 - 5 * bit32.bxor(me.alliance, me.flip)
+    local x = 6 - 5 * me.facing_side
     while foreign_panels(x, me.alliance) == 0 do
         x += step
         if x < 1 or x > 6 then
@@ -193,7 +193,7 @@ function controller.make(look: Look): (user: Object, spec: DimmingChipSpec) -> O
             end
             local x, y = targets.take(me)
             local damage = dimming_chips.damage_plus(me, s.bonus)
-            falling_meteor.spawn_kind(look.meteor, look.row, me, x, y, me.element, damage, true, Vec3.new(y, me.element, s.bonus))
+            falling_meteor.spawn_kind(look.meteor, look.row, me, x, y, me.element, damage, true, Vec3.new(y, me.element.byte, s.bonus))
         elseif phase == 8 then
             -- (Nothing reaches it: the table's third entry.)
             dimming.dim_screen(me)

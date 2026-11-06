@@ -43,13 +43,12 @@ function controller.past_own_area(me: Object, y: number): number
     return panels.area_front(me.alliance, me.flip, y)
 end
 
--- A panel of the side's own area (0x080E4708's flags by side: the owner bit 0x20 for side 1, none for side 0).
 local OWN_AREA: PanelCondition = { own_area = true }
 
 -- EXE4's front: from the far edge of the other side's field back toward the user's, the first panel of the other
--- side's (0x0800A1AE with 0x080E4708's flags).
+-- side's (0x0800A1AE with 0x080E4708's flags: the owner bit 0x20 for side 1, none for side 0).
 function controller.nearest_other(me: Object, y: number): number
-    local other = bit32.bxor(me.alliance, 1)
+    local other = battle.other_side(me.alliance)
     return panels.closest_in_row(other, y, OWN_AREA, other)
 end
 

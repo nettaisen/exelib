@@ -120,7 +120,7 @@ function beam.make_kind(look: Look): Kind
         sprite:set_animation(0xFF)
         sprite:step()
         me.visible = true
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me:set_coordinates_from_panel()
         me.pos = Vec3.new(int.i32(me.pos.x + me.facing * DRAWN_AHEAD * 0x10000), me.pos.y, me.pos.z)
         s.ticks = 0
@@ -150,8 +150,8 @@ end
 -- `pile`'s beam (of `kind`) on (x, y) with `element` and the damage word, hitting `distance` panels past its own,
 -- running while dimmed, facing as its pile does. (Its position is the spawner's registers, the row, the element and
 -- its height, until its init places it; the height stays.)
-function beam.spawn(kind: Kind, pile: Object, x: number, y: number, element: number, damage: number, distance: number): Object?
-    local o = battle.spawn(kind, Vec3.new(y, element, HEIGHT))
+function beam.spawn(kind: Kind, pile: Object, x: number, y: number, element: Element, damage: number, distance: number): Object?
+    local o = battle.spawn(kind, Vec3.new(y, element.byte, HEIGHT))
     if o then
         o.panel_x, o.panel_y = x, y
         o.element = element

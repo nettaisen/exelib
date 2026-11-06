@@ -374,13 +374,13 @@ function doll.make(look: DollLook): Doll
         me.anim, me.anim_loaded = 1, 0
         sprite:set_animation(1)
         sprite:step()
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me:set_panel_from_coordinates()
         if look.identity then
             me.identity = look.identity
         end
         me.hp, me.max_hp = HP, HP
-        me.element = 0
+        me.element = Element.null
         me.timer = LIFETIME
         if not me:create_collision() then
             me:free()

@@ -70,7 +70,7 @@ function falling.make_kind(look: Look): Kind
         sprite.shadow = "ground"
         me.anim = 0
         sprite:set_animation(0)
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me.vel = Vec3.new(me.vel.x, me.vel.y, 0)
         if not me:create_collision() then
             me:free()

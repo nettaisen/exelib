@@ -35,7 +35,7 @@ function falling_chip.make_kind(id: string, sprite: SpriteAsset): Chips
         sp:step()
         sp.priority = s.priority
         me.timer = 10
-        sp:set_flip(bit32.bxor(me.alliance, me.flip))
+        sp:face(me)
         me:set_lifecycle("update")
     end
 

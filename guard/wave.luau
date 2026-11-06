@@ -135,7 +135,7 @@ function wave.make(look: GuardWaveLook): GuardWaveSpawn
         sprite:set_animation(v.anim)
         me.timer, me.timer2 = v.ticks, 0
         sprite.palette = 0
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         mark(me.panel_x, me.panel_y, v)
         me:set_coordinates_from_panel()
         if not me:create_collision() then
@@ -177,7 +177,7 @@ function wave.make(look: GuardWaveLook): GuardWaveSpawn
         if o then
             (o.state :: State).variant = variant
             o.panel_x, o.panel_y = x, y
-            o.element = 0
+            o.element = Element.null
             o:set_damage_word(damage)
             o.alliance = owner.alliance
             if look.owned then

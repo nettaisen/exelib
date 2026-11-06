@@ -107,7 +107,7 @@ local function init(me: Object, look: Look)
     local s = me.state :: State
     s.size = 0
     sprite.palette = 0
-    sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+    sprite:face(me)
     local r = roller.spawn(look.roller, me)
     me.related2 = r
     if not r then
@@ -154,7 +154,7 @@ end
 -- `sub_80DBB0C`: a ball (of `kind`) at (x, y) on the ground with
 -- `element` and the damage word, of `owner`'s side and facing, running
 -- while dimmed.
-function ball.spawn(kind: Kind, owner: Object, x: number, y: number, element: number, damage: number): Object?
+function ball.spawn(kind: Kind, owner: Object, x: number, y: number, element: Element, damage: number): Object?
     local o = battle.spawn(kind)
     if not o then
         return nil

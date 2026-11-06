@@ -23,8 +23,8 @@ export type State = {
     unseen: boolean,
 }
 
--- Its element byte (5: past the elements, what nothing is weak to).
-local ELEMENT = 5
+-- Its element (the drain: past the elements, what nothing is weak to).
+local ELEMENT = Element.drain
 
 -- Its speed, 16.16 per tick.
 local SPEED = 0xA_0000
@@ -127,13 +127,18 @@ function gust.make_kind(id: string, look: GustLook): Kind
         sprite:set_animation(0)
         sprite:step()
         local turn = if s.pulls then 1 else 0
-        sprite:set_flip(bit32.bxor(bit32.bxor(me.alliance, me.flip), turn))
+        -- (Turned its way, back when it pulls; a side past 1, as `blow_rows` can leave one, turns it upside down
+        -- too, the flip value's second bit.)
+        sprite:face(me)
+        if s.pulls then
+            sprite.hflip = not sprite.hflip
+        end
         me.element = ELEMENT
         sprite.palette = if s.pulls then PULL_PALETTE else 0
         me:set_coordinates_from_panel()
         local p = me.pos
         -- object_getFlipDirection(side ^ turn, flip)
-        local dir = 1 - 2 * bit32.bxor(bit32.bxor(me.alliance, turn), me.flip)
+        local dir = 1 - 2 * bit32.bxor(me.facing_side, turn)
         me.pos = Vec3.new(p.x, p.y, 0)
         me.vel = Vec3.new(int.mul32(dir, SPEED), me.vel.y, me.vel.z)
         if not me:create_collision() then
@@ -167,7 +172,7 @@ function gust.make_kind(id: string, look: GustLook): Kind
     }
 end
 
--- (EXE6's `sub_80CD488`): a gust of `kind` on (x, y) for side `alliance` and flip `flip` (the spawner's halfword),
+-- (EXE6's `sub_80CD488`): a gust of `kind` on (x, y) for side `alliance`, turned or not (the spawner's halfword),
 -- blowing as `how` says, with the damage word `damage`, and the spawner that tracks it by `holder.state.gusts[slot]`
 -- (which becomes 1), if any. Its position is the spawner's registers, which its init overwrites.
 function gust.spawn(
@@ -175,7 +180,7 @@ function gust.spawn(
     x: number,
     y: number,
     alliance: number,
-    flip: number,
+    flip: boolean,
     how: GustHow,
     damage: number,
     holder: Object?,
@@ -201,16 +206,13 @@ end
 
 -- (EXE6's `sub_80CD4AC`, EXE5's 0x080CEBC8: the instant effect TenguCross's B+Back, EXE6's patch card dustman's and EXE5's
 -- patch cards' Vacuum have): a gust of `kind` in each row, from column 6 when the user faces right (1 when it faces
--- left), pulling. Their side is the user's shifted by its flip (the game's `lsl`), their flip 0; no damage, nothing
--- tracks them; then `sound`.
+-- left), pulling. Their side is the user's shifted by its flip (the game's `lsl`: a turned side 1's is 2), not
+-- turned; no damage, nothing tracks them; then `sound`.
 function gust.blow_rows(kind: Kind, user: Object, sound: Sound)
-    local facing = bit32.bxor(user.alliance, user.flip)
-    local x = 5 * bit32.bxor(facing, 1) + 1
-    local flip = user.flip
-    local word = if flip < 32 then bit32.lshift(user.alliance, flip) else 0
-    local side, side_flip = bit32.band(word, 0xFF), bit32.band(bit32.rshift(word, 8), 0xFF)
+    local x = if user.facing_side == 0 then 6 else 1
+    local side = if user.flip then user.alliance * 2 else user.alliance
     for y = 1, 3 do
-        gust.spawn(kind, x, y, side, side_flip, { pulls = true }, 0, nil, 0)
+        gust.spawn(kind, x, y, side, false, { pulls = true }, 0, nil, 0)
     end
     battle.play_sound(sound)
 end

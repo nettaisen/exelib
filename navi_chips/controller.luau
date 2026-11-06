@@ -56,7 +56,7 @@ export type Spec = {
     navi_block: boolean?,
     -- What the game keeps of a chip of the block as its navi comes (`sub_80E1880`: EXE5's last navi chip used): the
     -- chip, the element and the damage word, bonus included, the navi came with.
-    keep: ((chip: Chip?, element: number, damage: number) -> ())?,
+    keep: ((chip: Chip?, element: Element, damage: number) -> ())?,
 }
 
 -- What `make` hands back (`NaviChipController`): the kind and the chip's `dimming` hook.
@@ -94,7 +94,7 @@ local ANTI_NAVI_WAIT = 0x1E
 
 -- The other side's defensive chip is AntiNavi.
 local function anti_navi_waits(side: number): boolean
-    local trap = battle.linked(bit32.bxor(side, 1)).chip
+    local trap = battle.linked(battle.other_side(side)).chip
     return trap ~= nil and trap.trap == "anti_navi"
 end
 
@@ -141,7 +141,7 @@ function controller.anti_navi(me: Object, in_block: boolean)
             me.phase, me.phase_init = 8, 0
         end
     elseif p == 8 then
-        local other = bit32.bxor(side, 1)
+        local other = battle.other_side(side)
         if me.phase_init == 0 then
             -- (AntiNavi: the chip its user's record holds.)
             dimming.chip_telop(other, battle.linked(other).chip)

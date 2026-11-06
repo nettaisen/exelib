@@ -65,7 +65,23 @@ local DEBRIS_PALETTE = 0
 -- bits (holds a reservation; on column 2 also 0x80, which nothing reads); on column 3 in use and shown (0xE3), on
 -- column 4 not in use (0x04). nettai reads the canonical side's by its column and the other side's by its
 -- mirrored column (`place`).
-local BIOS_WORD, RUNS_PAUSED_AND_DIMMED = 0xE3A02004, 0x14
+-- What it leaves, by the column's low two bits: the BIOS word's bytes, low first (0x04, 0x20, 0xA0, 0xE3), each with
+-- the pause and dimming bits the spawner adds (the header flag byte's 0x14). Its top two bits, which nothing reads,
+-- stay as the byte has them.
+local HEADER_BY_COLUMN: { [number]: HeaderFlags } = {
+    [0] = { run_while_paused = true, run_while_dimmed = true },
+    [1] = { run_while_paused = true, run_while_dimmed = true, holds_reservation = true },
+    [2] = { run_while_paused = true, run_while_dimmed = true, holds_reservation = true, unused_high = true },
+    [3] = {
+        active = true,
+        visible = true,
+        run_while_paused = true,
+        run_while_dimmed = true,
+        holds_reservation = true,
+        unused_low = true,
+        unused_high = true,
+    },
+}
 
 -- Its actions (EXE6's `jt_80D2348`; EXE5's table has no frozen or bubbled rows and stands in its 6, the same
 -- actions).
@@ -218,15 +234,14 @@ function boulder.make(look: Look): Kind
             end
             o.panel_x, o.panel_y = x, y
             o:set_damage_word(look.damage)
-            o.element = 0
+            o.element = Element.null
             -- (Side 1's on a panel of side 1's area.)
             o.alliance = if field.check(x, y, OWN_AREA, 1) then 1 else 0
             -- (The original reads by the column as it is: a boulder on column 3 is in use and shown, one on column
             -- 4, side 1's front, isn't. nettai reads the other side's than the canonical by the mirrored column, so
             -- a boulder on either side's front column is as the canonical side's: docs/engine/side-symmetry.md.)
             local column = if field.side_sign(o.alliance) > 0 then x else 7 - x
-            local read = bit32.band(bit32.rshift(BIOS_WORD, 8 * (column % 4)), 0xFF)
-            o:set_header_flags(bit32.bor(read, RUNS_PAUSED_AND_DIMMED))
+            o:set_header_flags(HEADER_BY_COLUMN[column % 4])
             obstacle.enter_stage(o)
             return o
         end,

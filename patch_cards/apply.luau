@@ -259,7 +259,7 @@ function apply.run(
             elseif k == "hp_percent_sub" then
                 hp = clamp(div(hp * 100 - hp * n, 100), 1, 9999)
             elseif k == "body" then
-                put("body", game.bodies[e.element :: string] + 4)
+                put("body", Element.new(e.element :: ElementName).byte + 4)
             elseif k == "attack_add" then
                 stat("attack", n, 0, 9)
             elseif k == "attack_sub" then

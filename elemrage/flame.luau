@@ -21,7 +21,7 @@ local FLAME_STEPS = 6
 
 -- A game's flame of `look`.
 function flame.make_kind(look: Look): ElemFlame
-    local spawn_flame: (owner: Object, x: number, y: number, element: number, z: number, s: State, damage: number) -> Object?
+    local spawn_flame: (owner: Object, x: number, y: number, element: Element, z: number, s: State, damage: number) -> Object?
 
     -- Action 0 (EXE5's 0x080D9B50, EXE4's 0x080CE44C): when its animation ends: its idle animation, its hit on; the
     -- first time, the next flame ahead (and, spreading, the two beside it), its count one less.
@@ -133,7 +133,7 @@ function flame.make_kind(look: Look): ElemFlame
         sprite:load(look.sprite)
         sprite.shadow = "with_sprite"
         me.anim, me.anim_loaded = 0, 0xFF
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me:set_coordinates_from_panel()
         local p = me.pos
         me.pos = Vec3.new(int.i32(p.x + int.shl(me.facing * s.offset, 16)), p.y, p.z)
@@ -201,8 +201,8 @@ function flame.make_kind(look: Look): ElemFlame
     }
 
     -- EXE5's 0x080D9BE6, EXE4's 0x080CE49C.
-    spawn_flame = function(owner: Object, x: number, y: number, element: number, z: number, s: State, damage: number): Object?
-        local o = battle.spawn(kind, Vec3.new(y, element, z))
+    spawn_flame = function(owner: Object, x: number, y: number, element: Element, z: number, s: State, damage: number): Object?
+        local o = battle.spawn(kind, Vec3.new(y, element.byte, z))
         if not o then
             return nil
         end

@@ -33,8 +33,8 @@ function panels.side_direction(side: number): number
 end
 
 -- `object_getFlipDirection`: +1 facing right, -1 facing left.
-function panels.flip_direction(side: number, flip: number): number
-    return 1 - 2 * bit32.band(bit32.bxor(side, flip), 1)
+function panels.flip_direction(side: number, flip: boolean): number
+    return 1 - 2 * bit32.band(if flip then battle.other_side(side) else side, 1)
 end
 
 -- `object_getEnemyDirection`: toward the navi's enemies (its side's direction).
@@ -200,7 +200,7 @@ function panels.reaching(
     side: number,
     of: number?
 ): (number?, number?, number)
-    return panels.random_relative(x, y, cond, list, bit32.bxor(side, 1), of)
+    return panels.random_relative(x, y, cond, list, battle.other_side(side), of)
 end
 
 -- `sub_8015D80` (EXE4's 0x0800F83C): of the panels `list` names from (x, y) (dx toward the navi's enemies), those
@@ -237,12 +237,12 @@ end
 -- to the first panel `side` holds), if it meets the conditions; top to bottom.
 function panels.area_fronts(
     side: number,
-    flip: number,
+    flip: boolean,
     cond: PanelCondition?,
     of: number?
 ): { number }
     local back = -panels.flip_direction(side, flip)
-    local start = 6 - 5 * bit32.band(bit32.bxor(side, flip), 1)
+    local start = 6 - 5 * bit32.band(if flip then battle.other_side(side) else side, 1)
     local out = {}
     for y = 1, 3 do
         local x = start
@@ -270,7 +270,7 @@ local FRONT_OPEN: PanelCondition = { on_field = true, enemy_other_body = false, 
 -- EXE5's 0x08013126: of the front panels of the navi's own area it may step onto (`sub_800D1F0`), those whose next
 -- panel forward is free of those bodies (of `side`) and has the flag 0x10000 (`on_field`, every panel on the field's):
 -- one at random.
-function panels.front_line(navi: Object, side: number, flip: number): (number?, number?)
+function panels.front_line(navi: Object, side: number, flip: boolean): (number?, number?)
     local cond, of = panels.step_condition(navi)
     local fronts = panels.area_fronts(side, flip, cond, of)
     local found = {}

@@ -83,7 +83,7 @@ end
 -- init places it.)
 local function leave(kind: Kind, bomb: Object)
     local x, y = bomb.panel_x, bomb.panel_y
-    local o = battle.spawn(kind, Vec3.new(y, bomb.element, 0))
+    local o = battle.spawn(kind, Vec3.new(y, bomb.element.byte, 0))
     if o then
         o.panel_x, o.panel_y = x, y
         o.element = bomb.element

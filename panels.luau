@@ -178,10 +178,12 @@ local OWN_AREA: PanelCondition = { own_area = true }
 -- field), on to the first panel of `side`'s (`byte_800D52C`: the owner
 -- bit 0x20 for side 1, none for side 0), and one back. 0 for none; the
 -- column one back isn't checked to be on the field.
-function panels.area_front(side: number, flip: number, y: number): number
-    -- `object_getFlipDirection`: +1, or -1 for side ^ flip.
-    local dir = 1 - 2 * bit32.bxor(side, flip)
-    local x = 6 - 5 * bit32.bxor(side, flip)
+function panels.area_front(side: number, flip: boolean, y: number): number
+    -- `object_getFlipDirection`: +1, or -1 looking side 1's way (the other
+    -- side's when turned).
+    local facing = if flip then battle.other_side(side) else side
+    local dir = 1 - 2 * facing
+    local x = 6 - 5 * facing
     while true do
         if not field.valid(x, y) then
             return 0

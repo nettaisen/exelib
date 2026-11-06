@@ -35,7 +35,7 @@ export type Spec = {
 -- after the panel itself, which fails off the field: no test changes anything, so the order is the original's in
 -- effect); 0 for none.
 function controller.area_front(me: Object, y: number): number
-    local x = panels.area_front(bit32.bxor(me.alliance, 1), me.flip, y)
+    local x = panels.area_front(battle.other_side(me.alliance), me.flip, y)
     if x == 0 or not field.valid(x, y) or not panels.can_take(x, y, me.alliance) then
         return 0
     end

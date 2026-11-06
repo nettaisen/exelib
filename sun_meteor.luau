@@ -25,7 +25,7 @@ export type Look = {
     -- Its burst where it lands on something (EXE6's effect 5, EXE4's row 6).
     burst: Effect,
     -- Its hits' spark by its element (`sub_801A146`, EXE4's 0x08012F7A: the element's number as the spark's).
-    spark_of: (element: number) -> Spark,
+    spark_of: (element: Element) -> Spark,
 }
 
 export type SunMeteors = {
@@ -36,7 +36,7 @@ export type SunMeteors = {
         owner: Object,
         x: number,
         y: number,
-        element: number,
+        element: Element,
         variant: SunMeteor,
         damage: number,
         z: number
@@ -76,7 +76,7 @@ function sun_meteor.make(look: Look): SunMeteors
         sprite:set_animation(r.anim)
         sprite:step()
         sprite.shadow = "with_sprite"
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me:set_coordinates_from_panel()
         local front = me.facing
         local p = me.pos
@@ -192,12 +192,12 @@ function sun_meteor.make(look: Look): SunMeteors
         owner: Object,
         x: number,
         y: number,
-        element: number,
+        element: Element,
         variant: SunMeteor,
         damage: number,
         z: number
     ): Object?
-        local o = battle.spawn(kind, Vec3.new(y, element, z))
+        local o = battle.spawn(kind, Vec3.new(y, element.byte, z))
         if o then
             local s = o.state :: State
             s.variant = variant

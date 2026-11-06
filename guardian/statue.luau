@@ -354,7 +354,7 @@ function statue.make(look: Look): Statue
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
         sprite:step()
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me:set_coordinates_from_panel()
         me.pos = Vec3.new(me.pos.x, me.pos.y, 0)
         me.future_panel_x, me.future_panel_y = me.panel_x, me.panel_y
@@ -401,7 +401,7 @@ function statue.make(look: Look): Statue
             if not panel then
                 error(string.format("sub_80D4FA6 reads the side of panel (%d, %d), off the field", x, y))
             end
-            o.alliance, o.flip = panel.alliance, 0
+            o.alliance, o.flip = panel.alliance, false
             o.run_while_paused = true
         end
         o.run_while_dimmed = true

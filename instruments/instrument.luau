@@ -221,7 +221,7 @@ function instrument.make_kind(id: string, look: InstrumentLook): Kind
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
         sprite:step()
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me:set_coordinates_from_panel()
         me.pos = Vec3.new(me.pos.x, me.pos.y, 0)
         me.future_panel_x, me.future_panel_y = me.panel_x, me.panel_y

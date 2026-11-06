@@ -74,7 +74,7 @@ function face.make(spec: NumberManFaceSpec): NumberManFace
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
         sprite:step()
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         sprite.palette = owner.sprite.palette
         me:set_lifecycle("update")
         local s = me.state :: State

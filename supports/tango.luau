@@ -153,7 +153,7 @@ function tango.make(look: TangoLook): SupportActor
         sprite.shadow = "with_sprite"
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
-        sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+        sprite:face(me)
         me.visible = true
         place(me, look.pixel_nudge ~= false)
         me.timer = 0x28

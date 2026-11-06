@@ -32,12 +32,12 @@ export type Spec = {
 
 export type FollowEffect = {
     kind: Kind,
-    -- `sub_80E3FB4`: one for `owner` at `pos`, with the game's flip value `flip` and `palette_add`.
+    -- `sub_80E3FB4`: one for `owner` at `pos`, turned the way side `flip` faces, and `palette_add`.
     spawn: (owner: Object, pos: Vec3, flip: number, palette_add: number?) -> Object?,
 }
 
 export type State = {
-    -- The game's flip value and the palette added (its spawner's).
+    -- The side whose way it faces (the game's flip value: its spawner's) and the palette added (its spawner's).
     flip: number,
     palette_add: number,
 }
@@ -62,7 +62,7 @@ function follow_effect.make(spec: Spec): FollowEffect
         me.anim_loaded = spec.anim
         sprite:set_animation(spec.anim)
         sprite.palette = spec.palette + s.palette_add
-        sprite:set_flip(s.flip)
+        sprite:face_side(s.flip)
         me.visible = true
         me.hp = 0
         me:set_lifecycle("update")

@@ -121,7 +121,7 @@ local function init(me: Object, look: TornadoLook)
     me.anim = 0
     me.anim_loaded = 0
     sprite:set_animation(0)
-    sprite:set_flip(bit32.bxor(me.alliance, me.flip))
+    sprite:face(me)
     s.rearm_step = 1
     me:set_coordinates_from_panel()
     local p = me.pos
@@ -173,8 +173,8 @@ end
 -- `sub_80CA0E2`: a tornado (of `kind`, a game's) for `owner`'s side on
 -- (x, y) with the damage word `damage`. Its position is the spawner's
 -- registers (the panel Y, the element and 0) until its init places it.
-function tornado.spawn(kind: Kind, owner: Object, x: number, y: number, element: number, damage: number, spec: Spec): Object?
-    local o = battle.spawn(kind, Vec3.new(y, element, 0))
+function tornado.spawn(kind: Kind, owner: Object, x: number, y: number, element: Element, damage: number, spec: Spec): Object?
+    local o = battle.spawn(kind, Vec3.new(y, element.byte, 0))
     if o then
         local s = o.state :: State
         s.variant, s.status = spec.variant, spec.status

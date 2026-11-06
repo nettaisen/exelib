@@ -183,7 +183,7 @@ end
 -- canonical side's in the mirror image: its sprite's flip as the canonical side's with its flip, and the X's fraction
 -- mirrored (`follow`).
 function roller.spawn(kind: Kind, ball: Object): Object?
-    local flip_bits = bit32.band(bit32.lshift(bit32.bxor(field.canonical_side(), ball.flip), 4), 0x30)
+    local flip_bits = bit32.band(bit32.lshift(bit32.bxor(field.canonical_side(), if ball.flip then 1 else 0), 4), 0x30)
     local sign = field.side_sign(ball.alliance)
     local o = battle.spawn(kind, Vec3.new(sign * bit32.bor(8, flip_bits), flip_bits, 0))
     if not o then

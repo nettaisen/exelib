@@ -69,8 +69,9 @@ local function raise_arm_for(look: BusterLook, navi: Object, holder: Object, whi
     if form.base then
         if navi.navi_flags.no_charge then
             palette_add = NO_CHARGE_PALETTE
-        elseif stats.element ~= 0 then
-            palette_add = 0x14 + stats.element
+        elseif stats.element ~= Element.null then
+            -- (The palettes by the element's number, from 0x15.)
+            palette_add = 0x14 + stats.element.byte
         end
     elseif has_trait(form, "mood_palette") then
         -- A form whose palette follows the mood (EXE6's Gregar and Falzar

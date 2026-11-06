@@ -49,12 +49,12 @@ local function blast(me: Object, look: Look, s: State, x: number, y: number)
     battle.shake_camera(3, 0x28)
     battle.play_sound(look.hit_sound)
     local cx, cy = field.center(x, y)
-    battle.effect(Vec3.new(cx, cy, 0), look.blast, bit32.bxor(me.alliance, me.flip))
+    battle.effect(Vec3.new(cx, cy, 0), look.blast, me.facing_side)
     local word = int.lsr(int.u32(me.damage + me.stamina * 0x10000), s.shift)
     battle.hitbox(me, {
         panel_x = x,
         panel_y = y,
-        element = 0,
+        element = Element.null,
         region = regions.wide,
         hit_effect = nil,
         target = look.hits,
@@ -204,7 +204,7 @@ function shell.fire(kind: Kind, owner: Object, x: number, y: number, z: number, 
         s.cracks = spec.cracks
         s.shift = spec.shift
         o.panel_x, o.panel_y = x, y
-        o.element = 0
+        o.element = Element.null
         o:set_damage_word(damage)
         o.alliance, o.flip = owner.alliance, owner.flip
     end

@@ -20,7 +20,7 @@ local CAN_STAND: PanelCondition = { solid = true, on_field = true }
 -- the element and `r3` (the address the controller called him through,
 -- or nil for none), of which his init keeps Z's fraction.
 function navi_chips.spawn(kind: Kind, user: Object, spec: NaviChipSpec, r3: number?): Object?
-    local o = battle.spawn(kind, Vec3.new(spec.panel_y, spec.element, r3 or 0))
+    local o = battle.spawn(kind, Vec3.new(spec.panel_y, spec.element.byte, r3 or 0))
     if not o then
         return nil
     end
@@ -46,7 +46,7 @@ function navi_chips.stand(me: Object, sprite: SpriteAsset, shadow: Shadow, groun
     me.anim_loaded = 0
     s:set_animation(0)
     s.palette = 0
-    s:set_flip(bit32.bxor(me.alliance, me.flip))
+    s:face(me)
 end
 
 -- Whether his panel holds him (a field panel no one else stands on).

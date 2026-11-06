@@ -34,7 +34,7 @@ export type BatCanSpec = { shots: { number } }
 export type BatCan = {
     shot: Kind,
     -- `sub_80C5176`: a shot from `owner` on panel (x, y).
-    fire: (owner: Object, x: number, y: number, z: number, element: number, damage: number, hit_mod: number) -> Object?,
+    fire: (owner: Object, x: number, y: number, z: number, element: Element, damage: number, hit_mod: number) -> Object?,
     -- A chip's action.
     action: (spec: BatCanSpec) -> Action,
 }
@@ -135,7 +135,7 @@ function batcan.make(look: Look): BatCan
     -- `sub_80C5176`: a shot from `owner` on panel (x, y) at height `z` (16.16), with `element`, the damage word and
     -- the hit modifier; nil if the attack pool is full. It takes the owner's side and flip, runs later this tick,
     -- right after its spawner, and keeps its Z.
-    local function fire(owner: Object, x: number, y: number, z: number, element: number, damage: number, hit_mod: number): Object?
+    local function fire(owner: Object, x: number, y: number, z: number, element: Element, damage: number, hit_mod: number): Object?
         local o = battle.spawn(shot, Vec3.new(0, 0, z))
         if o then
             (o.state :: ShotState).hit_mod = hit_mod

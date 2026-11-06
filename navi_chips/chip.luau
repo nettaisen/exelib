@@ -42,7 +42,7 @@ export type Spec = {
 }
 
 -- What a game gives its navi chips: what it keeps of a chip of the block as its navi comes (EXE5's last navi chip).
-export type Game = { keep: ((chip: Chip?, element: number, damage: number) -> ())? }
+export type Game = { keep: ((chip: Chip?, element: Element, damage: number) -> ())? }
 
 -- `sub_80E199A`: AntiRecv's counterattack's damage word: three times the chip's damage (its low 11 bits, doubled first
 -- with the double-damage flag, 0x8000), with the trap's hit parameter (0x1E).
@@ -82,7 +82,7 @@ function chip.maker(game: Game): (spec: Spec) -> NaviChip
             -- counterattack with three times the damage, its telop AntiRecv's: `sub_80E37D2`'s r7, 0xBD), which the
             -- chip's action registers as the side's dimming.
             hook = function(user: Object, dspec: DimmingChipSpec): Object?
-                local trap = battle.linked(bit32.bxor(user.alliance, 1)).chip
+                local trap = battle.linked(battle.other_side(user.alliance)).chip
                 if trap and trap.trap == "anti_recovery" then
                     return navi_chip.spring_anti_recovery(user, counterattack(dspec.damage), true)
                 end

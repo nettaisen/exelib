@@ -49,7 +49,7 @@ local function make(
     local function effect(me: Object)
         local s = me.state :: State
         if me.phase_init == 0 then
-            local start = START[bit32.bxor(me.alliance, me.flip)]
+            local start = START[me.facing_side]
             if not always and not foreign(start[1], me.alliance) then
                 dimming_chips.done(me)
                 return
