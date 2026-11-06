@@ -51,7 +51,7 @@ function shademan.make(spec: ShadeManSpec): ShadeMan
         local n = s.steps[i]
         local any = false
         for _, key in steps[n + 1] do
-            if navi:dimmed_pressed(key) then
+            if (navi.dimmed_pressed :: any)[key] then
                 any = true
             end
         end

@@ -127,7 +127,7 @@ local function tick(me: Object, look: Look)
         return
     end
     local crushed = look.crushing_hit == "explodes" and bit32.btest(me.collision.hit_flags, CRUSHED)
-    if me:take_damage(0) < 0 or crushed then
+    if me:take_damage("damage_sound") == "broken" or crushed then
         battle.effect(me.pos, look.crushed)
         battle.play_sound(look.crushed_sound)
         finish(me)

@@ -38,7 +38,7 @@ local function shoot(me: Object, s: State, look: MegaManShotLook)
         me:set_animation(0x0E)
         look.buster.raise_arm(me)
         me.step_init = 4
-        me:set_status("using_action", true)
+        me.status.using_action = true
         s.timer = 0
     end
     if s.timer == 1 then

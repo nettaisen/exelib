@@ -396,7 +396,7 @@ function deltaray.make(spec: Spec): {
     -- `sub_80C2EB0`: his side's player pressed A while dimmed.
     local function asked_again(me: Object): boolean
         local p = battle.player(me.alliance) :: Object
-        return p:dimmed_pressed("a")
+        return p.dimmed_pressed.a
     end
 
     -- `sub_80C2D8C`: the strike: his sword out (animation 5), 20 ticks; at 10
@@ -408,7 +408,7 @@ function deltaray.make(spec: Spec): {
     local function hit(me: Object)
         local s = st(me)
         if spec.flashes then
-            battle.palette_flash(0, 5, true)
+            battle.palette_flash("one_layer", 5, true)
         end
         local x, y = me.panel_x + (1 - 2 * s.facing), me.panel_y
         local box = battle.hitbox(me, {
@@ -497,7 +497,7 @@ function deltaray.make(spec: Spec): {
         end
         battle.play_sound(spec.sounds.burst)
         if spec.flashes then
-            battle.palette_flash(0, 0x14, true)
+            battle.palette_flash("one_layer", 0x14, true)
         end
     end
 

@@ -302,7 +302,7 @@ function statue.make(look: Look): Statue
         if o.flip ~= 0 then
             error("sub_80CF374 registers a flipped user's Anubis statue past the field-object registry (alliance + 0x100)")
         end
-        obstacle.register(o, o.alliance, 1)
+        obstacle.register(o, o.alliance, "one_a_side")
         return o
     end
 

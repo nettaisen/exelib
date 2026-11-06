@@ -175,7 +175,7 @@ function visual.make(spec: Spec): Visual
             then me.sprite.steps >= look.down_steps
             else (me.sprite.steps > 0 and me.sprite.steps % look.up_steps == 0)
         if c.barrier ~= "none" then
-            if c.barrier_hp ~= 0 and not (blows and owner:status("bubbled")) then
+            if c.barrier_hp ~= 0 and not (blows and owner.status.bubbled) then
                 me.anim = me.anim - 1
                 me.visible = true
                 battle.play_sound(b.sound)

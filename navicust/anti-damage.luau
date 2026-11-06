@@ -19,14 +19,14 @@ local DAMAGE, LOCKOUT, TICKS = 0x32, 0x46, 0x1E
 -- The stance (`sub_80EFEAC`): the trap is armed until the timer runs out.
 local function stance(me: Object, s: State)
     if me.step_init == 0 then
-        me:set_status("using_action", true)
-        me:set_navi_state("trap_armed", true)
+        me.status.using_action = true
+        me.navi_flags.trap_armed = true
         me.step_init = 4
     end
     local t = s.timer - 1
     s.timer = t
     if t < 0 then
-        me:set_navi_state("trap_armed", false)
+        me.navi_flags.trap_armed = false
         me:exit_attack()
     end
 end
@@ -39,7 +39,7 @@ function anti_damage.stance(id: string): Action
         state = { timer = "u16" },
         -- `sub_80EFE7C`.
         update = function(me: Object, s: State)
-            if me:request("anti_damage_triggered") or me:request("anti_sword_triggered") then
+            if me.requests.anti_damage_triggered or me.requests.anti_sword_triggered then
                 me:start_stance_counter()
                 return
             end

@@ -36,7 +36,7 @@ function flick.action(spec: Spec): Action
         if me.step_init == 0 then
             me:set_animation(spec.anim or ANIM)
             me:open_counter_window()
-            me:set_status("using_action", true)
+            me.status.using_action = true
             me.step_init = 4
             s.timer = 0x0F
         end

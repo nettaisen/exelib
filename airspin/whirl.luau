@@ -51,7 +51,7 @@ function whirl.make(look: SeekingWhirlLook): { kind: Kind, sender: AirSpinSender
         for _, a in battle.alive_actors(bit32.bxor(me.alliance, 1)) do
             if a.panel_x == x and a.panel_y == y then
                 for _, f in look.hidden do
-                    if a:status(f) then
+                    if (a.status :: any)[f] then
                         return false
                     end
                 end

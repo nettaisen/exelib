@@ -78,7 +78,7 @@ function throw.action(spec: ThrowSpec, look: ThrowLook): Action
                 attachment.attach(look.attachment, me, spec.held, "related", { anim = spec.held_anim, palette_add = spec.held_palette })
             end
             battle.play_sound(SOUND)
-            me:set_status("using_action", true)
+            me.status.using_action = true
             s.timer = 0
             me.step_init = 4
         end

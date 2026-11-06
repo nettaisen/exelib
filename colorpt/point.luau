@@ -127,7 +127,7 @@ function point.make(look: Look): Point
                 chip_hand.add_bonus(side, cursor, "attack_bonus", s.bonus)
             end
         else
-            battle.add_special_bonus(side, 0, s.bonus)
+            battle.add_special_bonus(side, "attack", s.bonus)
         end
         battle.play_sound(look.sounds.arrive)
         release(me)

@@ -38,7 +38,7 @@ function widesht.action(spec: WideShotSpec, look: WideShotLook): Action
         me:set_animation(ANIM_HOLD)
         me:open_counter_window()
         attachment.attach(look.attachment, me, shooter_look, "overlay")
-        me:set_status("using_action", true)
+        me.status.using_action = true
         me.step, me.step_init = FIRE, 0
         me.attack_count = spec.waves
         s.timer = FIRST_TICKS

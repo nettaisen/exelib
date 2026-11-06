@@ -1060,7 +1060,7 @@ export type FanLook = {
 export type Fan = {
     kind: Kind,
     -- `sub_80CD2B4`: a fan of `variant` on (x, y), of `owner`'s side and facing, running while dimmed, with the
-    -- damage word `damage`; its side's one field object of class 1 (a second replaces the first). Its position is
+    -- damage word `damage`; its side's one field object (class "one_a_side": a second replaces the first). Its position is
     -- the spawner's registers until its init places it.
     spawn: (owner: Object, variant: FanVariant, x: number, y: number, damage: number) -> Object?,
 }
@@ -1363,11 +1363,11 @@ export type RockVariant = {
 export type RockEntrance = "rise" | "instant" | "fall" | "placed"
 
 -- What a rock is spawned with (chips/rockcube/rock): its variant, the
--- class of field-object slot it takes (0, the default: one of its side's
--- two; 1: its side's one), and its entrance ("rise" by default).
+-- class of field-object slot it takes ("two_a_side" by default), and its
+-- entrance ("rise" by default).
 export type RockSpec = {
     variant: RockVariant,
-    class: number?,
+    class: ObstacleClass?,
     entrance: RockEntrance?,
 }
 
@@ -1498,8 +1498,7 @@ export type SwordWaveVariant = {
 -- A countdown bomb (chips/timebom/countdown, a row of the original's
 -- `byte_80CD8AC`): the animations it rises and stands with, its HP, its
 -- NameID (the field objects' look, a number until identities come), the
--- class of field-object slot it takes (0: one of its side's two; 1: its
--- side's one), what it is and what it reacts to. `strong_shake`: its blast
+-- class of field-object slot it takes, what it is and what it reacts to. `strong_shake`: its blast
 -- shakes the camera a second time, harder (TimeBom+). The rows no chip
 -- sets: `allows_bodies`, it may appear under a body; `bursts_when_broken`,
 -- broken it blows up, and its countdown is only the last 15 ticks, after
@@ -1510,7 +1509,7 @@ export type CountdownVariant = {
     idle_anim: number,
     hp: number,
     identity: Identity?,
-    class: number,
+    class: ObstacleClass,
     collision: { is: CollisionType, hits: CollisionType },
     strong_shake: boolean?,
     allows_bodies: boolean?,

@@ -96,7 +96,7 @@ function cannon.action(spec: CannonSpec, look: Look): Action
             me:open_counter_window()
             s.timer = 0
             look.hold(me, spec.arm, "related")
-            me:set_status("using_action", true)
+            me.status.using_action = true
             me.step_init = 4
             return
         end

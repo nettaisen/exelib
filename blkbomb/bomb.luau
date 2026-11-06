@@ -340,7 +340,7 @@ function black_bomb.thrower(bomb_kind: Kind): Thrower
                 o:set_damage_word(damage)
                 o.alliance = user.alliance
                 o.run_while_dimmed = true
-                obstacle.register(o, user.alliance, 1)
+                obstacle.register(o, user.alliance, "one_a_side")
             end
             return o
         end,

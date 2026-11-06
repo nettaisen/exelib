@@ -159,7 +159,7 @@ local function fly(me: Object, s: State)
         me:set_panel_from_coordinates()
     end
     me:update_collision_panels()
-    if me.collision.direction ~= 0 then
+    if me.collision.direction ~= "none" then
         grow_grass(me, s)
     end
 end

@@ -6,17 +6,17 @@ local navi_status = {}
 
 -- `sub_800EB08`: the invulnerability ends, its timer and its flag.
 function navi_status.clear_invulnerable(navi: Object)
-    navi:set_status_timer("invulnerable", 0)
-    navi:set_status("invulnerable", false)
+    navi.status_timers.invulnerable = 0
+    navi.status.invulnerable = false
 end
 
 -- `sub_8012EA8`: the charge drops, its level, counter and source, and the hold requests.
 function navi_status.reset_charge(navi: Object)
-    navi.charge_level = 0
+    navi.charge_level = "none"
     navi.charge_counter = 0
-    navi.charge_source = 0
-    navi:set_request("a_held", false)
-    navi:set_request("b_held", false)
+    navi.charge_source = "none"
+    navi.requests.a_held = false
+    navi.requests.b_held = false
 end
 
 -- `sub_80143A6`: the navi calms down: the anger status, its request, the ticks of anger left and the stun ticks end,
@@ -27,8 +27,8 @@ function navi_status.end_anger(navi: Object, mood: "reset" | "unless_zero")
     if mood == "reset" or stats.mood ~= 0 then
         stats.mood = 0x80
     end
-    navi:set_status("anger", false)
-    navi:set_request("anger", false)
+    navi.status.anger = false
+    navi.requests.anger = false
     navi.anger_ticks = 0
     navi.stun_ticks = 0
 end

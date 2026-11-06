@@ -282,7 +282,7 @@ function fan.make(look: FanLook): Fan
         o.panel_x, o.panel_y = x, y
         o.alliance, o.flip = owner.alliance, owner.flip
         o.run_while_dimmed = true
-        obstacle.register(o, o.alliance, 1)
+        obstacle.register(o, o.alliance, "one_a_side")
         return o
     end
 

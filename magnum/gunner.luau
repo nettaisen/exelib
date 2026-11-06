@@ -201,7 +201,7 @@ function gunner.make(look: Look): Gunner
             end
             local t = me.timer - 1
             me.timer = bit32.band(t, 0xFFFF)
-            if t == 0 or (me.related1 :: Object):dimmed_pressed("a") then
+            if t == 0 or (me.related1 :: Object).dimmed_pressed.a then
                 me.timer = AFTER_AIM
                 me.phase = 8
             end

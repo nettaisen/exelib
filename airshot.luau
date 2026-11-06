@@ -44,7 +44,7 @@ function airshot.action(spec: AirShotSpec, look: Look): Action
             me:set_animation(look.anim)
             me:open_counter_window()
             s.timer = 0
-            me:set_status("using_action", true)
+            me.status.using_action = true
             look.hold(me, spec.shooter, look.slot)
             battle.play_sound(SOUND)
             me.step_init = 4

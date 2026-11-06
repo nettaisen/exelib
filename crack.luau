@@ -129,7 +129,7 @@ function crack.action(c: Crack, panels: { { number } }, id: string?): Action
         if me.step_init == 0 then
             me:set_animation(look.anim)
             me:open_counter_window()
-            me:set_status("using_action", true)
+            me.status.using_action = true
             s.timer = 15
             me.step_init = 4
         end

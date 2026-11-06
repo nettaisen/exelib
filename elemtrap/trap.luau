@@ -144,7 +144,7 @@ local function init(me: Object, look: ElemTrapLook)
     end
     me:setup_collision(look.self_type, look.target, HIT_MOD)
     me.collision:set_region(regions.field)
-    me:set_status("hit_while_dimmed", true)
+    me.status.hit_while_dimmed = true
     me.collision:present()
     local s = me.state :: State
     s.armed = false

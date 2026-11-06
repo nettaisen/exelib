@@ -34,7 +34,7 @@ function throw.action(spec: Spec): Action
             me:set_animation(0x0A)
             me:open_counter_window()
             attachment.attach(spec.attachment, me, spec.arm, "overlay")
-            me:set_status("using_action", true)
+            me.status.using_action = true
             local x, y = me.panel_x + me.facing, me.panel_y
             -- The damage word (the hit parameter in its high half), plus the Atk+ bonus. The yoyos are
             -- null-element whatever the chip says.

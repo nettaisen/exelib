@@ -173,7 +173,7 @@ function batcan.make(look: Look): BatCan
                     held:set_lifecycle("destroy")
                 end
                 attachment.attach(look.attachment, me, look.bat, "related")
-                me:set_status("using_action", true)
+                me.status.using_action = true
                 me.step_init = 4
                 return
             end
