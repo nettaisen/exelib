@@ -46,7 +46,7 @@ export type IceCube = {
     -- The role `hooks.encased` (`sub_801813A`'s end; EXE4's 0x08011788): an obstacle encased in ice becomes an ice
     -- block (the rock's ice variant, in the same registry class, there at once), one in a bubble the cube, formed; at
     -- its panel, with its side and damage word.
-    replace: (obstacle: Object, ice: boolean, class: number?) -> (),
+    replace: (obstacle: Object, ice: boolean, class: ObstacleClass?) -> (),
 }
 
 local SPEED = 0xA_0000
@@ -154,7 +154,7 @@ function ice_cube.make(look: Look): IceCube
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { look = "u8" },
+        state = { look = schema.u8 },
         -- `sub_80D984C`.
         update = function(me: Object)
             local l = me.lifecycle
@@ -190,7 +190,7 @@ function ice_cube.make(look: Look): IceCube
     -- or the encased obstacle was it; otherwise an address, which the port can't give: 0 too, unverified. An
     -- unregistered obstacle's ice block would take class 0xFF, which `setFieldBattleObject_800F614` turns into a
     -- write past the registry: a content error here.)
-    local function replace(obstacle: Object, ice: boolean, class: number?)
+    local function replace(obstacle: Object, ice: boolean, class: ObstacleClass?)
         local damage = bit32.bor(obstacle.damage, bit32.lshift(obstacle.stamina, 16))
         if ice then
             if class == nil then

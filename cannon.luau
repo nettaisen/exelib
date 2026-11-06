@@ -21,7 +21,7 @@ export type State = {
 
 -- One state for every cannon: a cannon continues the last one's attack
 -- variables, as the original's one action does.
-cannon.STATE = { timer = "u16" }
+cannon.STATE = { timer = schema.u16 }
 
 -- The phases, on the attack's step.
 local FIRE, LOWER = 0x0, 0x4
@@ -96,7 +96,7 @@ function cannon.action(spec: CannonSpec, look: Look): Action
             me:open_counter_window()
             s.timer = 0
             look.hold(me, spec.arm, "related")
-            me:set_status("using_action", true)
+            me.status.using_action = true
             me.step_init = 4
             return
         end

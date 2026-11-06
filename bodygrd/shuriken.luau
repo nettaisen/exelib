@@ -153,7 +153,7 @@ function shuriken.make_kind(look: Look): Kind
     return new.kind {
         id = look.id,
         pool = "attack",
-        state = { hit_mod = "u8" },
+        state = { hit_mod = schema.u8 },
         -- `sub_80CFEC4`.
         update = function(me: Object)
             local l = me.lifecycle

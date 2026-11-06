@@ -87,7 +87,7 @@ function controller.clear_bugs(user: Object)
     stats.hp_drain = 0
     stats.battle_start_bug = 0
     stats.hand_shrink_turn = 0
-    battle.set_hud("emotion_window_glitching", false)
+    battle.hud().emotion_window_glitching = false
 end
 
 function controller.make(look: Look): Controller
@@ -117,7 +117,7 @@ function controller.make(look: Look): Controller
     local kind = new.kind {
         id = look.id,
         pool = "effect",
-        state = { busy = "bool" },
+        state = { busy = schema.bool },
         update = dimming_chips.phases { name = "BugFix", effect = effect },
     }
 

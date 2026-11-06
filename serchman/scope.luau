@@ -151,7 +151,7 @@ function scope.make(spec: Spec): Scope
     local function pressed(s: State, keys: { Key }): boolean
         local user = s.user :: Object
         for _, k in keys do
-            if not user:dimmed_pressed(k) then
+            if not (user.dimmed_pressed :: any)[k] then
                 return false
             end
         end
@@ -249,14 +249,14 @@ function scope.make(spec: Spec): Scope
         id = spec.id,
         pool = "effect",
         state = {
-            sweep = "u8",
-            sight = "bool",
-            user = "object",
-            down = "bool",
-            outward = "bool",
-            near = "u8",
-            far = "u8",
-            late_b = "u8",
+            sweep = schema.u8,
+            sight = schema.bool,
+            user = schema.object,
+            down = schema.bool,
+            outward = schema.bool,
+            near = schema.u8,
+            far = schema.u8,
+            late_b = schema.u8,
         },
         -- 0x080E5208.
         update = function(me: Object)

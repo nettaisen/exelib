@@ -10,7 +10,7 @@
 -- Bodies don't break it, and nothing pushes it.
 --
 -- Each game makes its own (`otenko.make`) with its look: the sprite, identity, lifetime (EXE6's 1800, EXE5's 600),
--- the registry's class (EXE6's 0, two a side; EXE5's 1), the sounds, how it leaves (EXE6's `sub_80DB252`: absorbed,
+-- the registry's class (EXE6's two a side; EXE5's one), the sounds, how it leaves (EXE6's `sub_80DB252`: absorbed,
 -- blinking out, or a puff or bubbles with the breaking sound; EXE5's 0x080DBD1A: a puff with HP left, else bubbles,
 -- silent, whatever removed it), and whether its blessing goes to the side's special bonus with each side keeping its
 -- own gauge (EXE5's 0x080DBC78, battle flag 0x40).
@@ -35,7 +35,7 @@ export type Look = {
     sprite: SpriteAsset,
     identity: Identity,
     lifetime: number,
-    class: number,
+    class: ObstacleClass,
     sounds: { appear: Sound, ["break"]: Sound? },
     -- What it is and reaches: another body of its side, hit by the other side.
     is: CollisionType,
@@ -113,7 +113,7 @@ function otenko.make(look: Look): Otenko
             if s.count >= MOST then
                 return
             end
-            battle.add_special_bonus(side, 0, 1)
+            battle.add_special_bonus(side, "attack", 1)
             s.count += 1
             return
         end
@@ -125,7 +125,7 @@ function otenko.make(look: Look): Otenko
             return
         end
         local i = battle.hand_cursor(side)
-        local turn = battle.hand_entry(side, i, "turn")
+        local turn = battle.hand_entry(side, i).turn
         local same = i == s.entry and turn == s.turn
         s.entry, s.turn = i, turn
         if not same then
@@ -226,7 +226,7 @@ function otenko.make(look: Look): Otenko
     local statue = new.kind {
         id = look.statue_id,
         pool = "attack",
-        state = { entry = "u32", turn = "u32", count = "u32" },
+        state = { entry = schema.u32, turn = schema.u32, count = schema.u32 },
         -- `sub_80DB0E4`.
         update = function(me: Object)
             local l = me.lifecycle

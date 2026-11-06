@@ -19,7 +19,7 @@ export type State = {
 }
 
 -- One state for every spreader.
-spreader.STATE = { timer = "u16" }
+spreader.STATE = { timer = schema.u16 }
 
 -- The phases, on the attack's step.
 local FIRE, RECOVER = 0x0, 0x4
@@ -35,7 +35,7 @@ function spreader.action(spec: SpreaderSpec, look: SpreaderLook): Action
             me:set_animation(look.anim)
             me:open_counter_window()
             look.hold(me, spec.gun, look.slot)
-            me:set_status("using_action", true)
+            me.status.using_action = true
             me.step_init = 4
             s.timer = 0
         end

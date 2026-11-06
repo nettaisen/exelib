@@ -21,8 +21,10 @@ local glow = {}
 -- What it does first, its spawner's (`BugFixGlowStart`): its first action, which sets action 4 when it is done.
 export type Start = BugFixGlowStart
 
+local BUGFIX_GLOW_START = schema.record_type("bugfix-glow-start")
+
 function glow.start(run: (me: Object) -> ()): Start
-    return new.record("bugfix-glow-start", { run = run })
+    return new.record(BUGFIX_GLOW_START, { run = run })
 end
 
 export type State = {
@@ -139,7 +141,7 @@ function glow.make(look: Look): Glow
     local kind = new.kind {
         id = look.id,
         pool = "actor",
-        state = { start = "record:bugfix-glow-start", holder = "object" },
+        state = { start = BUGFIX_GLOW_START, holder = schema.object },
         -- `sub_80C4828`.
         update = function(me: Object)
             local l = me.lifecycle

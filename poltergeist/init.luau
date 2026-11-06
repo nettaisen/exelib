@@ -211,7 +211,7 @@ function poltergeist.make(id: string): Poltergeist
     local kind = new.kind {
         id = id,
         pool = "effect",
-        state = { holder = "object", taken = "object[8]", count = "u8", nearest = "bool" },
+        state = { holder = schema.object, taken = schema.array(schema.object, 8), count = schema.u8, nearest = schema.bool },
         -- 0x080E8CFC.
         update = function(me: Object)
             local l = me.lifecycle

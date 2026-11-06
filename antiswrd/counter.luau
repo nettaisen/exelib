@@ -20,7 +20,7 @@ export type State = {
     timer: number,
 }
 
-local STATE = { timer = "u16" }
+local STATE = { timer = schema.u16 }
 
 export type Spec = {
     id: string,
@@ -67,8 +67,8 @@ local function start(me: Object, s: State, spec: Spec)
     battle.play_sound(spec.start_sound)
     me:open_counter_window()
     if not spec.plain then
-        me:set_status_timer("invulnerable", 0xFFFF)
-        me:set_status("invulnerable", true)
+        me.status_timers.invulnerable = 0xFFFF
+        me.status.invulnerable = true
     end
     set_step(me, 4)
 end
@@ -90,7 +90,7 @@ local function swing(me: Object, s: State, spec: Spec)
             local blade_anim = spec.blade_anim
             parts.hold(spec.attachment :: Kind, me, spec.blade, 0, if blade_anim ~= nil then blade_anim(me) else nil)
         end
-        me:set_status("using_action", true)
+        me.status.using_action = true
         s.timer = SWING_TICKS
         me.step_init = 4
     end
@@ -121,11 +121,11 @@ end
 -- idle without the blade.
 local function finish(me: Object, s: State, spec: Spec)
     if me.step_init == 0 then
-        me:set_request("anti_sword_triggered", false)
+        me.requests.anti_sword_triggered = false
         -- sub_800EB08
         if not spec.plain then
-            me:set_status_timer("invulnerable", 0)
-            me:set_status("invulnerable", false)
+            me.status_timers.invulnerable = 0
+            me.status.invulnerable = false
         end
         s.timer = 5
         me.step_init = 4

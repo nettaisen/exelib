@@ -297,7 +297,7 @@ function black_bomb.make_kind(id: string, look: Look): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { angle = "u8", set_off = "bool", placed = "bool", target_x = "u8", target_y = "u8" },
+        state = { angle = schema.u8, set_off = schema.bool, placed = schema.bool, target_x = schema.u8, target_y = schema.u8 },
         -- `sub_80CD4EC`.
         update = function(me: Object)
             local l = me.lifecycle
@@ -340,7 +340,7 @@ function black_bomb.thrower(bomb_kind: Kind): Thrower
                 o:set_damage_word(damage)
                 o.alliance = user.alliance
                 o.run_while_dimmed = true
-                obstacle.register(o, user.alliance, 1)
+                obstacle.register(o, user.alliance, "one_a_side")
             end
             return o
         end,

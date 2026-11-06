@@ -130,7 +130,7 @@ function hand.make_kind(look: Look): Kind
     return new.kind {
         id = look.id,
         pool = "attack",
-        state = { first = "bool" },
+        state = { first = schema.bool },
         -- `sub_80CCC48`.
         update = function(me: Object)
             local l = me.lifecycle

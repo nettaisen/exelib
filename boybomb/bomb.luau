@@ -56,8 +56,8 @@ function bomb.make(look: BoyBombLook): BoyBomb
     local function start_countdown(me: Object)
         me.timer = COUNTDOWN
         me.phase, me.phase_init = 4, 0
-        me:set_status("moving", false)
-        me:set_status("move_complete", true)
+        me.status.moving = false
+        me.status.move_complete = true
         me.future_panel_x, me.future_panel_y = me.panel_x, me.panel_y
     end
 
@@ -222,7 +222,7 @@ function bomb.make(look: BoyBombLook): BoyBomb
         c:set_hit_effect(nil)
         c:set_region(nil)
         c:present()
-        me:set_status("moving", true)
+        me.status.moving = true
         me.timer, me.timer2 = FADE_TICKS, 0
         sprite.alpha = 0
         battle.effect(me.pos, look.comes)
@@ -237,7 +237,7 @@ function bomb.make(look: BoyBombLook): BoyBomb
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { doomed = "bool", hit = "bool", last_hp = "u16" },
+        state = { doomed = schema.bool, hit = schema.bool, last_hp = schema.u16 },
         -- EXE5's 0x080CCDF4.
         update = function(me: Object)
             local l = me.lifecycle
@@ -266,7 +266,7 @@ function bomb.make(look: BoyBombLook): BoyBomb
                 o.flip = controller.flip
             end
             o.run_while_dimmed = true
-            obstacle.register(o, o.alliance, 0)
+            obstacle.register(o, o.alliance, "two_a_side")
         end
         return o
     end

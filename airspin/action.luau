@@ -18,7 +18,7 @@ export type State = {
 
 -- One state for every AirSpin: a use continues the last one's attack
 -- variables, as the original's one action does.
-action.STATE = { timer = "u16" }
+action.STATE = { timer = schema.u16 }
 
 -- The phases, on the attack's step.
 local SPIN, RECOVER = 0x0, 0x4
@@ -36,8 +36,8 @@ function action.action(spec: AirSpinSpec): Action
         if me.step_init == 0 then
             me:set_animation(ANIM_SPIN)
             me:open_counter_window()
-            me:set_status("using_action", true)
-            me:set_status("moving", true)
+            me.status.using_action = true
+            me.status.moving = true
             s.timer = SPIN_TICKS
             me.step_init = 4
         end
@@ -50,7 +50,7 @@ function action.action(spec: AirSpinSpec): Action
         local t = s.timer - 1
         s.timer = t
         if t < 0 then
-            me:set_status("moving", false)
+            me.status.moving = false
             me.step = RECOVER
             me.step_init = 0
         end

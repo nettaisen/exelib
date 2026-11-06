@@ -24,8 +24,11 @@ local quake = {}
 -- did (the made quake's `puff` or `bubbles`).
 export type Change = GeddonChange
 
+local GEDDON_CHANGE = schema.record_type("geddon-change")
+quake.GEDDON_CHANGE = GEDDON_CHANGE
+
 function quake.change(c: Change): Change
-    return new.record("geddon-change", c)
+    return new.record(GEDDON_CHANGE, c)
 end
 
 export type State = {
@@ -117,7 +120,7 @@ function quake.make(look: Look): Quake
     local kind = new.kind {
         id = look.id,
         pool = "effect",
-        state = { change = "record:geddon-change", list = "u8[18]", count = "i32", holder = "object" },
+        state = { change = GEDDON_CHANGE, list = schema.array(schema.u8, 18), count = schema.i32, holder = schema.object },
         -- `sub_80E25D0`.
         update = function(me: Object)
             local l = me.lifecycle

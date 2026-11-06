@@ -38,8 +38,8 @@ local function effect(me: Object, SOUND: Sound)
             error("Invisibl's controller has no user (sub_8010474 writes through a null pointer)")
         end
         -- sub_8010474
-        user:set_status_timer("flash", (me.state :: State).ticks)
-        user:set_status("invisible", true)
+        user.status_timers.flash = (me.state :: State).ticks
+        user.status.invisible = true
         battle.play_sound(SOUND)
         me.timer = WAIT
         me.phase_init = 4
@@ -56,7 +56,7 @@ function invisible.make(spec: Spec): Invisible
     local kind = new.kind {
         id = spec.id,
         pool = "effect",
-        state = { ticks = "u16" },
+        state = { ticks = schema.u16 },
         -- `sub_80E74D4`.
         update = dimming_chips.phases {
             name = "Invisibl",

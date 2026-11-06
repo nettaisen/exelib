@@ -31,7 +31,7 @@ local function make(id: string, striker_kind: Kind)
     local kind = new.kind {
         id = id,
         pool = "effect",
-        state = { bonus = "u16", wait = "u8" },
+        state = { bonus = schema.u16, wait = schema.u8 },
         update = dimming_chips.phases { name = "BodyGrd", effect = effect },
     }
 

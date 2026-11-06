@@ -9,9 +9,6 @@ local navi_status = require("@exelib/navi_status")
 
 local heal = {}
 
--- The side statistic counting recoveries (`sub_800AB46`).
-local RECOVERIES = 5
-
 -- A chip's recovery of `hp`; `id`, the action's key when no chip
 -- definition holds it; `mood`, what the heal adds to the side's mood
 -- (EXE5's 0x080EC484 adds the use's +0x0A after a heal no AntiRecv turned;
@@ -25,7 +22,7 @@ function heal.action(spec: { id: string?, hp: number, mood: number?, mood_after_
         if spec.mood and (not sprang or spec.mood_after_trap) then
             navi_status.gain_mood(me.alliance, spec.mood)
         end
-        battle.bump_side_stat(me.alliance, RECOVERIES, 1)
+        battle.bump_side_stat(me.alliance, "recoveries", 1)
         me:exit_attack()
     end
     return new.action { id = spec.id, args = spec, update = update }

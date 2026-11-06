@@ -21,7 +21,7 @@ export type State = {
     timer: number,
 }
 
-local STATE = { timer = "u16" }
+local STATE = { timer = schema.u16 }
 
 -- A game's counter: its key, its shuriken's kind (or its own throw: EXE4's
 -- dives BodyGrd's shuriken, 0x080D90A4), its own target (none: by the
@@ -105,8 +105,8 @@ local function vanish(me: Object, s: State, spec: Spec)
         me:set_animation(VANISH_ANIM)
         if not spec.keeps_move then
             me:unreserve_panel(me.future_panel_x, me.future_panel_y)
-            me:set_status("sliding", false)
-            me:set_status("moving", true)
+            me.status.sliding = false
+            me.status.moving = true
         end
         me.future_panel_x, me.future_panel_y = me.panel_x, me.panel_y
         me:reserve_panel(me.panel_x, me.panel_y)
@@ -168,9 +168,9 @@ local function back(me: Object, s: State, spec: Spec)
         me:set_animation(0)
         me.collision:set_region(regions.single)
         me:unreserve_panel(me.future_panel_x, me.future_panel_y)
-        me:set_request("anti_damage_triggered", false)
+        me.requests.anti_damage_triggered = false
         if not spec.keeps_move then
-            me:set_status("moving", false)
+            me.status.moving = false
         end
         s.timer = 5
         me.step_init = 4

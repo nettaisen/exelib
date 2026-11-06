@@ -51,7 +51,7 @@ function whirl.make(look: SeekingWhirlLook): { kind: Kind, sender: AirSpinSender
         for _, a in battle.alive_actors(bit32.bxor(me.alliance, 1)) do
             if a.panel_x == x and a.panel_y == y then
                 for _, f in look.hidden do
-                    if a:status(f) then
+                    if (a.status :: any)[f] then
                         return false
                     end
                 end
@@ -266,14 +266,14 @@ function whirl.make(look: SeekingWhirlLook): { kind: Kind, sender: AirSpinSender
         id = look.id,
         pool = "attack",
         state = {
-            target_x = "i32",
-            target_y = "i32",
-            from_x = "i32",
-            from_y = "i32",
-            hits = "i32",
-            regrow = "i32",
-            dx = "i32",
-            dy = "i32",
+            target_x = schema.i32,
+            target_y = schema.i32,
+            from_x = schema.i32,
+            from_y = schema.i32,
+            hits = schema.i32,
+            regrow = schema.i32,
+            dx = schema.i32,
+            dy = schema.i32,
         },
         -- `sub_80DFFB8`.
         update = function(me: Object)

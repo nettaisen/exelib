@@ -20,6 +20,9 @@ export type Spec = {
 
 local WAIT = 0x3C
 
+local BARRIER = schema.record_type("barrier")
+controller.BARRIER = BARRIER
+
 function controller.make(spec: Spec): { kind: Kind, hook: (barrier: Barrier) -> (user: Object, dspec: DimmingChipSpec) -> Object? }
     -- `sub_80E3AFC`.
     local function effect(me: Object)
@@ -42,7 +45,7 @@ function controller.make(spec: Spec): { kind: Kind, hook: (barrier: Barrier) -> 
     local kind = new.kind {
         id = spec.id,
         pool = "effect",
-        state = { barrier = "record:barrier" },
+        state = { barrier = BARRIER },
         update = dimming_chips.phases { name = "the barrier chips", effect = effect },
     }
 

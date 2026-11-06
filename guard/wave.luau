@@ -29,8 +29,10 @@ type State = {
     variant: GuardWaveVariant,
 }
 
+local SHOCK_WAVE_VARIANT = schema.record_type("shock-wave-variant")
+
 function wave.variant(v: GuardWaveVariant): GuardWaveVariant
-    return new.record("shock-wave-variant", v)
+    return new.record(SHOCK_WAVE_VARIANT, v)
 end
 
 -- Done: off its panels, and freed at the next update.
@@ -149,7 +151,7 @@ function wave.make(look: GuardWaveLook): GuardWaveSpawn
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { variant = "record:shock-wave-variant" },
+        state = { variant = SHOCK_WAVE_VARIANT },
         -- EXE5's 0x080C739C, EXE4's 0x080CFBB0.
         update = function(me: Object)
             local l = me.lifecycle

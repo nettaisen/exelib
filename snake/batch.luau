@@ -88,7 +88,7 @@ function batch.make(spec: SnakeBatchSpec): SnakeBatch
     local nest = new.kind {
         id = spec.nest_id,
         pool = "attack",
-        state = { scan_x = "u8", scan_y = "u8", flags = "u32", holder = "object" },
+        state = { scan_x = schema.u8, scan_y = schema.u8, flags = schema.u32, holder = schema.object },
         -- EXE5's 0x080D0380 (EXE6's `sub_80D2BDC`).
         update = function(me: Object)
             local l = me.lifecycle
@@ -149,7 +149,7 @@ function batch.make(spec: SnakeBatchSpec): SnakeBatch
     local controller = new.kind {
         id = spec.controller_id,
         pool = "effect",
-        state = { bonus = "u16", busy = "bool" },
+        state = { bonus = schema.u16, busy = schema.bool },
         update = dimming_chips.phases { name = "Snake", effect = effect },
     }
 

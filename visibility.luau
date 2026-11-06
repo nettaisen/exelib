@@ -1,6 +1,6 @@
 --!strict
 -- Who sees an object, on each console: the original's consoles each clear an object's `VISIBLE` by rules of their own
--- side (`object:get("visible", side)`, `object:set("visible", on, side)`).
+-- side (`object:console(side).visible`, `object:console(side).visible = on`).
 
 local visibility = {}
 
@@ -8,14 +8,14 @@ local visibility = {}
 -- each console shows of it now (`battle.sees`).
 function visibility.hide_from_blind(o: Object)
     for side = 0, 1 do
-        o:set("visible", o:get("visible", side) and battle.sees(side, o.alliance), side)
+        o:console(side).visible = o:console(side).visible and battle.sees(side, o.alliance)
     end
 end
 
 -- Seen by whoever sees `owner`: what follows its owner's visibility.
 function visibility.copy(o: Object, owner: Object)
     for side = 0, 1 do
-        o:set("visible", owner:get("visible", side), side)
+        o:console(side).visible = owner:console(side).visible
     end
 end
 
@@ -29,8 +29,8 @@ function visibility.update(o: Object)
     local own = bit32.band(o.alliance, 1)
     for side = 0, 1 do
         local navi = battle.player(side)
-        local blind = side ~= own and navi ~= nil and navi.has_collision and navi:status("blind")
-        o:set("visible", o:get("visible", side) and not blind, side)
+        local blind = side ~= own and navi ~= nil and navi.has_collision and navi.status.blind
+        o:console(side).visible = o:console(side).visible and not blind
     end
 end
 

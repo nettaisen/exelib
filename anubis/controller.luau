@@ -6,6 +6,7 @@
 -- `dimming` hook is the made controller's `hook(variant)`.
 
 local dimming_chips = require("@exelib/dimming")
+local statue = require("./statue")
 
 local controller = {}
 
@@ -39,7 +40,7 @@ function controller.make(spec: Spec): { hook: (variant: AnubisVariant) -> (user:
     local kind = new.kind {
         id = spec.id,
         pool = "effect",
-        state = { variant = "record:anubis-variant" },
+        state = { variant = statue.ANUBIS_VARIANT },
         -- `sub_80E40EC`.
         update = dimming_chips.phases { name = "Anubis", effect = effect },
     }

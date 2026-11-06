@@ -231,13 +231,13 @@ function ball.make_kind(id: string, look: ThunderBallLook): Kind
         id = id,
         pool = "attack",
         state = {
-            fast = "bool",
-            panels = "u8",
-            status = "status",
-            bug = "u8",
-            big = "bool",
-            is = "collision",
-            sound = "sound",
+            fast = schema.bool,
+            panels = schema.u8,
+            status = schema.status,
+            bug = schema.u8,
+            big = schema.bool,
+            is = schema.collision,
+            sound = schema.sound,
         },
         -- `sub_80C93CC`.
         update = function(me: Object)

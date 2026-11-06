@@ -17,6 +17,7 @@ export type State = {
 }
 
 local attachment = require("../attachment")
+local projectile_shot = require("../projectile/projectile")
 
 local charged_shot = {}
 
@@ -38,7 +39,7 @@ local function shoot(me: Object, s: State, look: MegaManShotLook)
         me:set_animation(0x0E)
         look.buster.raise_arm(me)
         me.step_init = 4
-        me:set_status("using_action", true)
+        me.status.using_action = true
         s.timer = 0
     end
     if s.timer == 1 then
@@ -113,7 +114,7 @@ end
 function charged_shot.action(look: MegaManShotLook): Action
     return new.action {
         id = look.id,
-        state = { timer = "u16", projectile = "record:projectile-variant" },
+        state = { timer = schema.u16, projectile = projectile_shot.PROJECTILE_VARIANT },
         update = function(me: Object, s: State)
             update(me, s, look)
         end,

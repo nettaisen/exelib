@@ -37,7 +37,7 @@ export type State = {
 -- Rolling speed (16.16), panels it rolls at most.
 local SPEED, MAX_PANELS = 0x4_0000, 4
 -- Its field-object class.
-local CLASS = 1
+local CLASS: ObstacleClass = "one_a_side"
 -- Panel flags: where EXE6's can't be set down (other bodies and neutral
 -- objects); what stops its rolling (any body).
 local BODIES: { PanelFlag } = { "own_other_body", "enemy_other_body", "neutral" }
@@ -249,7 +249,7 @@ function top.make(look: AirSpinTopLook): AirSpinTop
     -- in a puff.
     local function removed(me: Object)
         local absorbed = look.absorbed
-        if absorbed and me:obstacle_flag("absorbed") then
+        if absorbed and me.obstacle_flags.absorbed then
             obstacle.fly_to_absorber(me, absorbed)
         else
             local b = obstacle.blink_out(me)
@@ -280,7 +280,7 @@ function top.make(look: AirSpinTopLook): AirSpinTop
     local function tick(me: Object)
         local c = me.collision
         c:remove()
-        local broken = me:take_damage(0) < 0 or c:hit_any(CRUSHING)
+        local broken = me:take_damage("damage_sound") == "broken" or c:hit_any(CRUSHING)
         if broken then
             battle.effect(me.pos, look.explosion)
             battle.play_sound(look.sounds.hit_bomb)
@@ -296,7 +296,7 @@ function top.make(look: AirSpinTopLook): AirSpinTop
                 leave(me)
             else
                 local run = not battle.dimmed()
-                if look.absorbed and me:obstacle_flag("removed") and me.action ~= REMOVED then
+                if look.absorbed and me.obstacle_flags.removed and me.action ~= REMOVED then
                     me.action = REMOVED
                     me.phase = 0
                     me.phase_init = 0
@@ -358,7 +358,7 @@ function top.make(look: AirSpinTopLook): AirSpinTop
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { target_x = "i32", interval = "i32", spins = "u8", palette = "u8" },
+        state = { target_x = schema.i32, interval = schema.i32, spins = schema.u8, palette = schema.u8 },
         -- `sub_80D88E0` (EXE5's 0x080D9EE4).
         update = function(me: Object)
             local l = me.lifecycle

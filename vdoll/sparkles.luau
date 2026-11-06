@@ -59,14 +59,14 @@ function sparkles.make(look: SparklesLook): Sparkles
         end
     end
 
-    local schema: StateSchema = { ticks = "u8", effect = "effect", silent = "bool" }
+    local state: StateSchema = { ticks = schema.u8, effect = schema.effect, silent = schema.bool }
     if look.stays then
-        schema.at = "vec3"
+        state.at = schema.vec3
     end
     local kind = new.kind {
         id = look.id,
         pool = "effect",
-        state = schema,
+        state = state,
         -- `sub_80E19BC`.
         update = function(me: Object)
             local l = me.lifecycle

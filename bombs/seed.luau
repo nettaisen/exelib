@@ -19,9 +19,11 @@ export type State = { variant: SeedVariant }
 local FLIGHT_TICKS = 0x28
 local SPEED, RISE, GRAVITY = 0x2E666, 0x20666, -0x2800
 
+local SEED_VARIANT = schema.record_type("seed-variant")
+
 -- A seed variant.
 function seed.variant(v: SeedVariant): SeedVariant
-    return new.record("seed-variant", v)
+    return new.record(SEED_VARIANT, v)
 end
 
 -- Done: hidden, off its panels, and freed at the next update.
@@ -138,7 +140,7 @@ function seed.make_kind(id: string, look: SeedLook): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { variant = "record:seed-variant" },
+        state = { variant = SEED_VARIANT },
         -- `sub_80CE24C`.
         update = function(me: Object)
             local l = me.lifecycle

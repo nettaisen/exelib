@@ -44,7 +44,7 @@ function controller.make(look: Look): Controller
     local kind = new.kind {
         id = look.id,
         pool = "effect",
-        state = { bonus = "u16", busy = "bool" },
+        state = { bonus = schema.u16, busy = schema.bool },
         update = dimming_chips.phases { name = "BugCharg", effect = effect },
     }
 

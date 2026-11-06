@@ -17,9 +17,11 @@ export type State = {
     variant: BulletVariant,
 }
 
+local BULLET_VARIANT = schema.record_type("bullet-variant")
+
 -- A bullet variant.
 function bullet.variant(v: BulletVariant): BulletVariant
-    return new.record("bullet-variant", v)
+    return new.record(BULLET_VARIANT, v)
 end
 
 -- Done: off its panels, and freed at the next update.
@@ -75,8 +77,8 @@ local function tick(me: Object, look: BulletLook)
     local c = me.collision
     c:remove()
     me:hit_spark()
-    if c.hit and not me:status("dead") then
-        me:set_status("dead", true)
+    if c.hit and not me.status.dead then
+        me.status.dead = true
         me.action = 4
         me.phase, me.phase_init = 0, 0
     end
@@ -111,7 +113,7 @@ function bullet.make_kind(id: string, look: BulletLook): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { variant = "record:bullet-variant" },
+        state = { variant = BULLET_VARIANT },
         -- `sub_80C6946`.
         update = function(me: Object)
             local l = me.lifecycle

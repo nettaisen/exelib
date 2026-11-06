@@ -25,9 +25,11 @@ export type State = {
     trail: number,
 }
 
+local WAVE_VARIANT = schema.record_type("wave-variant")
+
 -- A wave variant.
 function wave.variant(v: WaveVariant): WaveVariant
-    return new.record("wave-variant", v)
+    return new.record(WAVE_VARIANT, v)
 end
 
 local HIT_MOD = 3
@@ -202,7 +204,7 @@ function wave.make_kind(look: WideWaveLook): Kind
     return new.kind {
         id = look.id,
         pool = "attack",
-        state = { variant = "record:wave-variant", hit_mod = "u8", hit_panel = "u32", trail = "i32" },
+        state = { variant = WAVE_VARIANT, hit_mod = schema.u8, hit_panel = schema.u32, trail = schema.i32 },
         -- `sub_80CB49C`.
         update = function(me: Object)
             local l = me.lifecycle

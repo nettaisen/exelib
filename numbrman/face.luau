@@ -94,7 +94,7 @@ function face.make(spec: NumberManFaceSpec): NumberManFace
     local kind = new.kind {
         id = spec.id,
         pool = "actor",
-        state = { hidden = "bool" },
+        state = { hidden = schema.bool },
         -- EXE5's 0x080C412E, EXE4's 0x080CCC9C.
         update = function(me: Object)
             local l = me.lifecycle

@@ -46,7 +46,7 @@ function controller.make(spec: Spec): { hook: (user: Object, dspec: DimmingChipS
     local kind = new.kind {
         id = spec.id,
         pool = "effect",
-        state = { bonus = "u16" },
+        state = { bonus = schema.u16 },
         -- `sub_80E6758`.
         update = dimming_chips.phases { name = "Guardian's controller", effect = effect },
     }

@@ -152,7 +152,7 @@ function burst.make_kind(id: string, look: HyperBurstShotLook): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { bursting = "bool", bursts = "u16" },
+        state = { bursting = schema.bool, bursts = schema.u16 },
         -- `sub_80D8FC4` (it has no sprite).
         update = function(me: Object)
             local l = me.lifecycle

@@ -90,11 +90,11 @@ function beam.make_kind(id: string, hum: Sound): Kind
         pool = "effect",
         state = {
             slot = slot.TYPE,
-            offset = "vec3",
-            ticks = "u16",
-            sprite = "sprite",
-            palette = "u8",
-            while_dimmed = "bool",
+            offset = schema.vec3,
+            ticks = schema.u16,
+            sprite = schema.sprite,
+            palette = schema.u8,
+            while_dimmed = schema.bool,
         },
         -- `sub_80E5C2C`.
         update = function(me: Object)

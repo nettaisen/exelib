@@ -82,7 +82,7 @@ function falling_chip.make_kind(id: string, sprite: SpriteAsset): Chips
     local kind = new.kind {
         id = id,
         pool = "effect",
-        state = { priority = "u8" },
+        state = { priority = schema.u8 },
         update = function(me: Object)
             local l = me.lifecycle
             if l == "init" then

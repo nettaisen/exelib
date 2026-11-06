@@ -26,7 +26,7 @@ function blank_shot.make(look: { id: string, buster: Buster, click: Sound }): { 
         if me.step_init == 0 then
             me:set_animation(0x0E)
             buster.raise_arm(me)
-            me:set_status("using_action", true)
+            me.status.using_action = true
             s.timer = 0
             me.step_init = 4
         end
@@ -69,7 +69,7 @@ function blank_shot.make(look: { id: string, buster: Buster, click: Sound }): { 
         end
     end
 
-    local action = new.action { id = look.id, state = { timer = "u16" }, update = update }
+    local action = new.action { id = look.id, state = { timer = schema.u16 }, update = update }
 
     -- `sub_8011ADA`: nothing to fire.
     local function setup(navi: Object): Action

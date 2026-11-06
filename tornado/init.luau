@@ -33,9 +33,11 @@ export type State = {
 -- parameter) and its ticks (the third and fourth).
 export type Spec = TornadoSpec
 
+local TORNADO_VARIANT = schema.record_type("tornado-variant")
+
 -- A tornado variant.
 function tornado.variant(v: Variant): Variant
-    return new.record("tornado-variant", v)
+    return new.record(TORNADO_VARIANT, v)
 end
 
 -- The damage bits that are flags, kept when the damage doubles.
@@ -153,7 +155,7 @@ function tornado.make_kind(id: string, look: TornadoLook): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { variant = "record:tornado-variant", status = "status", rearm_step = "u32", rearm_ticks = "u32" },
+        state = { variant = TORNADO_VARIANT, status = schema.status, rearm_step = schema.u32, rearm_ticks = schema.u32 },
         -- `sub_80C9F78`.
         update = function(me: Object)
             local l = me.lifecycle

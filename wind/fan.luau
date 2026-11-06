@@ -26,9 +26,12 @@ local HIT_MOD = 0
 -- own panels.
 local OWN_PANELS = "own_area"
 
+local FAN_VARIANT = schema.record_type("fan-variant")
+fan.FAN_VARIANT = FAN_VARIANT
+
 -- A fan's variant.
 function fan.variant(v: FanVariant): FanVariant
-    return new.record("fan-variant", v)
+    return new.record(FAN_VARIANT, v)
 end
 
 function fan.make(look: FanLook): Fan
@@ -255,7 +258,7 @@ function fan.make(look: FanLook): Fan
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { variant = "record:fan-variant", row_counter = "u32" },
+        state = { variant = FAN_VARIANT, row_counter = schema.u32 },
         -- `sub_80CCFDC`.
         update = function(me: Object)
             local l = me.lifecycle
@@ -280,7 +283,7 @@ function fan.make(look: FanLook): Fan
         o.panel_x, o.panel_y = x, y
         o.alliance, o.flip = owner.alliance, owner.flip
         o.run_while_dimmed = true
-        obstacle.register(o, o.alliance, 1)
+        obstacle.register(o, o.alliance, "one_a_side")
         return o
     end
 

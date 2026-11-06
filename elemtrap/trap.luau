@@ -144,7 +144,7 @@ local function init(me: Object, look: ElemTrapLook)
     end
     me:setup_collision(look.self_type, look.target, HIT_MOD)
     me.collision:set_region(regions.field)
-    me:set_status("hit_while_dimmed", true)
+    me.status.hit_while_dimmed = true
     me.collision:present()
     local s = me.state :: State
     s.armed = false
@@ -158,7 +158,7 @@ function trap.make_kind(id: string, look: ElemTrapLook): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { chip = "chip", bonus = "u16", armed = "bool", sprung_by = "u8" },
+        state = { chip = schema.chip, bonus = schema.u16, armed = schema.bool, sprung_by = schema.u8 },
         -- `sub_80CDF84`.
         update = function(me: Object)
             local l = me.lifecycle

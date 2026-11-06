@@ -19,7 +19,7 @@ export type State = {
 type Spec = ThunderShot
 
 -- One state for both chips' shots.
-shoot.STATE = { timer = "u16" }
+shoot.STATE = { timer = schema.u16 }
 
 -- The phases, on the attack's step.
 local SHOOT, RECOVER = 0x0, 0x4
@@ -37,7 +37,7 @@ function shoot.action(spec: Spec, look: ThunderShotLook): Action
                 buster.raise_arm(me)
             end
             me:open_counter_window()
-            me:set_status("using_action", true)
+            me.status.using_action = true
             me.step_init = 4
             s.timer = 0
         end

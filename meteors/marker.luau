@@ -24,8 +24,10 @@ export type State = {
     shrink: number,
 }
 
+local MARKER_LOOK = schema.record_type("marker-look")
+
 -- A meteor's: 45 ticks, lit 5 of every 10.
-marker.meteor = new.record("marker-look", { lifetime = 45, period = 10, lit = 5, shrink = 0 } :: MarkerLook)
+marker.meteor = new.record(MARKER_LOOK, { lifetime = 45, period = 10, lit = 5, shrink = 0 } :: MarkerLook)
 
 -- `object_highlightPanelRegion`: the region's panels from (x, y), turned
 -- toward `side`'s front.
@@ -88,11 +90,11 @@ function marker.make_kind(id: string): Kind
         id = id,
         pool = "effect",
         state = {
-            look = "record:marker-look",
-            region = "region",
-            period_left = "u8",
-            lit_left = "u8",
-            shrink = "u8",
+            look = MARKER_LOOK,
+            region = schema.region,
+            period_left = schema.u8,
+            lit_left = schema.u8,
+            shrink = schema.u8,
         },
         -- `sub_80E4344`.
         update = function(me: Object)

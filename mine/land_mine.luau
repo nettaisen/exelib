@@ -245,7 +245,7 @@ function land_mine.make_kind(look: Look): Kind
     return new.kind {
         id = look.id,
         pool = "attack",
-        state = { targets = "u8[18]", count = "u32", index = "u32", hop_ticks = "u8" },
+        state = { targets = schema.array(schema.u8, 18), count = schema.u32, index = schema.u32, hop_ticks = schema.u8 },
         update = update,
     }
 end
@@ -261,7 +261,7 @@ function land_mine.spawn(kind: Kind, side: number, damage: number): Object?
     o.alliance = side
     o:set_damage_word(damage)
     o.run_while_dimmed = true
-    obstacle.register(o, side, 0)
+    obstacle.register(o, side, "two_a_side")
     return o
 end
 

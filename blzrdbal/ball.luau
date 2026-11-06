@@ -129,7 +129,7 @@ function ball.make_kind(look: Look): Kind
     return new.kind {
         id = look.id,
         pool = "attack",
-        state = { roller = "object", growth = "u16", size = "u8" },
+        state = { roller = schema.object, growth = schema.u16, size = schema.u8 },
         -- `sub_80DB994`.
         update = function(me: Object)
             local l = me.lifecycle

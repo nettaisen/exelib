@@ -62,12 +62,14 @@ local function effect(me: Object)
     end
 end
 
+local TRAP = schema.record_type("trap")
+
 -- A game's controller kind, keyed `id`.
 function traps.make_kind(id: string): Kind
     return new.kind {
         id = id,
         pool = "effect",
-        state = { chip = "chip", bonus = "u16", trap = "record:trap" },
+        state = { chip = schema.chip, bonus = schema.u16, trap = TRAP },
         -- `sub_80E34C0`.
         update = dimming_chips.phases { name = "a trap chip", effect = effect, hidden = true },
     }
@@ -75,7 +77,7 @@ end
 
 -- A trap's object, as a record a controller can keep.
 function traps.trap(t: Trap): Trap
-    return new.record("trap", t)
+    return new.record(TRAP, t)
 end
 
 -- A chip's `dimming` hook (`sub_80E353E`): the controller (of `kind`) for

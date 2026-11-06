@@ -22,9 +22,11 @@ export type State = {
     hit: LanceHit?,
 }
 
+local LANCE_HIT = schema.record_type("lance-hit")
+
 -- A chip's lance's hit.
 function lance.hit(h: LanceHit): LanceHit
-    return new.record("lance-hit", h)
+    return new.record(LANCE_HIT, h)
 end
 
 
@@ -160,7 +162,7 @@ function lance.make_kind(id: string, look: LanceLook): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { palette = "u8", hit = "record:lance-hit" },
+        state = { palette = schema.u8, hit = LANCE_HIT },
         -- `sub_80D2460`; an attack's panel highlighted while its region
         -- stands (EXE4's 0x080D73D4).
         update = function(me: Object)

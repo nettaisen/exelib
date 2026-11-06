@@ -15,7 +15,7 @@ export type State = {
 }
 
 -- One state for the three.
-tankcan.STATE = { timer = "u16" }
+tankcan.STATE = { timer = schema.u16 }
 
 -- The phases, on the attack's step.
 local AIM, FIRE, LOWER = 0x0, 0x4, 0x8
@@ -40,7 +40,7 @@ function tankcan.action(spec: Spec): Action
             me:open_counter_window()
             s.timer = AIM_TICKS
             attachment.attach(spec.attachment, me, spec.cannon, "overlay")
-            me:set_status("using_action", true)
+            me.status.using_action = true
             me.step_init = 4
             return
         end

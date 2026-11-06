@@ -48,7 +48,7 @@ function controller.make(spec: Spec): Controller
     local kind = new.kind {
         id = spec.id,
         pool = "effect",
-        state = { bonus = "u16", busy = "bool" },
+        state = { bonus = schema.u16, busy = schema.bool },
         -- EXE5's 0x080E6DFC, EXE4's 0x080E8418.
         update = dimming_chips.phases { name = "HolyDrem", effect = effect },
     }

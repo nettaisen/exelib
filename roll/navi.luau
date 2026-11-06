@@ -21,6 +21,7 @@ local panels = require("../panels")
 local regions = require("../regions")
 local slot = require("../slot")
 local navi_left = require("@exelib/navi_chips/left")
+local panel_changer = require("../panel_changer")
 
 -- What a chip summons her with (what the original reads by the chips' first parameter, their level): her whip's
 -- rounds of three hits (1; 3 for the parameter 5, which no chip has) and her palette (EXE6's Roll3's, EXE5's RollDS's
@@ -576,20 +577,20 @@ function roll.make(spec: Spec): Roll
         id = spec.id,
         pool = "actor",
         state = {
-            home_x = "u8",
-            home_y = "u8",
-            gray = "u8",
-            rounds = "u8",
-            swish = "u8",
-            controller = "object",
-            held = "object",
-            whip_rounds = "u8",
-            palette = "u8",
-            target_x = "u8",
-            target_y = "u8",
-            ribbon_palette = "u8",
-            appear_change = "record:panel-change",
-            mood = "u8",
+            home_x = schema.u8,
+            home_y = schema.u8,
+            gray = schema.u8,
+            rounds = schema.u8,
+            swish = schema.u8,
+            controller = schema.object,
+            held = schema.object,
+            whip_rounds = schema.u8,
+            palette = schema.u8,
+            target_x = schema.u8,
+            target_y = schema.u8,
+            ribbon_palette = schema.u8,
+            appear_change = panel_changer.PANEL_CHANGE,
+            mood = schema.u8,
         },
         -- `sub_80C07BC`.
         update = function(me: Object)

@@ -173,7 +173,7 @@ function shell.make_kind(id: string, look: Look): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { hit_mod = "u8", cracks = "bool", shift = "u8", spots = "u8[3]" },
+        state = { hit_mod = schema.u8, cracks = schema.bool, shift = schema.u8, spots = schema.array(schema.u8, 3) },
         -- `sub_80CB6F8`.
         update = function(me: Object)
             local l = me.lifecycle

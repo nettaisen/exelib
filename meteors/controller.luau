@@ -93,7 +93,7 @@ local function list(me: Object, s: Listed): number
 end
 
 controller.listed = {
-    state = { panels = "u8[20]", count = "u32", next = "u32" },
+    state = { panels = schema.array(schema.u8, 20), count = schema.u32, next = schema.u32 },
     first = function(me: Object): boolean
         local s = me.state :: Listed
         s.count = list(me, s)
@@ -145,7 +145,7 @@ local function scan(me: Object, s: Scanned): boolean
 end
 
 controller.scanned = {
-    state = { x = "i32", y = "i32" },
+    state = { x = schema.i32, y = schema.i32 },
     -- 0x080E5CF8: from before the field, past a column's last row.
     first = function(me: Object): boolean
         local s = me.state :: Scanned
@@ -210,7 +210,7 @@ function controller.make(look: Look): (user: Object, spec: DimmingChipSpec) -> O
         end
     end
 
-    local state: StateSchema = { bonus = "u16" }
+    local state: StateSchema = { bonus = schema.u16 }
     for name, field_type in targets.state do
         state[name] = field_type
     end

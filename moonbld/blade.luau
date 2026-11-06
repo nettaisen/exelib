@@ -110,7 +110,7 @@ function blade.make_kind(id: string, look: MoonBladeLook): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { plain = "bool" },
+        state = { plain = schema.bool },
         -- `sub_80D5C48`.
         update = function(me: Object)
             local l = me.lifecycle

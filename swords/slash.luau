@@ -34,7 +34,7 @@ export type State = {
 local SWING_ANIM, WARP_OUT_ANIM, SWING_STEPS = 5, 4, 22
 
 -- One state for every sword's slash.
-slash.STATE = { timer = "u16", turned = "u32" }
+slash.STATE = { timer = schema.u16, turned = schema.u32 }
 
 -- The phases, on the attack's step.
 local START, SET_UP, SWING, STEP_BACK, RECOVER = 0x0, 0x4, 0x8, 0xC, 0x10
@@ -110,10 +110,10 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
     -- `sub_800E5FC`: not while moving or sliding; then moving, from its
     -- panel, which it holds.
     local function set_off(me: Object): boolean
-        if me:status("moving") or me:status("sliding") then
+        if me.status.moving or me.status.sliding then
             return false
         end
-        me:set_status("moving", true)
+        me.status.moving = true
         me.future_panel_x, me.future_panel_y = me.panel_x, me.panel_y
         me:reserve_panel(me.panel_x, me.panel_y)
         return true
@@ -246,7 +246,7 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
             me:open_counter_window()
             battle.play_sound(spec.sound)
             hold(me)
-            me:set_status("using_action", true)
+            me.status.using_action = true
             s.timer = 0x15
             -- (nullsub_12 is passed the panel ahead and the hit region.)
             me.step_init = 4
@@ -314,7 +314,7 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
     local function recover(me: Object, s: State)
         if me.step_init == 0 then
             if clears_moving then
-                me:set_status("moving", false)
+                me.status.moving = false
             end
             s.timer = 5
             me.step_init = 4

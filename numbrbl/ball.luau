@@ -135,7 +135,7 @@ function ball.make(look: NumberBallLook): NumberBall
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { wait = "u8" },
+        state = { wait = schema.u8 },
         -- `sub_80D7278` (EXE5's 0x080D895C): by state, then the sprite
         -- (stepping while dimmed).
         update = function(me: Object)

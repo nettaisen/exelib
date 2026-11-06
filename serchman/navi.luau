@@ -231,13 +231,13 @@ function navi.make(spec: Spec): SearchMan
         id = spec.id,
         pool = "actor",
         state = {
-            controller = "object",
-            palette = "u8",
-            sweep = "u8",
-            gray = "u8",
-            powered = "bool",
-            shots = "u8",
-            fired = "bool",
+            controller = schema.object,
+            palette = schema.u8,
+            sweep = schema.u8,
+            gray = schema.u8,
+            powered = schema.bool,
+            shots = schema.u8,
+            fired = schema.bool,
         },
         -- 0x080C11D8.
         update = function(me: Object)

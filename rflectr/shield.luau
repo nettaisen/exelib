@@ -28,8 +28,10 @@ export type Shield = {
     spawn: (owner: Object, offset: Vec3, l: Look) -> Object?,
 }
 
+local REFLECTOR_SHIELD_LOOK = schema.record_type("reflector-shield-look")
+
 function shield.look(l: Look): Look
-    return new.record("reflector-shield-look", l)
+    return new.record(REFLECTOR_SHIELD_LOOK, l)
 end
 
 -- The actions: held up, then fading.
@@ -92,7 +94,7 @@ function shield.make(spec: {
         visibility.hide_from_blind(me)
         if hides_with_owner then
             local owner = me.related1 :: Object
-            if owner:navi_state("vanished") then
+            if owner.navi_flags.vanished then
                 me.visible = false
             end
         end
@@ -119,7 +121,7 @@ function shield.make(spec: {
     local kind = new.kind {
         id = spec.id,
         pool = "attack",
-        state = { slot = slot.TYPE, look = "record:reflector-shield-look" },
+        state = { slot = slot.TYPE, look = REFLECTOR_SHIELD_LOOK },
         -- `sub_80C96A0`: the state, then the sprite unless dimmed.
         update = function(me: Object)
             local l = me.lifecycle

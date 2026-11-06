@@ -1,6 +1,6 @@
 --!strict
 -- A sprite's look on each console: the two consoles draw some fields their own way, where the original's consoles
--- decide a look by their own side (`sprite:get(field, side)`, `sprite:set(field, value, side)`). And the looks the
+-- decide a look by their own side (`sprite:console(side)`). And the looks the
 -- content's definitions give: a navi's sprite in a form, what an identity (the original's NameID) is drawn as, and an
 -- object made to look as one.
 
@@ -8,20 +8,20 @@ local looks = {}
 
 -- `field` as side 0's console draws it (`side0`) and as side 1's does (`side1`): a palette by whose panel it is, the
 -- parts a console hides. Alike, it is every console's.
-function looks.by_console(sprite: Sprite, field: string, side0: any, side1: any)
+function looks.by_console(sprite: Sprite, field: SpriteFieldName, side0: any, side1: any)
     if side0 == side1 then
-        sprite:set(field, side0)
+        (sprite :: any)[field] = side0
     else
-        sprite:set(field, side0, 0)
-        sprite:set(field, side1, 1)
+        (sprite:console(0) :: any)[field] = side0;
+        (sprite:console(1) :: any)[field] = side1
     end
 end
 
 -- `from`'s `fields` onto `to` as each console draws them: what is drawn as its owner is copies them so (reading a
 -- field and setting it would make the local side's console's every console's).
-function looks.copy(to: Sprite, from: Sprite, ...: string)
+function looks.copy(to: Sprite, from: Sprite, ...: SpriteFieldName)
     for _, field in { ... } do
-        looks.by_console(to, field, from:get(field, 0), from:get(field, 1))
+        looks.by_console(to, field, (from:console(0) :: any)[field], (from:console(1) :: any)[field])
     end
 end
 

@@ -403,7 +403,7 @@ function deltaray.make(spec: Spec): {
     -- `sub_80C2EB0`: his side's player pressed A while dimmed.
     local function asked_again(me: Object): boolean
         local p = battle.player(me.alliance) :: Object
-        return p:dimmed_pressed("a")
+        return p.dimmed_pressed.a
     end
 
     -- `sub_80C2D8C`: the strike: his sword out (animation 5), 20 ticks; at 10
@@ -415,7 +415,7 @@ function deltaray.make(spec: Spec): {
     local function hit(me: Object)
         local s = st(me)
         if spec.flashes then
-            battle.palette_flash(0, 5, true)
+            battle.palette_flash("one_layer", 5, true)
         end
         local x, y = me.panel_x + (1 - 2 * s.facing), me.panel_y
         local box = battle.hitbox(me, {
@@ -504,7 +504,7 @@ function deltaray.make(spec: Spec): {
         end
         battle.play_sound(spec.sounds.burst)
         if spec.flashes then
-            battle.palette_flash(0, 0x14, true)
+            battle.palette_flash("one_layer", 0x14, true)
         end
     end
 
@@ -620,17 +620,17 @@ function deltaray.make(spec: Spec): {
         id = spec.id,
         pool = "actor",
         state = {
-            controller = "object",
-            facing = "u8",
-            home = "u16",
-            target_x = "u8",
-            target_y = "u8",
-            first_x = "u8",
-            first_y = "u8",
-            first_found = "u8",
-            again = "u8",
-            glow = "u8",
-            palette = "u8",
+            controller = schema.object,
+            facing = schema.u8,
+            home = schema.u16,
+            target_x = schema.u8,
+            target_y = schema.u8,
+            first_x = schema.u8,
+            first_y = schema.u8,
+            first_found = schema.u8,
+            again = schema.u8,
+            glow = schema.u8,
+            palette = schema.u8,
         },
         -- `sub_80C2A78`.
         update = function(me: Object)

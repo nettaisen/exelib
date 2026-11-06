@@ -87,7 +87,7 @@ function heal.make(look: TangoHealLook): TangoHeal
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { target_x = "u8", target_y = "u8" },
+        state = { target_x = schema.u8, target_y = schema.u8 },
         update = update,
     }
 

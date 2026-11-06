@@ -105,7 +105,7 @@ function panel_bursts.make_kind(id: string): Kind
     return new.kind {
         id = id,
         pool = "effect",
-        state = { targets = "u8[28]", count = "u8", effect = "effect", sound = "sound" },
+        state = { targets = schema.array(schema.u8, 28), count = schema.u8, effect = schema.effect, sound = schema.sound },
         update = update,
     }
 end

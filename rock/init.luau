@@ -2,8 +2,8 @@
 -- Rocks, as EXE5 and EXE6 share them (EXE6's attack object #0x59, `sub_80CF954`; EXE5's #0x59, 0x080D0FA0, the same
 -- code): field obstacles with HP that block their panel, break into debris when destroyed, and leave after 6000
 -- ticks. A rock is spawned with its variant (the original's first parameter, a row of EXE6's `byte_80CF934` or EXE5's
--- 0x080D0F80: the rock cubes and the ice block), the class of field-object slot it takes (the second: 0, two a side;
--- 1, one) and how it comes onto the field (the third, its entrance). RockCube and IceCube place one, and others use
+-- 0x080D0F80: the rock cubes and the ice block), the class of field-object slot it takes (the second: two a side, or
+-- one) and how it comes onto the field (the third, its entrance). RockCube and IceCube place one, and others use
 -- it too: an obstacle encased in ice becomes an ice block (EXE6's), and some stages place them when the round starts
 -- (an actor list's entry type 8, the kind's `place`, with the variant the stage names). See EXE6's
 -- docs/engine/field-objects.md.
@@ -72,7 +72,7 @@ export type Look = {
 export type Rock = {
     kind: Kind,
     -- `sub_80CFBC4`: a rock for `side` on (x, y): of `spec.variant`, in field-object class `spec.class` of the
-    -- side's slots (0 by default; evicting the oldest if they are full), coming as `spec.entrance` ("rise" by
+    -- side's slots ("two_a_side" by default; evicting the oldest if they are full), coming as `spec.entrance` ("rise" by
     -- default), with the damage word it hits with when thrown. Placed at the start, it also runs while the battle
     -- is paused. (Until its init places it, its position is the spawner's registers: Y, the side, and what nothing
     -- reads.)
@@ -96,9 +96,12 @@ local RISE_STEPS = 10
 -- actions).
 local APPEAR, DESTROYED, STANDING = 0, 2, 8
 
+local ROCK_VARIANT = schema.record_type("rock-variant")
+rock.ROCK_VARIANT = ROCK_VARIANT
+
 -- A rock's variant (a row of the game's table).
 function rock.variant(v: RockVariant): RockVariant
-    return new.record("rock-variant", v)
+    return new.record(ROCK_VARIANT, v)
 end
 
 function rock.make(look: Look): Rock
@@ -287,14 +290,14 @@ function rock.make(look: Look): Rock
         if entrance == "placed" then
             o.run_while_paused = true
         end
-        obstacle.register(o, side, spec.class or 0)
+        obstacle.register(o, side, spec.class or "two_a_side")
         return o
     end
 
     kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { variant = "record:rock-variant", entrance = { "rise", "instant", "fall", "placed" } },
+        state = { variant = ROCK_VARIANT, entrance = { "rise", "instant", "fall", "placed" } },
         -- `sub_80CF954`.
         update = function(me: Object)
             local l = me.lifecycle

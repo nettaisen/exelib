@@ -26,11 +26,14 @@ export type State = {
     holder: Object?,
 }
 
+local PANEL_CHANGE = schema.record_type("panel-change")
+panel_changer.PANEL_CHANGE = PANEL_CHANGE
+
 -- A change: which panels (`off_80E291C`), the type they become, how they
 -- show meanwhile, how long, and the conditions by side. (`byte_80E272C`'s
 -- rows by kind: its sounds were the kind's, now the row's.)
 function panel_changer.change(c: PanelChange): PanelChange
-    return new.record("panel-change", c)
+    return new.record(PANEL_CHANGE, c)
 end
 
 -- `sub_80E2ACA`: a changer (of `kind`, a game's) of `change` on panel
@@ -163,7 +166,7 @@ function panel_changer.make_kind(id: string): Kind
     return new.kind {
         id = id,
         pool = "effect",
-        state = { change = "record:panel-change", list = "u8[18]", count = "u8", holder = "object" },
+        state = { change = PANEL_CHANGE, list = schema.array(schema.u8, 18), count = schema.u8, holder = schema.object },
         -- `sub_80E28A8`.
         update = function(me: Object)
             local l = me.lifecycle

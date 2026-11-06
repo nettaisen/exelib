@@ -20,7 +20,7 @@ places.FIRST = 3
 places.RECORDS = 8
 
 -- A place as a setup and a state hold it.
-local PLACE: StateSchema = { chip = "chip", pattern = "u8", zero = "bool" }
+local PLACE: StateSchema = { chip = schema.chip, pattern = schema.u8, zero = schema.bool }
 places.PLACE = PLACE
 export type Place = { chip: Chip?, pattern: number, zero: boolean }
 

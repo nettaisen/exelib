@@ -22,9 +22,11 @@ export type State = {
     row: MeteorRow,
 }
 
+local METEOR_ROW = schema.record_type("meteor-row")
+
 -- A meteor's row.
 function falling_meteor.row(r: MeteorRow): MeteorRow
-    return new.record("meteor-row", r)
+    return new.record(METEOR_ROW, r)
 end
 
 
@@ -156,7 +158,7 @@ function falling_meteor.make_kind(id: string, look: MeteorLook): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { row = "record:meteor-row" },
+        state = { row = METEOR_ROW },
         -- `sub_80CF3BE`.
         update = function(me: Object)
             local l = me.lifecycle

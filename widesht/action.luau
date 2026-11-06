@@ -17,7 +17,7 @@ export type State = {
     timer: number,
 }
 
-widesht.STATE = { timer = "u16" }
+widesht.STATE = { timer = schema.u16 }
 
 -- The phases, on the attack's step.
 local RAISE, FIRE, RECOVER = 0x0, 0x4, 0x8
@@ -38,7 +38,7 @@ function widesht.action(spec: WideShotSpec, look: WideShotLook): Action
         me:set_animation(ANIM_HOLD)
         me:open_counter_window()
         attachment.attach(look.attachment, me, shooter_look, "overlay")
-        me:set_status("using_action", true)
+        me.status.using_action = true
         me.step, me.step_init = FIRE, 0
         me.attack_count = spec.waves
         s.timer = FIRST_TICKS

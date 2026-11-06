@@ -7,6 +7,7 @@
 -- cut short. And the NaviCust's buster bugs' pick (`sub_8013D5E`). See docs/engine/objects-and-player.md §B6.
 
 local attachment = require("../attachment")
+local projectile_shot = require("../projectile/projectile")
 
 -- (The recovery after the shot is the navi's `attack_count`, AIAttackVars+0x12:
 -- a throw doesn't write it, so it waits the last shot's, whatever ran in
@@ -27,9 +28,11 @@ export type State = {
 
 local buster = {}
 
+local MEGAMAN_BUSTER_THROW = schema.record_type("megaman-buster-throw")
+
 -- A setup's throw: what flies instead of the shot (its sound, then it).
 function buster.throw(run: (me: Object) -> ()): MegaManBusterThrow
-    return new.record("megaman-buster-throw", { run = run })
+    return new.record(MEGAMAN_BUSTER_THROW, { run = run })
 end
 
 -- The phases, on the attack's step.
@@ -79,7 +82,7 @@ local function shoot(me: Object, s: State, look: MegaManBusterLook)
     if me.step_init == 0 then
         me:set_animation(0x0E)
         look.buster.raise_arm(me)
-        me:set_status("using_action", true)
+        me.status.using_action = true
         me.step_init = 4
         s.timer = 0
     end
@@ -145,10 +148,10 @@ function buster.shot_action(look: MegaManBusterLook): Action
     return new.action {
         id = look.id,
         state = {
-            timer = "u16",
-            spread = "bool",
-            throw = "record:megaman-buster-throw",
-            projectile = "record:projectile-variant",
+            timer = schema.u16,
+            spread = schema.bool,
+            throw = MEGAMAN_BUSTER_THROW,
+            projectile = projectile_shot.PROJECTILE_VARIANT,
         },
         update = function(me: Object, s: State)
             update(me, s, look)

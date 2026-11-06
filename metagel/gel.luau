@@ -166,7 +166,7 @@ function gel.make(look: Look): Gel
     local kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { holder = "object", slot = "u8" },
+        state = { holder = schema.object, slot = schema.u8 },
         -- EXE5's 0x080CE02C.
         update = function(me: Object)
             local l = me.lifecycle

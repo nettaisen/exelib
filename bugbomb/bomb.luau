@@ -135,7 +135,7 @@ local function tick(me: Object, look: Look)
         return
     end
     local crushed = look.crushing_hit == "explodes" and me.collision:hit_any(CRUSHED)
-    if me:take_damage(0) < 0 or crushed then
+    if me:take_damage("damage_sound") == "broken" or crushed then
         battle.effect(me.pos, look.crushed)
         battle.play_sound(look.crushed_sound)
         finish(me)
@@ -199,7 +199,7 @@ function bomb.make_kind(id: string, look: Look): Kind
     return new.kind {
         id = id,
         pool = "attack",
-        state = { angle = "u8", target_x = "u8", target_y = "u8" },
+        state = { angle = schema.u8, target_x = schema.u8, target_y = schema.u8 },
         -- `sub_80D9D4C`.
         update = function(me: Object)
             local l = me.lifecycle

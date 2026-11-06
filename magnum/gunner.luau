@@ -199,7 +199,7 @@ function gunner.make(look: Look): Gunner
             end
             local t = me.timer - 1
             me.timer = bit32.band(t, 0xFFFF)
-            if t == 0 or (me.related1 :: Object):dimmed_pressed("a") then
+            if t == 0 or (me.related1 :: Object).dimmed_pressed.a then
                 me.timer = AFTER_AIM
                 me.phase = 8
             end
@@ -251,10 +251,10 @@ function gunner.make(look: Look): Gunner
         id = look.id,
         pool = look.pool,
         state = {
-            controller = "object",
-            x = "i32",
-            interval = "i32",
-            dir = "i32",
+            controller = schema.object,
+            x = schema.i32,
+            interval = schema.i32,
+            dir = schema.i32,
         },
         update = function(me: Object)
             local s = me.state :: State

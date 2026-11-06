@@ -16,7 +16,7 @@ export type State = {
 }
 
 -- One state for every flick.
-flick.STATE = { timer = "u16" }
+flick.STATE = { timer = schema.u16 }
 
 -- The phases, on the attack's step.
 local FLICK, RECOVER = 0x0, 0x4
@@ -36,7 +36,7 @@ function flick.action(spec: Spec): Action
         if me.step_init == 0 then
             me:set_animation(spec.anim or ANIM)
             me:open_counter_window()
-            me:set_status("using_action", true)
+            me.status.using_action = true
             me.step_init = 4
             s.timer = 0x0F
         end

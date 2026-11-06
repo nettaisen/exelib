@@ -247,7 +247,7 @@ function dice.make(spec: DiceSpec): Dice
             go(me)
             return
         end
-        if me:take_damage(0) < 0 or c:hit_any(ENEMY) then
+        if me:take_damage("damage_sound") == "broken" or c:hit_any(ENEMY) then
             battle.effect(me.pos, explosion(s))
             battle.play_sound(spec.blow_up)
             go(me)
@@ -304,16 +304,16 @@ function dice.make(spec: DiceSpec): Dice
         id = spec.id,
         pool = "attack",
         state = {
-            face = "u8",
-            dimmed = "bool",
-            target_x = "u8",
-            target_y = "u8",
-            status = "status",
-            hit_mod = "u8",
-            holder = "object",
-            slot = "u8",
-            exact = "bool",
-            quiet = "bool",
+            face = schema.u8,
+            dimmed = schema.bool,
+            target_x = schema.u8,
+            target_y = schema.u8,
+            status = schema.status,
+            hit_mod = schema.u8,
+            holder = schema.object,
+            slot = schema.u8,
+            exact = schema.bool,
+            quiet = schema.bool,
         },
         -- EXE5's 0x080C4F2C, EXE4's 0x080CD9E8.
         update = function(me: Object)

@@ -61,7 +61,7 @@ end
 -- `sub_8010368` (EXE4's 0x0800C3FC): the conditions of a panel `navi` may step onto: (require, forbid), and the side
 -- their names are of.
 function panels.step_condition(navi: Object): (PanelFlags?, PanelFlags?, number)
-    local row = if navi:status("air_shoe") then AIR_SHOE_STEP else STEP
+    local row = if navi.status.air_shoe then AIR_SHOE_STEP else STEP
     return row.require, row.forbid, side_of(navi)
 end
 

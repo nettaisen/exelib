@@ -61,9 +61,11 @@ local HIT: { HitName } = {
 -- The legs.
 local OUT, ACROSS, BACK = 0, 1, 2
 
+local BOOMERANG_VARIANT = schema.record_type("boomerang-variant")
+
 -- A boomerang variant.
 function boomerang.variant(v: Variant): Variant
-    return new.record("boomerang-variant", v)
+    return new.record(BOOMERANG_VARIANT, v)
 end
 
 -- `sub_80CA510`: a grass boomerang turns the other side's panel it is on
@@ -164,7 +166,7 @@ local function fly(me: Object, s: State)
         me:set_panel_from_coordinates()
     end
     me:update_collision_panels()
-    if me.collision.direction ~= 0 then
+    if me.collision.direction ~= "none" then
         grow_grass(me, s)
     end
 end
@@ -211,12 +213,12 @@ function boomerang.make_kind(look: BoomerangLook): Kind
         id = look.id,
         pool = "attack",
         state = {
-            variant = "record:boomerang-variant",
-            turns = "bool",
-            column = "u8",
-            strong = "bool",
-            leg = "u8",
-            hit_panel = "u16",
+            variant = BOOMERANG_VARIANT,
+            turns = schema.bool,
+            column = schema.u8,
+            strong = schema.bool,
+            leg = schema.u8,
+            hit_panel = schema.u16,
         },
         -- `sub_80CA2A8`.
         update = function(me: Object)

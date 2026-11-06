@@ -72,7 +72,7 @@ local function raise_arm_for(look: BusterLook, navi: Object, holder: Object, whi
     local arm = form.buster_arm
     local palette_add = 0
     if form.base then
-        if navi:navi_state("no_charge") then
+        if navi.navi_flags.no_charge then
             palette_add = NO_CHARGE_PALETTE
         elseif stats.element ~= 0 then
             palette_add = 0x14 + stats.element
@@ -120,7 +120,7 @@ local function move_cancel(navi: Object): boolean
         return false
     end
     local dir = navi:held_direction()
-    if dir == 0 or navi:step_target(dir) == nil then
+    if dir == nil or navi:step_target(dir) == nil then
         return false
     end
     navi.related1 = nil

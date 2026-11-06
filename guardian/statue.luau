@@ -403,14 +403,14 @@ function statue.make(look: Look): Statue
             o.run_while_paused = true
         end
         o.run_while_dimmed = true
-        obstacle.register(o, o.alliance, 1)
+        obstacle.register(o, o.alliance, "one_a_side")
         return o
     end
 
     kind = new.kind {
         id = look.id,
         pool = "attack",
-        state = { staged = "bool", quiet = "bool", strike = "bool", avenger = "u8" },
+        state = { staged = schema.bool, quiet = schema.bool, strike = schema.bool, avenger = schema.u8 },
         -- `sub_80D4C84`.
         update = function(me: Object)
             local l = me.lifecycle
