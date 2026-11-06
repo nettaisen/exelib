@@ -21,7 +21,7 @@ type State = {
     dy: number,
 }
 
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 local LIFETIME = 30
 
 -- Gone: no region, and freed at the next update; its time up, from its first action and phase (the game's word
@@ -86,7 +86,7 @@ function magnet.make(look: MagnetLook): MagnetSpawn
         c:set_hit_effect(look.spark_of(me.element))
         if (me.state :: State).paralyzes then
             c.status_base = look.paralysis
-            c.hit_mod_base = 0
+            c.hit_mod_base = {}
         end
         me:set_lifecycle("update")
         tick(me)
@@ -114,7 +114,7 @@ function magnet.make(look: MagnetLook): MagnetSpawn
             local s = o.state :: State
             s.paralyzes, s.dx, s.dy = paralyzes, dx, dy
             o.element = element
-            o:set_damage_word(damage)
+            o.damage_word = damage
             o.alliance = owner.alliance
             o.related1 = owner
             if not look.watches then

@@ -106,7 +106,7 @@ function panel_types.burn(spec: BurnSpec): (Object, boolean) -> ()
             c:add_damage(FIRE, damage, true)
             c:add_mood_damage(spec.mood or 0)
             -- (A hit: the hit modifiers 1 and 2, on both sides'.)
-            c:add_hit_mod(3)
+            c:add_hit_mod({ flinch = true, flash = true })
         end
         local x, y = c.panel_x, c.panel_y
         field.set_type(x, y, "normal")

@@ -54,7 +54,7 @@ local SHUFFLE_SWAPS = 0x14
 local TARGETS: PanelCondition = { require = { "solid", "enemy_area" }, forbid = { "occupied", "reaches_set_objects" } }
 -- Its collision's hit modifier (it is a mine, and reaches what stands on
 -- either side).
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 
 -- Its actions (`off_80CDE20`, by index).
 local DESTROYED, ARMED = 2, 8
@@ -259,7 +259,7 @@ function land_mine.spawn(kind: Kind, side: number, damage: number): Object?
         return nil
     end
     o.alliance = side
-    o:set_damage_word(damage)
+    o.damage_word = damage
     o.run_while_dimmed = true
     obstacle.register(o, side, "two_a_side")
     return o

@@ -117,7 +117,7 @@ function batch.make(spec: SnakeBatchSpec): SnakeBatch
         local o = battle.spawn(nest, Vec3.new(0, 0, z))
         if o then
             o.panel_x, o.panel_y = x, y
-            o:set_damage_word(damage)
+            o.damage_word = damage
             o.related1 = controller
             local s = o.state :: NestState
             s.holder = holder

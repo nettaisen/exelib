@@ -71,7 +71,7 @@ export type ControllerState = {
 }
 
 local FALL, PANEL_TICKS = 0x1_9999, 15
-local HIT_MOD = 1
+local HIT_MOD: HitModifier = { flinch = true }
 
 -- The enemy's area (EXE5's 0x080D63AC, EXE4's 0x080DD214: the panels a side's flock looks for), the column EXE5's
 -- starts from (0x080D63BC, by side and flip) and EXE4's (0x080DD224, by side).
@@ -314,7 +314,7 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
                     if o then
                         o.panel_x, o.panel_y = p.panel_x, 0
                         o.element = me.element
-                        o:set_damage_word(bit32.bor(me.damage, bit32.lshift(me.stamina, 16)))
+                        o.damage_word = me.damage_word
                         o.alliance = me.alliance
                         o.run_while_dimmed = true
                     end
@@ -422,7 +422,7 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
                     local fs = o.state :: FlockState
                     fs.every = 12
                     o.timer, o.timer2 = 12, 18
-                    o:set_damage_word(dimming_chips.damage_plus(me, s.bonus))
+                    o.damage_word = dimming_chips.damage_plus(me, s.bonus)
                     o.alliance, o.flip = me.alliance, me.flip
                     fs.controller = me
                     o.run_while_dimmed = true

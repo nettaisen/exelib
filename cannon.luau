@@ -48,7 +48,7 @@ type Look = CannonLook
 
 -- The attack's damage word with the Atk+ bonus (`av.u32[8] + av.u16[6]`).
 local function damage_word(me: Object): number
-    return int.u32(me.attack_damage + me.hit_param * 0x10000 + me.extra)
+    return damage_word.plus(me.attack_word, me.extra)
 end
 
 local function set_phase(me: Object, step: number)

@@ -50,9 +50,8 @@ function bugcurse.make(look: BugCurseLook): (user: Object, spec: DimmingChipSpec
             hit_effect = nil,
             target = look.hits,
             self_type = look.is,
-            damage = me.damage,
-            stamina = me.stamina,
-            hit_mod = 0,
+            damage = me.damage_word,
+            hit_mod = {},
             bug = bit32.band(bug, 0xFF),
             bug_arg = bit32.rshift(bug, 8),
         })
@@ -154,7 +153,7 @@ function bugcurse.make(look: BugCurseLook): (user: Object, spec: DimmingChipSpec
         if o then
             o.panel_x, o.panel_y = x, y
             o.element = element
-            o:set_damage_word(damage)
+            o.damage_word = damage
             o.alliance = controller.alliance
             ;(o.state :: CurseState).controller = controller
             o.run_while_dimmed = true
@@ -178,7 +177,7 @@ function bugcurse.make(look: BugCurseLook): (user: Object, spec: DimmingChipSpec
         if me.phase_init == 0 then
             local enemy = battle.player(bit32.bxor(me.alliance, 1))
             if enemy and not untouched(enemy) then
-                if spawn(me, enemy.panel_x, enemy.panel_y, me.element, bit32.bor(me.damage, bit32.lshift(me.stamina, 16))) then
+                if spawn(me, enemy.panel_x, enemy.panel_y, me.element, me.damage_word) then
                     s.waiting = true
                 end
             end

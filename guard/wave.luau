@@ -17,7 +17,7 @@
 
 local wave = {}
 
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- Out of sight: 240 pixels to the right.
 local GONE_X = 240
 
@@ -77,7 +77,7 @@ function wave.make(look: GuardWaveLook): GuardWaveSpawn
         local t = me.timer - 1
         me.timer = int.u16(t)
         if t == 0 then
-            local damage = int.u32(me.damage + me.stamina * 0x10000)
+            local damage = me.damage_word
             spawn(me, me.panel_x + me.facing, me.panel_y, (me.state :: State).variant, damage)
             me.action = FADING
         end
@@ -176,7 +176,7 @@ function wave.make(look: GuardWaveLook): GuardWaveSpawn
             (o.state :: State).variant = variant
             o.panel_x, o.panel_y = x, y
             o.element = 0
-            o:set_damage_word(damage)
+            o.damage_word = damage
             o.alliance = owner.alliance
             if look.owned then
                 o.flip = owner.flip

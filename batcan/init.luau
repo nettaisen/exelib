@@ -34,12 +34,12 @@ export type BatCanSpec = { shots: { number } }
 export type BatCan = {
     shot: Kind,
     -- `sub_80C5176`: a shot from `owner` on panel (x, y).
-    fire: (owner: Object, x: number, y: number, z: number, element: number, damage: number, hit_mod: number) -> Object?,
+    fire: (owner: Object, x: number, y: number, z: number, element: number, damage: number, hit_mod: HitModifier) -> Object?,
     -- A chip's action.
     action: (spec: BatCanSpec) -> Action,
 }
 
-type ShotState = { hit_mod: number }
+type ShotState = { hit_mod: HitModifierByte }
 
 export type State = {
     -- The phase's count (AIAttackVars+0x10).
@@ -135,13 +135,13 @@ function batcan.make(look: Look): BatCan
     -- `sub_80C5176`: a shot from `owner` on panel (x, y) at height `z` (16.16), with `element`, the damage word and
     -- the hit modifier; nil if the attack pool is full. It takes the owner's side and flip, runs later this tick,
     -- right after its spawner, and keeps its Z.
-    local function fire(owner: Object, x: number, y: number, z: number, element: number, damage: number, hit_mod: number): Object?
+    local function fire(owner: Object, x: number, y: number, z: number, element: number, damage: number, hit_mod: HitModifier): Object?
         local o = battle.spawn(shot, Vec3.new(0, 0, z))
         if o then
-            (o.state :: ShotState).hit_mod = hit_mod
+            (o.state :: ShotState).hit_mod = hit_modifier.byte(hit_mod)
             o.panel_x, o.panel_y = x, y
             o.element = element
-            o:set_damage_word(damage)
+            o.damage_word = damage
             o.alliance, o.flip = owner.alliance, owner.flip
             o.related1 = owner
         end
@@ -180,7 +180,7 @@ function batcan.make(look: Look): BatCan
             if s.timer == SHOT_TICK then
                 battle.play_sound(look.sound)
                 local hit_mod = spec.shots[#spec.shots - me.attack_count + 1]
-                local damage = int.u32(me.attack_damage + me.hit_param * 0x10000 + me.extra)
+                local damage = damage_word.plus(me.attack_word, me.extra)
                 fire(me, me.panel_x + me.facing, me.panel_y, SHOT_Z, me.attack_element, damage, hit_mod)
             end
             local t = s.timer + 1

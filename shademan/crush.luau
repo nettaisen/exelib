@@ -16,7 +16,7 @@ local crush = {}
 type State = {
     -- What his command gave (his +0x70: the crush's parameters).
     palette: number,
-    hit_mod: number,
+    hit_mod: HitModifierByte,
     status: Status?,
     bug: number,
     bug_arg: number,
@@ -38,8 +38,7 @@ function crush.make(spec: ShadeManCrushSpec): ShadeManCrush
             hit_effect = nil,
             target = spec.hits,
             self_type = spec.attack,
-            damage = me.damage,
-            stamina = me.stamina,
+            damage = me.damage_word,
             hit_mod = s.hit_mod,
             status = s.status,
             bug = s.bug,
@@ -126,11 +125,11 @@ function crush.make(spec: ShadeManCrushSpec): ShadeManCrush
         if o then
             o.panel_x, o.panel_y = x, y
             o.element = 0
-            o:set_damage_word(bit32.bor(shademan.damage, bit32.lshift(shademan.stamina, 16)))
+            o.damage_word = shademan.damage_word
             o.alliance, o.flip = shademan.alliance, shademan.flip
             o.run_while_dimmed = true
             local s = o.state :: State
-            s.palette, s.hit_mod, s.status = given.palette, given.hit_mod, given.status
+            s.palette, s.hit_mod, s.status = given.palette, hit_modifier.byte(given.hit_mod), given.status
             s.bug, s.bug_arg = given.bug or 0, given.bug_arg or 0
         end
         return o

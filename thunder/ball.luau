@@ -268,7 +268,7 @@ function ball.spawn(kind: Kind, owner: Object, x: number, y: number, element: nu
         s.big, s.is, s.sound = spec.big or false, spec.is, spec.sound
         o.panel_x, o.panel_y = x, y
         o.element = element
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance, o.flip = owner.alliance, owner.flip
         o.related1 = nil
     end

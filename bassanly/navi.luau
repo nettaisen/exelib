@@ -64,7 +64,7 @@ local STAND_STEPS = 38
 function bassanly.make(spec: Spec): { kind: Kind, summon: (user: Object, controller: Object, spec: NaviChipSpec) -> Object? }
     -- `sub_80C3EBC`: a shot from his panel, up or down the slant.
     local function shoot(me: Object, slant: number)
-        spec.shoot(me, me.panel_x, me.panel_y, slant, bit32.bor(me.damage, bit32.lshift(me.stamina, 16)))
+        spec.shoot(me, me.panel_x, me.panel_y, slant, me.damage_word)
     end
 
     -- `sub_80C3DC8`: waiting, 51 ticks (to -1).
@@ -252,7 +252,7 @@ function bassanly.make(spec: Spec): { kind: Kind, summon: (user: Object, control
         o.panel_x, o.panel_y = nspec.panel_x, nspec.panel_y
         o.element = nspec.element
         o.alliance, o.flip = user.alliance, user.flip
-        o:set_damage_word(nspec.damage)
+        o.damage_word = nspec.damage
         local s = o.state :: State
         s.controller = controller
         return o

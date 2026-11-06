@@ -44,7 +44,7 @@ export type Gel = {
 }
 
 local DROP, START_Z = 0x80000, 0x100_0000
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- Where it stays (EXE5's 0x080CE1AC, EXE4's 0x080D5F70, by side; a side but 0 as side 1): a solid panel of the other
 -- side's, with nothing on it.
 local function stays(x: number, y: number, side: number): boolean
@@ -101,8 +101,7 @@ function gel.make(look: Look): Gel
             hit_effect = look.spark,
             target = look.hits,
             self_type = look.is,
-            damage = me.damage,
-            stamina = me.stamina,
+            damage = me.damage_word,
             hit_mod = HIT_MOD,
         })
         if h then
@@ -196,7 +195,7 @@ function gel.make(look: Look): Gel
         local o = battle.spawn(kind, Vec3.zero)
         if o then
             o.panel_x, o.panel_y = x, y
-            o:set_damage_word(damage)
+            o.damage_word = damage
             o.alliance = holder.alliance
             local s = o.state :: State
             s.holder, s.slot = holder, slot

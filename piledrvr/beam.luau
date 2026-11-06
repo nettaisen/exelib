@@ -30,7 +30,7 @@ local beam = {}
 local DRAWN_AHEAD, HEIGHT = 0x3C, 0x1C_0000
 -- Its hits: ten, 16 ticks apart (the timer to -1), the first at once.
 local HITS, BETWEEN = 0x0A, 0x0F
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- Its opening (animation twice its distance) lasts this many of its sprite's steps, by its distance (every game's).
 local OPENING_STEPS = { [0] = 2, 4, 6, 6 }
 
@@ -60,8 +60,7 @@ function beam.make_kind(look: Look): Kind
             hit_effect = look.spark,
             target = look.hits,
             self_type = look.is,
-            damage = me.damage,
-            stamina = me.stamina,
+            damage = me.damage_word,
             hit_mod = HIT_MOD,
         })
         if box then
@@ -155,7 +154,7 @@ function beam.spawn(kind: Kind, pile: Object, x: number, y: number, element: num
     if o then
         o.panel_x, o.panel_y = x, y
         o.element = element
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance, o.flip = pile.alliance, pile.flip
         local s = o.state :: State
         s.distance = distance

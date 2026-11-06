@@ -195,7 +195,7 @@ function falling_meteor.spawn_kind(
     (o.state :: State).row = row
     o.panel_x, o.panel_y = x, y
     o.element = element
-    o:set_damage_word(damage)
+    o.damage_word = damage
     o.alliance, o.flip = owner.alliance, owner.flip
     if while_dimmed then
         o.run_while_dimmed = true

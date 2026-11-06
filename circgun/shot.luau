@@ -75,9 +75,8 @@ function shot.make_kind(id: string, look_: CircGunLook): Kind
                 hit_effect = look_.spark,
                 target = look_.target,
                 self_type = v.hit,
-                damage = me.damage,
-                stamina = me.stamina,
-                hit_mod = 3,
+                damage = me.damage_word,
+                hit_mod = { flinch = true, flash = true },
                 bug = v.bug or 0,
                 bug_arg = v.bug_arg or 0,
             })
@@ -164,7 +163,7 @@ function shot.spawn_kind(
     end
     o.panel_x, o.panel_y = x, y
     o.element = element
-    o:set_damage_word(damage)
+    o.damage_word = damage
     o.alliance = gun.alliance
     local s = o.state :: State
     s.gun, s.slot, s.variant, s.ticks = gun, slot, variant, ticks

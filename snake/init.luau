@@ -183,8 +183,7 @@ local function fly(me: Object, look: Look)
         hit_effect = look.strike_spark,
         target = look.hits,
         self_type = look.is,
-        damage = me.damage,
-        stamina = me.stamina,
+        damage = me.damage_word,
         hit_mod = look.strike_hit_mod,
     })
     if h then
@@ -285,7 +284,7 @@ function snake.spawn(kind: Kind, nest: Object, x: number, y: number, tx: number,
         o.panel_x, o.panel_y = x, y
         local s = o.state :: State
         s.target_x, s.target_y, s.nest, s.slot = tx, ty, nest, slot
-        o:set_damage_word(bit32.bor(nest.damage, bit32.lshift(nest.stamina, 16)))
+        o.damage_word = nest.damage_word
         o.alliance, o.flip = nest.alliance, nest.flip
     end
     return o

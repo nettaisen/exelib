@@ -44,7 +44,7 @@ local TOP, BOTTOM = 0x4_0000, 0x34_0000
 
 -- Its collision's hit modifier: 1, or 3 for a strong one. (What it is and
 -- hits are the game's: EXE6's an attack that hits navis.)
-local HIT_MOD, STRONG_HIT_MOD = 1, 3
+local HIT_MOD, STRONG_HIT_MOD = { flinch = true }, { flinch = true, flash = true }
 -- A hit registered by something (`dword_80CA540`).
 local HIT: { HitName } = {
     "own_attack",
@@ -244,7 +244,7 @@ function boomerang.spawn(kind: Kind, owner: Object, x: number, y: number, elemen
     if o then
         o.panel_x, o.panel_y = x, y
         o.element = element
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance, o.flip = owner.alliance, owner.flip
         local s = o.state :: State
         s.variant = throw.variant

@@ -187,7 +187,7 @@ function gust.spawn(
     end
     o.panel_x, o.panel_y = x, y
     o.alliance, o.flip = alliance, flip
-    o:set_damage_word(damage)
+    o.damage_word = damage
     local s = o.state :: State
     s.holder = holder
     s.slot = slot

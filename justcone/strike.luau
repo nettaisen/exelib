@@ -40,7 +40,7 @@ export type Strike = {
 }
 
 -- Its own collision's hit modifier (`dword_80DB558`).
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- How far behind and above it starts, and how fast it falls (both ways), 16.16.
 local START, SPEED = 0x100_0000, 0x10_0000
 local FALL_TICKS = 0x10
@@ -50,7 +50,7 @@ local LANDS: { PanelFlag } = { "any_body", "solid" }
 -- the damage's flag bits) and hit modifier 3.
 local WAVES = { regions.beside, regions.diagonals }
 local NO_SPARK: Spark? = nil
-local WAVE_DAMAGE, WAVE_HIT_MOD = 0x64, 3
+local WAVE_DAMAGE, WAVE_HIT_MOD = 0x64, { flinch = true, flash = true }
 -- The dust (effect 0) around its panel (`byte_80DB540`: dx facing forward, dy).
 local DUST = { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, -1 }, { 0, 0 }, { 0, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 } }
 local STAY_TICKS = 0x1E
@@ -215,7 +215,7 @@ function strike.make(look: Look): Strike
         if o then
             o.panel_x, o.panel_y = x, y
             o.element = element
-            o:set_damage_word(damage)
+            o.damage_word = damage
             o.alliance, o.flip = owner.alliance, owner.flip
             o.related1 = owner
         end

@@ -62,8 +62,7 @@ function lance.make_kind(id: string, look: LanceLook): Kind
                 hit_effect = hit.spark,
                 target = hit.hits,
                 self_type = hit.is,
-                damage = me.damage,
-                stamina = me.stamina,
+                damage = me.damage_word,
                 hit_mod = hit.hit_mod,
                 bug = hit.bug or 0,
                 bug_arg = hit.bug_arg or 0,
@@ -205,7 +204,7 @@ function lance.spawn_kind(
     if o then
         o.panel_x, o.panel_y = x, y
         o.element = element
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance = owner.alliance
         if not side_only then
             o.flip = owner.flip

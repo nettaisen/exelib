@@ -158,9 +158,8 @@ function gunner.make(look: Look): Gunner
             hit_effect = look.spark,
             target = look.hits,
             self_type = look.is,
-            damage = me.damage,
-            stamina = me.stamina,
-            hit_mod = 3,
+            damage = me.damage_word,
+            hit_mod = { flinch = true, flash = true },
         })
         if h then
             h.run_while_dimmed = true
@@ -289,7 +288,7 @@ function gunner.make(look: Look): Gunner
         if o then
             o.panel_x, o.panel_y = controller.panel_x, controller.panel_y
             o.element = controller.element
-            o:set_damage_word(damage)
+            o.damage_word = damage
             o.related1 = user
             o.alliance, o.flip = user.alliance, user.flip
             o.run_while_dimmed = true

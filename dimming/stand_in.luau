@@ -37,7 +37,7 @@ function stand_in.spawn(kind: Kind, controller: Object, user: Object, damage: nu
     end
     o.panel_x, o.panel_y = controller.panel_x, controller.panel_y
     o.element = controller.element
-    o:set_damage_word(damage)
+    o.damage_word = damage
     o.related1 = user
     ;(o.state :: State).controller = controller
     ;(controller.state :: Waiting).busy = true

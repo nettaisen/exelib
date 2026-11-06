@@ -176,7 +176,7 @@ function bomb.thrower(kind: Kind, variant: BombVariant): Thrower
                 (o.state :: State).variant = variant
                 o.element = 0
                 o.alliance, o.flip = user.alliance, user.flip
-                o:set_damage_word(damage)
+                o.damage_word = damage
                 o.related1 = user
             end
             return o

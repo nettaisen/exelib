@@ -219,9 +219,8 @@ function protoman.make(kind_spec: ProtoManKind): {
             hit_effect = nil,
             target = spec.target,
             self_type = spec.self_type,
-            damage = me.damage,
-            stamina = me.stamina,
-            hit_mod = 3,
+            damage = me.damage_word,
+            hit_mod = { flinch = true, flash = true },
         })
         if box then
             box.run_while_dimmed = true
@@ -380,7 +379,7 @@ function protoman.make(kind_spec: ProtoManKind): {
                 o.flip = user.flip
                 o.related1 = user
             end
-            o:set_damage_word(spec.damage)
+            o.damage_word = spec.damage
             local s = o.state :: State
             s.controller = controller
             s.look = look

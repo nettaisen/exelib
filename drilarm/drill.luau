@@ -43,7 +43,7 @@ export type Spec = { ticks: number, light: boolean?, bugs: number? }
 -- Ticks between hits.
 local PERIOD = 0x0C
 -- Hit modifiers.
-local HIT_MOD, LIGHT_HIT_MOD = 0x61, 3
+local HIT_MOD, LIGHT_HIT_MOD = { flinch = true, back = true, drag = true }, { flinch = true, flash = true }
 
 -- A drill kind (`id`) of `look`, with its spawner.
 function drill.make_kind(
@@ -126,7 +126,7 @@ function drill.make_kind(
             end
             o.alliance, o.flip = owner.alliance, owner.flip
             o.related1 = owner
-            o:set_damage_word(damage)
+            o.damage_word = damage
             local s = o.state :: State
             s.second, s.ticks, s.light, s.bugs = second, spec.ticks, spec.light or false, spec.bugs or 0
             s.slot = slot
@@ -143,7 +143,7 @@ function drill.make_kind(
     local function init(me: Object)
         local s = me.state :: State
         if not s.second then
-            local damage = me.damage + me.stamina * 0x10000
+            local damage = me.damage_word
             local o = spawn(me, me.element, me.pos.z, damage, { ticks = s.ticks, light = s.light, bugs = s.bugs }, true, "child")
             if o and look.keeps_element then
                 o.run_while_dimmed = me.run_while_dimmed

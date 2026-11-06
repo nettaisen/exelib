@@ -44,7 +44,7 @@ type RollerState = { swallowed: boolean }
 
 local SPEED = 0x3_0000
 -- Its hit modifier, no spark.
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 
 -- `sub_80DBA7C`: grow if the roller swallowed something last tick; roll
 -- on, hitting again in a new column; gone where the panel isn't solid or
@@ -159,7 +159,7 @@ function ball.spawn(kind: Kind, owner: Object, x: number, y: number, element: nu
     end
     o.pos = Vec3.new(x, y, 0)
     o.element = element
-    o:set_damage_word(damage)
+    o.damage_word = damage
     o.alliance, o.flip = owner.alliance, owner.flip
     o.run_while_dimmed = true
     return o

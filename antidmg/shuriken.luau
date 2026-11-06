@@ -19,7 +19,7 @@ export type State = {
     to_x: number,
     to_y: number,
     -- Its hit modifier (the original's first parameter).
-    hit_mod: number,
+    hit_mod: HitModifierByte,
 }
 
 -- A game's shuriken: its kind's key, its sprite, its landing's sound, the
@@ -191,7 +191,7 @@ function shuriken.spawn(
     x: number,
     y: number,
     element: number,
-    hit_mod: number,
+    hit_mod: HitModifier,
     damage: number,
     flip: number,
     height: number
@@ -202,11 +202,11 @@ function shuriken.spawn(
     end
     o.panel_x, o.panel_y = x, y
     o.element = element
-    o:set_damage_word(damage)
+    o.damage_word = damage
     o.alliance = thrower.alliance
     o.related1 = thrower
     o.flip = flip
-    ;(o.state :: State).hit_mod = hit_mod
+    ;(o.state :: State).hit_mod = hit_modifier.byte(hit_mod)
     return o
 end
 

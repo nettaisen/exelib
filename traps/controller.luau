@@ -49,7 +49,7 @@ local function effect(me: Object)
         battle.set_linked(user.alliance, {
             chip = s.chip,
             bonus = s.bonus,
-            damage = bit32.bor(me.damage, bit32.lshift(me.stamina, 16)),
+            damage = me.damage_word,
             owner = user,
             object = object,
         })

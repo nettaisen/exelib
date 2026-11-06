@@ -58,7 +58,7 @@ function hook.make(spec: Spec): {
     -- A flame of swing `swing` on column `x`.
     local function flame(me: Object, x: number, row: number, swing: number)
         local s = me.state :: State
-        local damage = bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
+        local damage = me.damage_word
         spec.flame(me, x, row, me.element, damage, swing, s.flames)
     end
 
@@ -166,7 +166,7 @@ function hook.make(spec: Spec): {
                 o.element = element
             end
             o.alliance, o.flip = user.alliance, user.flip
-            o:set_damage_word(damage)
+            o.damage_word = damage
             o.related1 = user
             local s = o.state :: State
             s.flames = flames

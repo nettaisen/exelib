@@ -17,7 +17,7 @@ local fist = {}
 
 export type State = {
     -- The strike's hit modifier (the chip's second parameter).
-    hit_mod: number,
+    hit_mod: HitModifierByte,
 }
 
 -- What the effect looks for (`off_80CFEB8`, by the user's side): the other
@@ -61,8 +61,7 @@ local function strike(me: Object, look: FireHitFistLook)
             hit_effect = look.spark,
             target = look.target,
             self_type = look.self_type,
-            damage = me.damage,
-            stamina = me.stamina,
+            damage = me.damage_word,
             hit_mod = (me.state :: State).hit_mod,
         })
         me.visible = true
@@ -129,22 +128,22 @@ end
 -- `owner`'s on (x, y), its hit with the damage word `damage` and modifier
 -- `hit_mod`. (It spawns at the registers' values, which its init replaces
 -- but for Z.)
-function fist.spawn(kind: Kind, owner: Object, x: number, y: number, element: number, z: number, hit_mod: number, damage: number): Object?
+function fist.spawn(kind: Kind, owner: Object, x: number, y: number, element: number, z: number, hit_mod: HitModifier, damage: number): Object?
     local o = battle.spawn(kind, Vec3.new(y, element, z))
     if o then
         o.panel_x, o.panel_y = x, y
         o.element = element
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance, o.flip = owner.alliance, owner.flip
         o.related1 = owner;
-        (o.state :: State).hit_mod = hit_mod
+        (o.state :: State).hit_mod = hit_modifier.byte(hit_mod)
     end
     return o
 end
 
 -- `sub_80CFE5C`: a fist on column `at` of each row where column `probe` has
 -- one of the other side's; how many.
-local function strike_column(user: Object, probe: number, at: number, hit_mod: number, spec: InstantChipSpec, kind: Kind): number
+local function strike_column(user: Object, probe: number, at: number, hit_mod: HitModifier, spec: InstantChipSpec, kind: Kind): number
     local n = 0
     for y = 1, 3 do
         if field.any(probe, y, TARGETS, user.alliance) then
@@ -159,7 +158,7 @@ end
 -- `kind`, a game's) hit with modifier `hit_mod`. The columns ahead of the user while its row's
 -- panel there is on the field; the fists' column follows for the first
 -- three.
-function fist.instant(hit_mod: number, kind: Kind): (user: Object, spec: InstantChipSpec) -> ()
+function fist.instant(hit_mod: HitModifier, kind: Kind): (user: Object, spec: InstantChipSpec) -> ()
     return function(user: Object, spec: InstantChipSpec)
         local dir = user.facing
         local probe = user.panel_x + dir

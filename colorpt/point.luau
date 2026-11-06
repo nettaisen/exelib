@@ -201,7 +201,7 @@ function point.make(look: Look): Point
             return nil
         end
         o.panel_x, o.panel_y = x, y
-        o:set_damage_word(y)
+        o.damage_word = y
         o.alliance, o.flip = holder.alliance, holder.flip
         if look.element then
             o.element = look.element

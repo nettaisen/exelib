@@ -135,7 +135,7 @@ function heart.make(spec: Spec): Heart
         local o = battle.spawn(kind, Vec3.zero)
         if o then
             o.panel_x, o.panel_y = x, y
-            o:set_damage_word(amount)
+            o.damage_word = amount
             o.alliance = user.alliance
             if not spec.heals_side_navi then
                 o.related1 = user

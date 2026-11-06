@@ -175,7 +175,7 @@ function poltergeist.make(id: string): Poltergeist
     local function throw_all(me: Object)
         local s = me.state :: State
         if me.phase_init == 0 then
-            local damage = int.u32(me.damage + me.stamina * 0x10000)
+            local damage = me.damage_word
             local i = me.timer2
             repeat
                 local x, y: number
@@ -245,7 +245,7 @@ function poltergeist.make(id: string): Poltergeist
         o.element = holder.alliance
         o.related1 = holder
         o.alliance, o.flip = holder.alliance, holder.flip
-        o:set_damage_word(damage)
+        o.damage_word = damage
         local s = o.state :: State
         s.holder, s.nearest = holder, nearest
         ;(holder.state :: { busy: boolean }).busy = true

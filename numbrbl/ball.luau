@@ -18,7 +18,7 @@ export type State = {
 }
 
 -- Rolling 3 pixels a tick; hit modifier 3.
-local SPEED, HIT_MOD = 0x3_0000, 3
+local SPEED, HIT_MOD = 0x3_0000, { flinch = true, flash = true }
 local ANIM_ROLL = 1
 -- Gone once its X is more than 150 pixels off the field's middle either
 -- way (the unsigned test `x + 150 > 300`).
@@ -167,7 +167,7 @@ function ball.make(look: NumberBallLook): NumberBall
         o.panel_x, o.panel_y = x, y
         o.element = thrower.element
         o.alliance, o.flip = thrower.alliance, thrower.flip
-        o:set_damage_word(bit32.bor(thrower.damage, bit32.lshift(thrower.stamina, 16)))
+        o.damage_word = thrower.damage_word
         o.run_while_dimmed = true
         (o.state :: State).wait = wait
         return o

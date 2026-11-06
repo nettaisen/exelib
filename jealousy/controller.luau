@@ -24,7 +24,7 @@ export type State = {
 -- its player navi.
 local OCCUPIED = "enemy_navi"
 local BETWEEN, WAIT, WARN_UNTIL = 0x0A, 0x5A, 0x14
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- What the gauge loses in the operation battle: all of it.
 local FULL_GAUGE = 0x4000
 
@@ -47,8 +47,7 @@ function controller.make(look: JealousyLook): (user: Object, spec: DimmingChipSp
                         hit_effect = look.spark,
                         target = look.hits,
                         self_type = look.is,
-                        damage = bit32.band(word, 0xFFFF),
-                        stamina = bit32.rshift(word, 16),
+                        damage = word,
                         hit_mod = HIT_MOD,
                     })
                     if box then

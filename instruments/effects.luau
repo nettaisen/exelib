@@ -22,9 +22,8 @@ local function hit(me: Object, region: Region, is: CollisionType, hits: Collisio
         hit_effect = nil,
         target = hits,
         self_type = is,
-        damage = 0,
-        stamina = 0,
-        hit_mod = 0,
+        damage = damage_word.of { amount = 0, counter = 0 },
+        hit_mod = {},
         status = status,
     })
 end

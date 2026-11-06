@@ -215,9 +215,8 @@ function roll.make(spec: Spec): Roll
             hit_effect = spec.spark,
             target = spec.hits,
             self_type = spec.hit_type,
-            damage = me.damage,
-            stamina = me.stamina,
-            hit_mod = 3,
+            damage = me.damage_word,
+            hit_mod = { flinch = true, flash = true },
         })
         if box then
             box.run_while_dimmed = true
@@ -623,7 +622,7 @@ function roll.make(spec: Spec): Roll
             if not alone then
                 o.flip = user.flip
             end
-            o:set_damage_word(nspec.damage)
+            o.damage_word = nspec.damage
             if not alone then
                 o.related1 = user
             end

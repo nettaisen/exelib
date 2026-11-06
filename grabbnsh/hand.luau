@@ -32,12 +32,12 @@ export type Look = {
     target: CollisionType,
     self_type: CollisionType,
     height: number?,
-    hit_mod: number?,
+    hit_mod: HitModifier?,
 }
 
 local HEIGHT, FALL_SPEED = 0xC0_0000, 0x8_0000
 -- Its hit's modifier (`dword_80CCD20`: 0x4B, no spark, element 0).
-local HIT_MOD = 0x4B
+local HIT_MOD: HitModifier = { flinch = true, flash = true, back_far = true, drag = true }
 local GRAB_ANIM = 1
 -- Its fall (animation 0) comes round every 8 of its sprite's steps (every game's).
 local FALL_STEPS = 8
@@ -63,8 +63,7 @@ local function fall(me: Object, look: Look)
         hit_effect = nil,
         target = look.target,
         self_type = look.self_type,
-        damage = me.damage,
-        stamina = me.stamina,
+        damage = me.damage_word,
         hit_mod = look.hit_mod or HIT_MOD,
     })
     -- (sub_80C53A6 lets it resolve while dimmed; the hand's own attempt
@@ -157,7 +156,7 @@ function hand.spawn(kind: Kind, owner: Object, x: number, y: number, element: nu
     (o.state :: State).first = first
     o.panel_x, o.panel_y = x, y
     o.element = element
-    o:set_damage_word(damage)
+    o.damage_word = damage
     o.alliance = owner.alliance
     o.run_while_dimmed = true
     return o

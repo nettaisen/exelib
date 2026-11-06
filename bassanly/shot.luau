@@ -92,7 +92,7 @@ local function own_side_panel(x: number, y: number, side: number): boolean
 end
 
 -- Its hit's modifier.
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- Its first stretch's ticks.
 local FIRST_TICKS = 0x10
 
@@ -403,7 +403,7 @@ function shot.spawn(
         s.homing = what.homing
         o.panel_x, o.panel_y = x, y
         o.element = element
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance, o.flip = owner.alliance, owner.flip
         o.related1 = owner
         o.run_while_dimmed = true

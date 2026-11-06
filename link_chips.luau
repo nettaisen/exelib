@@ -16,13 +16,13 @@ local link_chips = {}
 -- `ldrh av+8; ldrh av+6; add; strh av+8`: the Atk+ bonus goes into the
 -- damage (a halfword store), as each routine's first attacking phase does.
 function link_chips.add_bonus(me: Object)
-    me.attack_damage = me.attack_damage + me.extra
+    me.attack_word = damage_word.with_damage(me.attack_word, me.attack_damage + me.extra)
 end
 
 -- `ldr av+8`: the damage word the routines hand their hits and objects,
 -- the damage (with its flag bits) and the hit parameter above it.
 function link_chips.damage_word(me: Object): number
-    return int.u32(me.attack_damage + me.hit_param * 0x10000)
+    return me.attack_word
 end
 
 -- The damage word's halves, as a hit region takes them.

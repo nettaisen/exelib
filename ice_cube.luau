@@ -55,7 +55,7 @@ local FORMED = 2
 local FORMING_STEPS = 10
 -- What bursts it: bodies and neutral objects.
 local BURSTS_ON: { HitName } = { "own_body", "enemy_body", "neutral" }
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 local AQUA = 2
 
 function ice_cube.make(look: Look): IceCube
@@ -180,7 +180,7 @@ function ice_cube.make(look: Look): IceCube
         (o.state :: State).look = cube_look
         o.panel_x, o.panel_y = x, y
         o.element = AQUA
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance = owner.alliance
         o.run_while_dimmed = true
         return o
@@ -191,7 +191,7 @@ function ice_cube.make(look: Look): IceCube
     -- unregistered obstacle's ice block would take class 0xFF, which `setFieldBattleObject_800F614` turns into a
     -- write past the registry: a content error here.)
     local function replace(obstacle: Object, ice: boolean, class: ObstacleClass?)
-        local damage = bit32.bor(obstacle.damage, bit32.lshift(obstacle.stamina, 16))
+        local damage = obstacle.damage_word
         if ice then
             if class == nil then
                 error("an unregistered obstacle's ice block registers in class 0xFF, past the field-object registry")

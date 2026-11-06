@@ -24,7 +24,7 @@ export type State = {
     -- Shown with its navi (the original's +0x0C).
     shown: boolean,
     -- The hit modifier that popped the barrier (its ExtraVars+8).
-    pop_hit_mod: number,
+    pop_hit_mod: HitModifierByte,
 }
 
 export type Spec = {

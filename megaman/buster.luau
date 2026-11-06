@@ -68,7 +68,7 @@ end
 -- The attack's damage word: its damage | its hit parameter << 16
 -- (AIAttackVars+0x08 as a word).
 local function damage_word(me: Object): number
-    return bit32.bor(me.attack_damage, bit32.lshift(me.hit_param, 16))
+    return me.attack_word
 end
 
 -- `sub_80EB450`: raise the buster; on the second tick the shot, or the

@@ -228,7 +228,7 @@ function rush.make(look: RushLook): SupportActor
             me:free()
             return
         end
-        me:setup_collision(look.is, look.hits, 0)
+        me:setup_collision(look.is, look.hits, {})
         me.collision.status_base = look.status
         me.collision:set_region(nil)
         me:set_lifecycle("update")

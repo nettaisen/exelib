@@ -45,7 +45,7 @@ end
 -- The damage word a thrown thing carries: the attack's damage and hit
 -- parameter plus the Atk+ bonus.
 function throw.damage_word(me: Object): number
-    return int.u32(me.attack_damage + me.hit_param * 0x10000 + me.extra)
+    return damage_word.plus(me.attack_word, me.extra)
 end
 
 -- Where a game's thrown thing leaves from: ahead of the navi, or toward the

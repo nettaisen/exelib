@@ -102,7 +102,7 @@ local function init(me: Object, look: BulletLook)
         me:free()
         return
     end
-    me:setup_collision(look.probe, look.target, 0)
+    me:setup_collision(look.probe, look.target, {})
     me.collision.element = 0
     me.collision:present()
     me:set_lifecycle("update")
@@ -138,7 +138,7 @@ function bullet.fire(kind: Kind, owner: Object, x: number, y: number, z: number,
         (o.state :: State).variant = variant
         o.panel_x, o.panel_y = x, y
         o.element = element
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance, o.flip = owner.alliance, owner.flip
         o.related1 = owner
     end

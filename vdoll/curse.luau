@@ -44,7 +44,7 @@ export type Curse = { kind: Kind, telop: DimmingTelop, spawn: (doll: Object, dam
 -- The effect's phases.
 local MARK, WAIT, HIT = 0x0, 0x4, 0x8
 local MARK_TICKS, WAIT_TICKS, HIT_TICKS = 0x3C, 0xA, 0x1E
-local HIT_MOD = 1
+local HIT_MOD: HitModifier = { flinch = true }
 -- Where the other side's combatants stand (EXE5's 0x080E629C, EXE4's 0x080E7974, by the controller's side: the
 -- other side's player navi).
 local OTHER_SIDE = "enemy_navi"
@@ -97,7 +97,7 @@ function curse.make(look: Look): Curse
     -- stands there.
     local function strike(me: Object, s: State)
         local x, y = s.target_x, s.target_y
-        local word = int.u32(me.damage + me.stamina * 0x10000)
+        local word = me.damage_word
         local box = battle.hitbox(me, {
             panel_x = x,
             panel_y = y,
@@ -107,8 +107,7 @@ function curse.make(look: Look): Curse
             hit_effect = look.spark,
             target = look.hits,
             self_type = look.is,
-            damage = bit32.band(word, 0xFFFF),
-            stamina = bit32.rshift(word, 16),
+            damage = word,
             hit_mod = HIT_MOD,
         })
         if box then
@@ -190,7 +189,7 @@ function curse.make(look: Look): Curse
             o.element = 0
             o.related1 = doll
             o.alliance = doll.alliance
-            o:set_damage_word(damage)
+            o.damage_word = damage
         end
         return o
     end

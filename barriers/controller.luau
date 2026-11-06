@@ -61,7 +61,7 @@ function controller.make(spec: Spec): { kind: Kind, hook: (barrier: Barrier) -> 
             o.element = dspec.element
             o.related1 = user
             o.alliance = user.alliance
-            o:set_damage_word(dspec.damage)
+            o.damage_word = dspec.damage
             local s = o.state :: State
             s.barrier = barrier
             return o

@@ -51,7 +51,7 @@ function airshot.action(spec: AirShotSpec, look: Look): Action
             return
         end
         if s.timer == SHOT_TICK then
-            local damage = int.u32(me.attack_damage + me.hit_param * 0x10000 + me.extra)
+            local damage = damage_word.plus(me.attack_word, me.extra)
             projectile.spawn(me, me.panel_x + me.facing, me.panel_y, { variant = spec.shot, damage = damage, z = SHOT_Z })
         end
         local t = s.timer + 1

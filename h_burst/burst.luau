@@ -65,8 +65,7 @@ function burst.make_kind(id: string, look: HyperBurstShotLook): Kind
             hit_effect = nil,
             target = look.hits,
             self_type = look.is,
-            damage = me.damage,
-            stamina = me.stamina,
+            damage = me.damage_word,
             status = look.status,
         })
         battle.region_effects(x, y, r, me.alliance, look.explosion, EXPLOSION_Z)
@@ -140,7 +139,7 @@ function burst.make_kind(id: string, look: HyperBurstShotLook): Kind
             me:free()
             return
         end
-        me:setup_collision(look.probe, look.hits, 0)
+        me:setup_collision(look.probe, look.hits, {})
         local status = look.status
         if status then
             me.collision.status_base = status
@@ -176,7 +175,7 @@ function burst.spawn(kind: Kind, owner: Object, x: number, y: number, element: n
     if o then
         o.panel_x, o.panel_y = x, y
         o.element = element
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance, o.flip = owner.alliance, owner.flip
         local s = o.state :: State
         s.bursts = bursts

@@ -64,8 +64,7 @@ function anti_damage.make(ids: { weapon: string, action: string, charge_ticks: {
         navi.attack_variant = 0
         navi.charged = 0
         navi.extra = 0
-        navi.hit_param = 0
-        navi.attack_damage = DAMAGE
+        navi.attack_word = damage_word.of { amount = DAMAGE, counter = 0 }
         local s = navi:action_state(action) :: State
         s.timer = TICKS
         navi.attack_lockout = LOCKOUT

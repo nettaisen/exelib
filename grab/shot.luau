@@ -63,9 +63,8 @@ local function fall(me: Object, look: Look)
         hit_effect = nil,
         target = look.target,
         self_type = look.self_type,
-        damage = me.damage,
-        stamina = me.stamina,
-        hit_mod = 1,
+        damage = me.damage_word,
+        hit_mod = { flinch = true },
     })
     if hit then
         hit.run_while_dimmed = true
@@ -152,7 +151,7 @@ function shot.spawn(kind: Kind, owner: Object, x: number, y: number, element: nu
         o.panel_x, o.panel_y = x, y
         o.element = element
         o.alliance = owner.alliance
-        o:set_damage_word(damage)
+        o.damage_word = damage
     end
     return o
 end

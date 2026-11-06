@@ -28,7 +28,7 @@ function navi_chips.spawn(kind: Kind, user: Object, spec: NaviChipSpec, r3: numb
     o.element = spec.element
     o.related1 = user
     o.alliance, o.flip = user.alliance, user.flip
-    o:set_damage_word(spec.damage)
+    o.damage_word = spec.damage
     return o
 end
 

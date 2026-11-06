@@ -134,7 +134,7 @@ local function init(me: Object, look: TornadoLook)
         me:free()
         return
     end
-    me:setup_collision(if v.bug and look.bug_is then look.bug_is else look.is, look.target, 1)
+    me:setup_collision(if v.bug and look.bug_is then look.bug_is else look.is, look.target, { flinch = true })
     local c = me.collision
     c:set_hit_effect(look.spark(me.element))
     local status = s.status
@@ -181,7 +181,7 @@ function tornado.spawn(kind: Kind, owner: Object, x: number, y: number, element:
         o.element = element
         o.panel_x, o.panel_y = x, y
         o.timer = spec.ticks
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance = owner.alliance
     end
     return o

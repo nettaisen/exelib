@@ -55,11 +55,11 @@ local LIFETIME = 0x1770
 -- Thrown at 0x2C000 a tick along the ground, falling 0x2800 a tick.
 local SPEED, GRAVITY = 0x2C000, -0x2800
 -- Its collision: hit modifier 3; it deals 100 with counter byte 0x1E.
-local HIT_MOD, SELF_DAMAGE, COUNTER = 3, 0x64, 0x1E
+local HIT_MOD, SELF_DAMAGE, COUNTER = { flinch = true, flash = true }, 0x64, 0x1E
 -- The burst (`byte_80CD828`): over the whole area of the side it hits, no
 -- hit spark, hit modifier 3, fire; then explosions there every 3 ticks
 -- (panel bursts).
-local BURST_HIT_MOD, FIRE = 3, 1
+local BURST_HIT_MOD, FIRE = { flinch = true, flash = true }, 1
 local BURST_INTERVAL = 2
 
 -- The actions (the object's action byte).
@@ -197,8 +197,7 @@ local function burst(me: Object, k: Look)
         hit_effect = nil,
         target = k.burst_target,
         self_type = k.burst_is,
-        damage = me.damage,
-        stamina = me.stamina,
+        damage = me.damage_word,
         hit_mod = BURST_HIT_MOD,
     })
     panel_bursts.spawn(k.bursts, me, area, BURST_INTERVAL, 0, k.burst_effect)
@@ -337,7 +336,7 @@ function black_bomb.thrower(bomb_kind: Kind): Thrower
                 local s = o.state :: State
                 s.target_x = bit32.band(xy, 0xFF)
                 s.target_y = bit32.rshift(xy, 8)
-                o:set_damage_word(damage)
+                o.damage_word = damage
                 o.alliance = user.alliance
                 o.run_while_dimmed = true
                 obstacle.register(o, user.alliance, "one_a_side")

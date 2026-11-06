@@ -16,7 +16,7 @@ export type Look = { id: string, sprite: SpriteAsset, sound: Sound, target: Coll
 
 local HIT_INTERVAL, HITS, LINGER = 7, 3, 0x14
 -- The hits' hit modifiers, by hit (`dword_80C68AC`).
-local HIT_MODS = { [0] = 1, [1] = 1, [2] = 3 }
+local HIT_MODS: { [number]: HitModifier } = { [0] = { flinch = true }, [1] = { flinch = true }, [2] = { flinch = true, flash = true } }
 
 -- `sub_80C6854`: the hits, then the linger.
 local function tick(me: Object, look: Look)
@@ -44,8 +44,7 @@ local function tick(me: Object, look: Look)
             hit_effect = nil,
             target = look.target,
             self_type = look.self_type,
-            damage = me.damage,
-            stamina = me.stamina,
+            damage = me.damage_word,
             hit_mod = hit_mod,
         })
         n += 1

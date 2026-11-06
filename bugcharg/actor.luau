@@ -94,7 +94,7 @@ function actor.make(look: Look): Actor
         end
         me.timer = BETWEEN
         local x, y = field.center(me.panel_x + me.facing, me.panel_y)
-        local shot = look.launch(me, Vec3.new(x, y, SHOT_Z), bit32.bor(me.damage, bit32.lshift(me.stamina, 16)))
+        local shot = look.launch(me, Vec3.new(x, y, SHOT_Z), me.damage_word)
         if shot then
             shot.run_while_dimmed = true
         end
@@ -184,7 +184,7 @@ function actor.make(look: Look): Actor
         if o then
             o.panel_x, o.panel_y = controller.panel_x, controller.panel_y
             o.element = controller.alliance
-            o:set_damage_word(damage)
+            o.damage_word = damage
             o.related1 = user;
             (o.state :: State).controller = controller;
             (controller.state :: Waiting).busy = true

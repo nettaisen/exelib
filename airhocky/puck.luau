@@ -269,7 +269,7 @@ local function init(me: Object, look: Look)
         me:free()
         return
     end
-    me:setup_collision(look.is, look.hits, 1)
+    me:setup_collision(look.is, look.hits, { flinch = true })
     me.collision:set_hit_effect(look.spark)
     me.collision:present()
     battle.play_sound(look.sound)
@@ -332,7 +332,7 @@ function puck.spawn(
         o.panel_x, o.panel_y = x, y
         o.element = element
         o.alliance, o.flip = owner.alliance, owner.flip
-        o:set_damage_word(damage)
+        o.damage_word = damage
     end
     return o
 end

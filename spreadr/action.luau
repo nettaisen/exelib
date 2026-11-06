@@ -49,7 +49,7 @@ function spreader.action(spec: SpreaderSpec, look: SpreaderLook): Action
             gun.anim += 1
         end
         battle.play_sound(spec.sound or look.sound)
-        local damage = int.u32(me.attack_damage + me.hit_param * 0x10000 + me.extra)
+        local damage = damage_word.plus(me.attack_word, me.extra)
         bullet.fire(spec.bullet_kind or look.bullet_kind, me, me.panel_x + me.facing, me.panel_y, spec.z, spec.bullet, me.attack_element, damage)
         me.step, me.step_init = RECOVER, 0
     end

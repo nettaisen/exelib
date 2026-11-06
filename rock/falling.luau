@@ -22,7 +22,7 @@ export type Look = {
     gravity: number,
     is: CollisionType,
     hits: CollisionType,
-    hit_mod: number,
+    hit_mod: HitModifier,
     spark: Spark,
     puff: Effect,
     chips: RockChips,

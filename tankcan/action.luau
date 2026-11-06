@@ -67,7 +67,7 @@ function tankcan.action(spec: Spec): Action
         end
         if s.timer == SHELL_TICK then
             battle.shake_camera(1, 0x14)
-            local damage = int.u32(me.attack_damage + me.hit_param * 0x10000 + me.extra)
+            local damage = damage_word.plus(me.attack_word, me.extra)
             shell.fire(spec.kind, me, me.panel_x + me.facing, me.panel_y, SHELL_Z, damage, spec.shell)
         end
         local t = s.timer + 1

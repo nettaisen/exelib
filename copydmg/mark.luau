@@ -35,7 +35,7 @@ local PLAYERS: { PanelFlag } = { "own_navi", "enemy_navi" }
 -- The probe's element: the sixth slot, which no hit's element names.
 local SIXTH_ELEMENT = 5
 -- EXE5's hit in the own-gauges mode: 50, hit modifier 3.
-local OWN_GAUGES_DAMAGE, OWN_GAUGES_HIT_MOD = 50, 3
+local OWN_GAUGES_DAMAGE, OWN_GAUGES_HIT_MOD = 50, { flinch = true, flash = true }
 
 -- The damage-carry record the probe's side sets: the other side's (the
 -- one that takes the damage).
@@ -150,8 +150,7 @@ function mark.make(look: CopyDamageMarkLook): CopyDamageMark
                     hit_effect = hit.spark,
                     target = hit.hits,
                     self_type = hit.is,
-                    damage = OWN_GAUGES_DAMAGE,
-                    stamina = 0,
+                    damage = damage_word.of { amount = OWN_GAUGES_DAMAGE, counter = 0 },
                     hit_mod = OWN_GAUGES_HIT_MOD,
                 })
             end
@@ -187,7 +186,7 @@ function mark.make(look: CopyDamageMarkLook): CopyDamageMark
             me:free()
             return
         end
-        me:setup_collision(look.is, look.hits, 0)
+        me:setup_collision(look.is, look.hits, {})
         me.collision:present()
         me:set_lifecycle("update")
     end
@@ -223,7 +222,7 @@ function mark.make(look: CopyDamageMarkLook): CopyDamageMark
         local o = battle.spawn_at_end(kind, Vec3.new(y, element, 0))
         if o then
             o.panel_x, o.panel_y = x, y
-            o:set_damage_word(damage)
+            o.damage_word = damage
             o.alliance, o.flip = owner.alliance, owner.flip
         end
         return o

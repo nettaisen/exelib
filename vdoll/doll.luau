@@ -29,9 +29,9 @@ export type DollLook = {
     absorbed: AbsorbedLook?,
     is: CollisionType,
     hits: CollisionType,
-    hit_mod: number,
+    hit_mod: HitModifier,
     spark: Spark,
-    set_down: { is: CollisionType, hits: CollisionType, hit_mod: number }?,
+    set_down: { is: CollisionType, hits: CollisionType, hit_mod: HitModifier }?,
     breaking_hits: { HitName }?,
     landing_panel: PanelType,
     landing_sound: Sound,
@@ -429,7 +429,7 @@ function doll.make(look: DollLook): Doll
                     local s = o.state :: State
                     s.target_x = bit32.band(bit32.rshift(word, 16), 0xFF)
                     s.target_y = bit32.rshift(word, 24)
-                    o:set_damage_word(damage)
+                    o.damage_word = damage
                     o.alliance, o.flip = user.alliance, user.flip
                     o.run_while_dimmed = true
                     obstacle.register(o, user.alliance, "one_a_side")

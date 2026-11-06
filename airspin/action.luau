@@ -44,7 +44,7 @@ function action.action(spec: AirSpinSpec): Action
         if s.timer == SPAWN_AT then
             -- The damage word (the hit parameter in its high half), plus
             -- the Atk+ bonus.
-            local damage = me.attack_damage + me.hit_param * 0x10000 + me.extra
+            local damage = damage_word.plus(me.attack_word, me.extra)
             spec.whirlwind.send(me, me.panel_x + me.facing, me.panel_y, me.attack_element, damage)
         end
         local t = s.timer - 1

@@ -46,7 +46,7 @@ local BEHIND, DOWN = 0x86_0000, 0x10_0000
 -- `byte_80DBD8C`, `byte_80DBD98`, `byte_80DBE44`: Param2 4's rows).
 local FALL, FORWARD, GRAVITY = 0xE_0000, 0x11_8000, 0xD200
 -- Its hit (`sub_80DBEBA`, 0x15050001): on its panel, hit modifier 3.
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- The bounce: 7 ticks, moving back for the last 4.
 local BOUNCE, BOUNCE_MOVES = 7, 4
 
@@ -88,8 +88,7 @@ function fist.make(look: Look): {
             hit_effect = look.spark,
             target = look.target,
             self_type = look.self_type,
-            damage = me.damage,
-            stamina = me.stamina,
+            damage = me.damage_word,
             hit_mod = HIT_MOD,
         })
         if h then
@@ -182,7 +181,7 @@ function fist.make(look: Look): {
         if o then
             o.panel_x, o.panel_y = x, y
             o.element = element
-            o:set_damage_word(damage)
+            o.damage_word = damage
             o.alliance, o.flip = spawner.alliance, spawner.flip
             o.related1 = spawner
             o.run_while_dimmed = true

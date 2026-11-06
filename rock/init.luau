@@ -84,7 +84,7 @@ local LIFETIME = 6000
 -- Where it can stand (`object_checkPanelParameters`): a solid panel with nothing on it (bodies, neutral objects,
 -- blockers, reservations).
 local OCCUPIED = "occupied"
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- Falling from 160 pixels up, 0.25 pixels a tick faster each tick.
 local FALL_HEIGHT, GRAVITY = 0xA0_0000, 0x4000
 -- The animation it rises in.
@@ -285,7 +285,7 @@ function rock.make(look: Look): Rock
         s.variant, s.entrance = spec.variant, entrance
         o.panel_x, o.panel_y = x, y
         o.alliance = side
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.run_while_dimmed = true
         if entrance == "placed" then
             o.run_while_paused = true

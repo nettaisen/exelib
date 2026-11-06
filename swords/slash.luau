@@ -61,7 +61,7 @@ end
 
 -- The damage word: the chip's damage and hit parameter, plus the bonus.
 local function damage_word(me: Object): number
-    return int.u32(me.attack_damage + me.hit_param * 0x10000 + me.extra)
+    return damage_word.plus(me.attack_word, me.extra)
 end
 
 -- A chip's slash, its blade an attachment of `attachment` (a game's kind),
@@ -203,8 +203,7 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
             hit_effect = nil,
             target = h.collision.hits,
             self_type = h.collision.is,
-            damage = bit32.band(word, 0xFFFF),
-            stamina = bit32.rshift(word, 16),
+            damage = word,
             hit_mod = if rules.hit_mod then rules.hit_mod(me, h.hit_mod) else h.hit_mod,
             status = h.status,
             bug = h.bug or 0,

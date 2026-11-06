@@ -56,9 +56,8 @@ function crack.make(look: Look): Crack
                 hit_effect = nil,
                 target = look.hits,
                 self_type = look.is,
-                damage = me.damage,
-                stamina = me.stamina,
-                hit_mod = 0,
+                damage = me.damage_word,
+                hit_mod = {},
             })
             field.break_panel(me.panel_x, me.panel_y, look.break_sound)
             me.timer = 18
@@ -112,7 +111,7 @@ local function spawn(c: Crack, owner: Object, x: number, y: number, element: num
         o.panel_x, o.panel_y = x, y
         o.element = element
         o.alliance = owner.alliance
-        o:set_damage_word(damage)
+        o.damage_word = damage
     end
 end
 
@@ -136,7 +135,7 @@ function crack.action(c: Crack, panels: { { number } }, id: string?): Action
         if s.timer == 13 then
             local dir = me.facing
             local x, y = me.panel_x + dir, me.panel_y
-            local damage = int.u32(me.attack_damage + me.hit_param * 0x10000 + me.extra)
+            local damage = damage_word.plus(me.attack_word, me.extra)
             for _, p in panels do
                 local px, py = x + dir * p[1], y + p[2]
                 if not look.on_field_only or field.valid(px, py) then

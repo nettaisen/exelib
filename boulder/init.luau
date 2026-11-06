@@ -53,7 +53,7 @@ export type Look = {
 local HP = 500
 -- What its timer starts at (nothing counts it down).
 local TIMER = 0x1770
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- The palette of the debris it breaks into.
 local DEBRIS_PALETTE = 0
 -- The header flags the spawner (EXE6's `sub_80D2430`, EXE5's 0x080D3A3E) leaves. It means to add the pause and
@@ -215,7 +215,7 @@ function boulder.make(look: Look): Kind
                 return nil
             end
             o.panel_x, o.panel_y = x, y
-            o:set_damage_word(look.damage)
+            o.damage_word = look.damage
             o.element = 0
             -- (Side 1's on a panel of side 1's area.)
             o.alliance = if field.check(x, y, "own_area", nil, 1) then 1 else 0

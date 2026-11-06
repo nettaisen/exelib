@@ -20,7 +20,7 @@ type State = {
 }
 
 local FLIGHT_TICKS, GRAVITY = 50, -0x3000
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- Its sprite's animation and palette (EXE5's 0x080CB5EC).
 local ANIM, PALETTE = 1, 4
 -- Its target: three panels ahead.
@@ -138,7 +138,7 @@ function ball.make(look: CannonballLook, aim: Trajectory): Cannonball
                 if o then
                     o.alliance = user.alliance
                     o.element = 0
-                    o:set_damage_word(damage)
+                    o.damage_word = damage
                     local s = o.state :: State
                     s.target_x, s.target_y = user.panel_x + REACH * user.facing, user.panel_y
                 end

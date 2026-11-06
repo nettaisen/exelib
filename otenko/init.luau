@@ -61,7 +61,7 @@ local APPEAR_TICKS, EVERY = 5, 5
 local BLESSING_ANIM = 1
 -- Each hand entry gains at most this much.
 local MOST = 50
-local HIT_MOD = 3
+local HIT_MOD: HitModifier = { flinch = true, flash = true }
 -- The controller's wait.
 local WAIT = 0x3C
 
@@ -252,7 +252,7 @@ function otenko.make(look: Look): Otenko
         end
         o.panel_x, o.panel_y = x, y
         o.element = 0
-        o:set_damage_word(damage)
+        o.damage_word = damage
         o.alliance, o.flip = user.alliance, user.flip
         o.related1 = user
         o.run_while_dimmed = true
@@ -266,7 +266,7 @@ function otenko.make(look: Look): Otenko
             local x, y = me.panel_x + me.facing, me.panel_y
             -- (Where it places the statue, `byte_80E76C4`, both sides': a solid panel with nothing on it.)
             if field.check(x, y, "solid", "occupied") then
-                local damage = bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
+                local damage = me.damage_word
                 spawn(me.related1 :: Object, x, y, damage)
             end
             me.timer = WAIT

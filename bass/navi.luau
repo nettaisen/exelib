@@ -67,7 +67,7 @@ local SHOT_COOLDOWN = 0x16
 local STANCE_STEPS = 38
 
 local function damage_word(me: Object): number
-    return bit32.bor(me.damage, bit32.lshift(me.stamina, 16))
+    return me.damage_word
 end
 
 -- `sub_80C3C2C`: the columns ahead, from the third (or his own, if further), that hold a panel of the other
@@ -335,7 +335,7 @@ function bass.make(spec: Spec): Bass
         o.panel_x, o.panel_y = nspec.panel_x, nspec.panel_y
         o.element = nspec.element
         o.alliance, o.flip = user.alliance, user.flip
-        o:set_damage_word(nspec.damage)
+        o.damage_word = nspec.damage
         local s = o.state :: State
         s.controller = controller
         return o

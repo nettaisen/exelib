@@ -25,7 +25,7 @@ type State = {
     target_y: number,
     -- Its hits' status and hit modifier (EXE5's +0x64, +0x68).
     status: Status?,
-    hit_mod: number,
+    hit_mod: HitModifierByte,
     -- The object waiting on it (+0x60, the flag its spawner gave it): its `busy`, cleared when it goes; or, with
     -- `slot`, its `dice[slot + 1]` (EXE5 DS's DiceBons' NumberMan's two flags).
     holder: Object?,
@@ -206,7 +206,7 @@ function dice.make(spec: DiceSpec): Dice
             damage = bit32.band(s.face * me.damage, 0x7FFF) + bit32.band(me.damage, 0x8000)
             stamina = me.stamina
         else
-            local word = int.u32(s.face * me.damage + me.stamina * 0x10000)
+            local word = int.u32(s.face * me.damage_word)
             damage, stamina = bit32.band(word, 0xFFFF), bit32.rshift(word, 16)
         end
         local box = battle.hitbox(me, {
@@ -343,11 +343,11 @@ function dice.make(spec: DiceSpec): Dice
         local s = o.state :: State
         s.face, s.dimmed = throw.face, throw.dimmed
         s.target_x, s.target_y = throw.target_x, throw.target_y
-        s.status, s.hit_mod = throw.status, throw.hit_mod
+        s.status, s.hit_mod = throw.status, hit_modifier.byte(throw.hit_mod)
         o.hp, o.max_hp = throw.hp, throw.hp
         o.related1 = owner
         o.alliance, o.flip = owner.alliance, owner.flip
-        o:set_damage_word(throw.damage)
+        o.damage_word = throw.damage
         o.run_while_dimmed = true
         s.holder = throw.holder
         s.slot = if throw.slot then throw.slot + 1 else 0
