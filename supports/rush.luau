@@ -223,7 +223,7 @@ function rush.make(look: RushLook): SupportActor
         place(me, look.stand or STAND, look.not_on)
         battle.play_sound(look.appear_sound)
         me.element = 0
-        me.damage, me.stamina = 0, 0
+        me.damage_word = 0
         if not me:create_collision() then
             me:free()
             return

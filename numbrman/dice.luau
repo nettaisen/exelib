@@ -201,13 +201,17 @@ function dice.make(spec: DiceSpec): Dice
     local function burst(me: Object)
         local s = me.state :: State
         me.collision:set_region(nil)
-        local damage, stamina
+        local w = me.damage_word
+        local product = s.face * damage_word.damage(w)
+        local word
         if spec.keeps_top_bit then
-            damage = bit32.band(s.face * me.damage, 0x7FFF) + bit32.band(me.damage, 0x8000)
-            stamina = me.stamina
+            -- (The product's damage halfword without its doubling, and the damage's own.)
+            local doubled = damage_word.flags(w).double
+            word = damage_word.with_damage(w, product)
+            word = damage_word.with(damage_word.without(word, { double = true }), { double = doubled })
         else
-            local word = int.u32(s.face * me.damage_word)
-            damage, stamina = bit32.band(word, 0xFFFF), bit32.rshift(word, 16)
+            -- (The product carries into the counter byte.)
+            word = damage_word.plus(damage_word.with_damage(w, 0), product)
         end
         local box = battle.hitbox(me, {
             panel_x = me.panel_x,
@@ -218,8 +222,7 @@ function dice.make(spec: DiceSpec): Dice
             hit_effect = nil,
             target = spec.hits_navis,
             self_type = spec.attack,
-            damage = damage,
-            stamina = stamina,
+            damage = word,
             hit_mod = s.hit_mod,
             status = s.status,
         })

@@ -154,9 +154,9 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
         end
         if field.solid(x, y) then
             -- EXE5's 0x080CDB36: a splash of 10 damage (EXE4's 0x080D5A92: and the throw's Atk+ bonus).
-            local word = bit32.bor(bit32.band(me.damage_word, 0xFFFF0000), SPLASH_DAMAGE)
+            local word = damage_word.with_damage(me.damage_word, SPLASH_DAMAGE)
             if look.splash_bonus then
-                word = int.u32(word + ((me.state :: State).bonus :: number))
+                word = damage_word.plus(word, (me.state :: State).bonus :: number)
             end
             hit(me, x, y, 0, word)
             battle.effect(me.pos, look.splash)

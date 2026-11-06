@@ -47,7 +47,7 @@ local CANNON_POINT, NAVI_ANIM = 7, 8
 type Look = CannonLook
 
 -- The attack's damage word with the Atk+ bonus (`av.u32[8] + av.u16[6]`).
-local function damage_word(me: Object): number
+local function word_with_bonus(me: Object): number
     return damage_word.plus(me.attack_word, me.extra)
 end
 
@@ -112,7 +112,7 @@ function cannon.action(spec: CannonSpec, look: Look): Action
         if t == SHOT_TICK then
             battle.play_sound(SOUND)
             local x, y = me.panel_x + me.facing, me.panel_y
-            projectile.spawn(me, x, y, { variant = spec.shot, damage = damage_word(me), z = SHOT_Z })
+            projectile.spawn(me, x, y, { variant = spec.shot, damage = word_with_bonus(me), z = SHOT_Z })
         end
         t += 1
         s.timer = t

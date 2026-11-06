@@ -25,7 +25,7 @@ export type SonicBoomLook = {
 export type SlashGame = {
     blade_anim: ((Object) -> number)?,
     -- The hit modifier its hits take, by its holder and the chip's (none: the chip's; EXE4's ProtoSoul's, 0x080EB7FE).
-    hit_mod: ((me: Object, chip_hit_mod: HitModifier) -> number)?,
+    hit_mod: ((me: Object, chip_hit_mod: HitModifier) -> HitModifier)?,
     -- The sprite its afterimages of the navi show (none: a copy of the navi's NameID's, EXE6's and EXE5's; EXE4's its
     -- sprite in its form, 0x0800B90A).
     navi_afterimage: ((me: Object) -> SpriteAsset)?,
@@ -770,18 +770,21 @@ export type NumberBall = {
 -- the panel it is given (its init places it there).
 export type LifeSyncMarkerLook = { id: string, sprite: SpriteAsset, palette: number, height: number? }
 
+-- A bug code a hit brings, with its argument.
+export type BugCode = { bug: number, arg: number }
+
 -- A game's BugCurse (@exelib/bugcurse): its controller's and curse's kind ids, the curse's sheet and sound, what keeps
--- it off the enemy navi, its bugs (code | argument << 8, one a tick), and EXE5's operation battle (the mode's test and
--- its bugs).
+-- it off the enemy navi, its bugs (each a bug code and its argument, one a tick), and EXE5's operation battle (the
+-- mode's test and its bugs).
 export type BugCurseLook = {
     controller_id: string,
     curse_id: string,
     sprite: SpriteAsset,
     sound: Sound,
     untouched: { StatusFlag },
-    bugs: { number },
+    bugs: { BugCode },
     operation_battle: (() -> boolean)?,
-    operation_bugs: { number }?,
+    operation_bugs: { BugCode }?,
     is: CollisionType,
     hits: CollisionType,
 }

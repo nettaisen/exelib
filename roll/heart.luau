@@ -64,7 +64,7 @@ function heart.make(spec: Spec): Heart
             else
                 user = me.related1 :: Object
             end
-            local amount = me.damage
+            local amount = damage_word.damage(me.damage_word)
             if amount == 0 then
                 amount = user.max_hp
             end

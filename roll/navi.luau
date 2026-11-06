@@ -80,9 +80,8 @@ export type Spec = {
     -- Her user warping back in (EXE6's and EXE5's: her related1's, `sub_80E1332`).
     recall: ((me: Object) -> ())?,
     -- Her heart: who it is for and where it drops (EXE6's and EXE5's: her user, on its panel when the chip was used;
-    -- nil, none), and the bits of her damage it heals three times (0x7FF; doubled with 0x8000 set).
+    -- nil, none); it heals three times her damage's amount as hits read it, doubled with its double flag.
     heart_at: ((me: Object) -> (Object?, number, number))?,
-    heal_mask: number?,
 }
 
 export type Roll = {
@@ -482,12 +481,11 @@ function roll.make(spec: Spec): Roll
         end
     end
 
-    -- `sub_80E199A`: the heal: three times her damage's low 11 bits (EXE4's 14),
-    -- doubled first with its double flag.
-    local heal_mask = spec.heal_mask or 0x7FF
+    -- `sub_80E199A`: the heal: three times her damage's amount as hits read it (its low 11 bits, EXE4's 14), doubled
+    -- first with its double flag.
     local function heal_amount(damage: number): number
-        local n = bit32.band(damage, heal_mask)
-        if bit32.btest(damage, 0x8000) then
+        local n = damage_word.read_amount(damage)
+        if damage_word.flags(damage).double then
             n *= 2
         end
         return n * 3
@@ -505,7 +503,7 @@ function roll.make(spec: Spec): Roll
         if me.phase_init == 0 then
             local user, x, y = heart_at(me)
             if user then
-                spec.heart(user, x, y, heal_amount(me.damage))
+                spec.heart(user, x, y, heal_amount(damage_word.damage(me.damage_word)))
             end
             if spec.heart_dropped then
                 spec.heart_dropped(me)

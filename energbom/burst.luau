@@ -87,8 +87,7 @@ local function leave(kind: Kind, bomb: Object)
         o.panel_x, o.panel_y = x, y
         o.element = bomb.element
         o.alliance = bomb.alliance
-        o.damage = bomb.damage
-        o.stamina = bomb.stamina
+        o.damage_word = bomb.damage_word
         o.related1 = bomb
     end
 end

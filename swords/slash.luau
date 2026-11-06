@@ -60,7 +60,7 @@ local function turn(me: Object)
 end
 
 -- The damage word: the chip's damage and hit parameter, plus the bonus.
-local function damage_word(me: Object): number
+local function word_with_bonus(me: Object): number
     return damage_word.plus(me.attack_word, me.extra)
 end
 
@@ -215,7 +215,7 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
     -- ahead (CrosSwrd's second), and the slash's effect over it.
     local function strike(me: Object)
         local x, y = me.panel_x + me.facing, me.panel_y
-        local word = damage_word(me)
+        local word = word_with_bonus(me)
         hit(me, x, y, spec.hit, word)
         if spec.second_hit then
             -- (With the first hit's status and bug.)

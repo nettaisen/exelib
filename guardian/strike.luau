@@ -62,7 +62,7 @@ function strike.make(look: StrikeLook): Strike
         o.element = statue.element
         o.related1 = statue
         o.alliance = statue.alliance
-        o.damage, o.stamina = statue.damage, statue.stamina
+        o.damage_word = statue.damage_word
         return o
     end
 

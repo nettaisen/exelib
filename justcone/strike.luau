@@ -96,7 +96,7 @@ function strike.make(look: Look): Strike
     -- `sub_80DB4CE`: a camera shake (magnitude 3, 45 ticks), the landing's hits (running while dimmed) and dust.
     local function land(me: Object)
         battle.shake_camera(3, 0x2D)
-        local damage = bit32.band(me.damage, 0xF000) + WAVE_DAMAGE
+        local damage = damage_word.flag_word(me.damage_word) + WAVE_DAMAGE
         local element = if look.waves_take_element then me.element else 0
         for _, region in WAVES do
             local box = battle.hitbox(me, {
@@ -108,8 +108,7 @@ function strike.make(look: Look): Strike
                 hit_effect = NO_SPARK,
                 target = look.hits,
                 self_type = look.wave_is,
-                damage = damage,
-                stamina = me.stamina,
+                damage = damage_word.with_damage(me.damage_word, damage),
                 hit_mod = WAVE_HIT_MOD,
             })
             -- sub_80C53A6

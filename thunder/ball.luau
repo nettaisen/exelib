@@ -201,7 +201,7 @@ local function init(me: Object, look: ThunderBallLook)
     end
     if s.bug ~= 0 then
         -- sub_801A4D0: the bug, with argument 1.
-        c.bugs = s.bug + 0x100
+        c.bug, c.bug_arg = s.bug, 1
     end
     c:present()
     aim(me, look)

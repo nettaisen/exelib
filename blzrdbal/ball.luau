@@ -120,7 +120,7 @@ local function init(me: Object, look: Look)
     me.vel = Vec3.new(SPEED * me.facing, me.vel.y, me.vel.z)
     me.collision:set_hit_effect(nil)
     me.collision:present()
-    s.growth = if look.growth == "damage" then bit32.band(me.damage, 0xFFF) else look.growth :: number
+    s.growth = if look.growth == "damage" then damage_word.amount(me.damage_word) else look.growth :: number
     me:set_lifecycle("update")
 end
 

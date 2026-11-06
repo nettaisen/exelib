@@ -192,11 +192,11 @@ end
 -- its final hit modifier (the table at 0x080133B4, five directions a side, by the move's direction; a direction past a
 -- side's row, "other", pushes nothing), which the intake reads after: a slide by the push's row, or a drag with a hit's
 -- drag bit.
-function panel_types.ice_pushes(bits: { { [MoveDirection]: number } }): (Object) -> ()
+function panel_types.ice_pushes(bits: { { [MoveDirection]: HitModifier } }): (Object) -> ()
     return function(me: Object)
         if me.collision.element ~= AQUA and not off_the_floor(me) and me.status.affected_by_ice then
             local row = bits[bit32.band(me.alliance, 1) + 1]
-            me.collision:add_final_hit_mod(row[me.collision.direction] or 0)
+            me.collision:add_final_hit_mod(row[me.collision.direction] or {})
         end
     end
 end

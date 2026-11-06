@@ -244,7 +244,7 @@ local function init(me: Object, s: State, k: Kinded)
     end
     me:setup_collision(k.is, k.target, HIT_MOD)
     me.collision.self_damage = SELF_DAMAGE
-    me.collision.counter_byte = COUNTER
+    me.collision.counter, me.collision.cant_counter = COUNTER, false
     me.collision:set_region(nil)
     me.collision:set_hit_effect(k.spark)
     me.collision:present()

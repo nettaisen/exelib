@@ -184,7 +184,7 @@ function trap.spawn(kind: Kind, controller: Object, user: Object, chip: Chip?, b
     end
     o.related1 = user
     o.element = 0
-    o.damage, o.stamina = controller.damage, controller.stamina
+    o.damage_word = controller.damage_word
     o.alliance = controller.alliance
     local s = o.state :: State
     s.chip, s.bonus = chip, bonus

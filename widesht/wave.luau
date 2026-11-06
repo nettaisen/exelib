@@ -187,7 +187,7 @@ local function init(me: Object, look: WideWaveLook)
     end
     local bug = v.bug
     if bug then
-        c.bugs = bug
+        c.bug, c.bug_arg = bug, 0
     end
     local palette = v.palette
     if palette then

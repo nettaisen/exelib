@@ -30,7 +30,7 @@ local ELEMENT = 5
 local SPEED = 0xA_0000
 
 -- The push its hit gives: a weak gust pushes weaker.
-local PUSH, WEAK_PUSH = 8, 4
+local PUSH: HitModifier, WEAK_PUSH: HitModifier = { back_far = true }, { forward_far = true }
 -- The palette of a gust that pulls (its first parameter times 2).
 local PULL_PALETTE = 2
 

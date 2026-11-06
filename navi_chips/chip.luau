@@ -44,14 +44,14 @@ export type Spec = {
 -- What a game gives its navi chips: what it keeps of a chip of the block as its navi comes (EXE5's last navi chip).
 export type Game = { keep: ((chip: Chip?, element: number, damage: number) -> ())? }
 
--- `sub_80E199A`: AntiRecv's counterattack's damage word: three times the chip's damage (its low 11 bits, doubled first
--- with the double-damage flag, 0x8000), with the trap's hit parameter (0x1E).
+-- `sub_80E199A`: AntiRecv's counterattack's damage word: three times the chip's damage (its amount as hits read it, the
+-- low 11 bits, doubled first with the double-damage flag), with the trap's hit parameter (0x1E: counter strength 30).
 local function counterattack(word: number): number
-    local d = bit32.band(word, 0x7FF)
-    if bit32.btest(word, 0x8000) then
+    local d = damage_word.read_amount(word)
+    if damage_word.flags(word).double then
         d *= 2
     end
-    return d * 3 + 0x1E * 0x10000
+    return damage_word.of { amount = d * 3, counter = 30 }
 end
 
 -- A game's navi chips: `make(spec)` is a chip's `navi` (`NaviChip`, types.d.luau).

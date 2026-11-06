@@ -68,7 +68,7 @@ local BUBBLE_EVERY = 0x10
 local OTHER_SIDE = "enemy_area"
 -- The drain (`byte_80CF31C`, by side): the other side's whole area, the silent element 5, 1 damage that can't
 -- counter (0x81), hitting by what it is alone (the look's drain, target row 0), no spark, hit modifier 0.
-local DRAIN_ELEMENT, DRAIN_DAMAGE, DRAIN_COUNTER = 5, 1, 0x81
+local DRAIN_ELEMENT, DRAIN_DAMAGE, DRAIN_COUNTER = 5, 1, 1
 
 local ANUBIS_VARIANT = schema.record_type("anubis-variant")
 statue.ANUBIS_VARIANT = ANUBIS_VARIANT
@@ -159,8 +159,7 @@ function statue.make(look: Look): Statue
             hit_effect = nil,
             target = look.nothing,
             self_type = look.drain,
-            damage = DRAIN_DAMAGE,
-            stamina = DRAIN_COUNTER,
+            damage = damage_word.of { amount = DRAIN_DAMAGE, counter = DRAIN_COUNTER, cant_counter = true },
             hit_mod = {},
         })
     end

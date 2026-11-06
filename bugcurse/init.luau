@@ -40,7 +40,7 @@ function bugcurse.make(look: BugCurseLook): (user: Object, spec: DimmingChipSpec
 
     -- EXE5's 0x080D6680 (EXE4's 0x080DD516): a one-tick hit on its panel carrying `bug` (code | argument << 8),
     -- running while dimmed.
-    local function hit(me: Object, bug: number)
+    local function hit(me: Object, bug: BugCode)
         local box = battle.hitbox(me, {
             panel_x = me.panel_x,
             panel_y = me.panel_y,
@@ -52,8 +52,8 @@ function bugcurse.make(look: BugCurseLook): (user: Object, spec: DimmingChipSpec
             self_type = look.is,
             damage = me.damage_word,
             hit_mod = {},
-            bug = bit32.band(bug, 0xFF),
-            bug_arg = bit32.rshift(bug, 8),
+            bug = bug.bug,
+            bug_arg = bug.arg,
         })
         if box then
             box.run_while_dimmed = true
@@ -84,7 +84,7 @@ function bugcurse.make(look: BugCurseLook): (user: Object, spec: DimmingChipSpec
         end
         local n = me.timer2
         if n < #look.bugs then
-            local list = if operation then look.operation_bugs :: { number } else look.bugs
+            local list = if operation then look.operation_bugs :: { BugCode } else look.bugs
             local bug = list[n + 1]
             if bug == nil then
                 error(string.format("BugCurse's curse: bug %d reads past its list", n))

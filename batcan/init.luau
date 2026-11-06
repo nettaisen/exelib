@@ -29,7 +29,7 @@ export type Look = {
 
 -- A chip's shots: each one's hit modifier, in the order they're fired (the chip parameters, or BatCan4's
 -- `byte_80EC1BC`).
-export type BatCanSpec = { shots: { number } }
+export type BatCanSpec = { shots: { HitModifier } }
 
 export type BatCan = {
     shot: Kind,

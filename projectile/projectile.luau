@@ -195,7 +195,7 @@ local function init(me: Object, look: Look)
         c.status_base = status
     end
     if bug ~= 0 then
-        c.bugs = bit32.bor(bug, bit32.lshift(v.bug_arg or 0, 8))
+        c.bug, c.bug_arg = bug, v.bug_arg or 0
     end
     c:present()
     me:set_lifecycle("update")

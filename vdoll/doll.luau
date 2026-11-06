@@ -62,8 +62,8 @@ export type State = {
 local HP, LIFETIME = 0x32, 0x1E0
 -- Its arc: 60 ticks to the target's center, falling 0x2000 a tick; it can hit in its last five.
 local FLIGHT_TICKS, GRAVITY, HITS_FROM = 0x3C, -0x2000, 5
--- The curse's damage word: the damage taken, hit parameter 0xB2.
-local CURSE_HIT_PARAM = 0xB2_0000
+-- The curse's damage word: the damage taken, hit parameter 0xB2 (counter strength 50; it can't counter).
+local CURSE_COUNTER = 50
 -- A puff 16 pixels up; the curse's own puff 12 up.
 local PUFF_UP, CURSE_PUFF_UP = 0x10_0000, 0xC_0000
 
@@ -163,7 +163,8 @@ function doll.make(look: DollLook): Doll
     -- The curse: hidden, the game's curse with the damage it took, the dimming.
     local function start_curse(me: Object)
         local s = me.state :: State
-        local controller = look.curse.spawn(me, int.u32(CURSE_HIT_PARAM + s.damage_taken))
+        local word = damage_word.plus(damage_word.of { counter = CURSE_COUNTER, cant_counter = true }, s.damage_taken)
+        local controller = look.curse.spawn(me, word)
         dimming.start(me.alliance, true, controller, me, look.curse.telop)
         if tracked then
             obstacle.release_tracking(me)

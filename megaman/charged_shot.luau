@@ -45,7 +45,7 @@ local function shoot(me: Object, s: State, look: MegaManShotLook)
     if s.timer == 1 then
         battle.play_sound(look.shot_sound)
         local variant = s.projectile or look.plain
-        me.attack_count = look.projectiles.fire(me, { variant = variant, damage = me.attack_damage, z = SHOT_Z })
+        me.attack_count = look.projectiles.fire(me, { variant = variant, damage = damage_word.damage(me.attack_word), z = SHOT_Z })
         attachment.attach(look.attachment, me, look.buster.flash, "related")
     end
     s.timer += 1
