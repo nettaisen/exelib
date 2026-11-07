@@ -118,7 +118,7 @@ function boulder.make(look: Look): Kind
         me.collision:set_region(nil)
         me:unreserve_panel(me.future_panel_x, me.future_panel_y)
         obstacle.leave_stage(me)
-        local how = if by_hp then (if me.hp ~= 0 then "removed" else "broken") else obstacle.removal(me)
+        local how = if by_hp then (if me.hp ~= 0 then ObstacleRemoval.removed else ObstacleRemoval.broken) else obstacle.removal(me)
         if by_hp and how == ObstacleRemoval.removed then
             local p = me.pos
             battle.effect(Vec3.new(p.x, p.y, p.z + 0xC_0000), look.effects.puff)

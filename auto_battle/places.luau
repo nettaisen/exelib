@@ -29,6 +29,16 @@ export type Place = { chip: Chip?, pattern: number, zero: boolean }
 -- offer a place the chips it can hold): the mega, giga and program advance lists, which the games' writer fills with
 -- the most used chips of that class (nettai's choice, docs/design/app-ui.md §2.27). The first and standard lists
 -- take a chip of any class, though the writer puts only standard chips there.
+-- A chip class's name, for a message (none: "none").
+local function class_name(class: ChipClass?): string
+    for name, c in ChipClass :: { [string]: ChipClass } do
+        if c == class then
+            return name
+        end
+    end
+    return "none"
+end
+
 local LISTS: { { name: string, start: number, len: number, own_class: boolean? } } = {
     { name = "first", start = 1, len = 3 },
     { name = "standard", start = 4, len = 24 },
@@ -180,7 +190,7 @@ function places.validate(stated: { Place }, problem: (p: SetupProblem) -> ())
                         "%s holds %s, a chip of class `%s`: the list holds `%s` chips alone",
                         where,
                         battle.name(chip),
-                        if chip.class then tostring(chip.class) else "none",
+                        class_name(chip.class),
                         list.name
                     ),
                 })

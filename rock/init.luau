@@ -172,7 +172,7 @@ function rock.make(look: Look): Rock
             obstacle.release_tracking(me)
         end
         obstacle.unregister(me)
-        local how = if by_hp then (if me.hp ~= 0 then "removed" else "broken") else obstacle.removal(me)
+        local how = if by_hp then (if me.hp ~= 0 then ObstacleRemoval.removed else ObstacleRemoval.broken) else obstacle.removal(me)
         if by_hp and how == ObstacleRemoval.removed then
             local p = me.pos
             battle.effect(Vec3.new(p.x, p.y, p.z + 0xC_0000), look.effects.puff)
