@@ -80,7 +80,7 @@ local function leave(me: Object)
     if holder then
         (holder.state :: { busy: boolean }).busy = false
     end
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 function glow.make(look: Look): Glow
@@ -125,7 +125,7 @@ function glow.make(look: Look): Glow
         local navi = navi_of(me, "sub_80C4848")
         local sprite = me.sprite
         looks.load_like(sprite, navi)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me.visible = true
         local p = navi.pos
         me.pos = Vec3.new(p.x, p.y + look.offset * 0x10000, p.z + look.offset * 0x10000)
@@ -134,20 +134,20 @@ function glow.make(look: Look): Glow
         sprite:face(me)
         look.wear(me, navi)
         me.anim, me.anim_loaded = 0, 0xFF
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "actor",
+        pool = Pool.actor,
         state = { start = BUGFIX_GLOW_START, holder = schema.object },
         -- `sub_80C4828`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:free()

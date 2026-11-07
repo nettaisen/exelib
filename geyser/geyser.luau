@@ -76,7 +76,7 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
     -- EXE5's 0x080CDC2C: the order on its first tick; a panel every three ticks; gone after the eighth.
     local water_kind = new.kind {
         id = look.water_id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { order = schema.array(schema.u8, 8), count = schema.u16 },
         update = function(me: Object)
             local s = me.state :: WaterState
@@ -127,7 +127,7 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
     -- Gone: no region, and freed at the next update.
     local function leave(me: Object)
         me.collision:set_region(nil)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- EXE5's 0x080CDAAC: fly; landed, a splash or a geyser.
@@ -171,7 +171,7 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
         me.collision:set_region(regions.single)
         local sprite = me.sprite
         sprite:load(look.geyser)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim, me.anim_loaded = 0, 0xFF
         battle.play_sound(look.erupt)
         me.timer = 0
@@ -212,7 +212,7 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
         if battle.over() then
             me.collision:set_region(nil)
             me.visible = false
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         if me.collision.hit then
@@ -247,7 +247,7 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
         me.visible = true
         local sprite = me.sprite
         sprite:load(look.bomb)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me.anim, me.anim_loaded = 1, 0
         sprite:set_animation(1)
         sprite:step()
@@ -266,7 +266,7 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
         me:setup_collision(look.attack, look.hits, HIT_MOD)
         me.collision:set_region(nil)
         me.collision:present()
-        me:set_lifecycle("update")
+        me:enter_update()
     end
 
     local state: StateSchema = { target_x = schema.u8, target_y = schema.u8 }
@@ -275,17 +275,17 @@ function geyser.make(look: GeyserLook, aim: Trajectory): GeyserBomb
     end
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = state,
         -- EXE5's 0x080CD992.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
                 if not me.active then
                     return
                 end
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

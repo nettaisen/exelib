@@ -98,7 +98,7 @@ local function tick(me: Object, look: Look)
                 then me.sprite.steps >= look.landing_steps
                 else (me.sprite.steps > 0 and me.sprite.steps % FALL_STEPS == 0)
         then
-            me.lifecycle = "destroy"
+            me.lifecycle = Lifecycle.destroy
         end
     else
         error(string.format("grab shot action %#x reads past its table", a))
@@ -110,14 +110,14 @@ end
 local function init(me: Object, look: Look)
     me.visible = true
     me.sprite:load(look.sprite)
-    me.sprite.shadow = "with_sprite"
+    me.sprite.shadow = Shadow.with_sprite
     me.anim = 0
     me.anim_loaded = 0xFF
     me.vel = Vec3.new(me.vel.x, me.vel.y, FALL_SPEED)
     local cx, cy = field.center(me.panel_x, me.panel_y)
     me.pos = Vec3.new(cx, cy, HEIGHT)
     battle.play_sound(look.fall_sound)
-    me.lifecycle = "update"
+    me.lifecycle = Lifecycle.update
     tick(me, look)
 end
 
@@ -125,13 +125,13 @@ end
 function shot.make_kind(look: Look): Kind
     return new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         -- `sub_80C6414`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, look)
             else
                 me:destroy()

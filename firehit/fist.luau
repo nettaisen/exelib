@@ -72,7 +72,7 @@ local function strike(me: Object, look: FireHitFistLook)
     local left = me.timer - 1
     me.timer = left
     if left < 0 then
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 end
 
@@ -92,14 +92,14 @@ end
 local function init(me: Object, look: FireHitFistLook)
     local sprite = me.sprite
     sprite:load(look.sprite)
-    sprite.shadow = "with_sprite"
+    sprite.shadow = Shadow.with_sprite
     me.visible = true
     me.anim, me.anim_loaded = 0, 0xFF
     me.visible = false
     me:set_coordinates_from_panel()
     sprite:face(me)
     battle.play_sound(look.sound)
-    me:set_lifecycle("update")
+    me:enter_update()
     tick(me, look)
 end
 
@@ -107,14 +107,14 @@ end
 function fist.make_kind(id: string, look: FireHitFistLook): Kind
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { hit_mod = schema.u8 },
         -- `sub_80CFCF8`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, look)
             else
                 me:destroy()

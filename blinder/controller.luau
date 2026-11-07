@@ -44,7 +44,7 @@ function controller.make(look: BlinderLook): (user: Object, spec: DimmingChipSpe
     local function blind(me: Object)
         if me.phase_init == 0 then
             me.timer = 60
-            battle.palette_flash("one_layer", 60, true, false)
+            battle.palette_flash(PaletteFlashVariant.one_layer, 60, true, false)
             battle.play_sound(look.sound)
             local h = battle.hitbox(me, {
                 panel_x = me.panel_x,
@@ -88,7 +88,7 @@ function controller.make(look: BlinderLook): (user: Object, spec: DimmingChipSpe
 
     local kind = new.kind {
         id = look.id,
-        pool = "effect",
+        pool = Pool.effect,
         -- `sub_80E2E34`.
         update = dimming_chips.phases { name = "Blinder", effect = effect },
     }

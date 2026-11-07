@@ -127,10 +127,10 @@ function numbrman.make(spec: NumberManSpec): NumberMan
             end
             local face = s.face
             if face then
-                face:set_lifecycle("destroy")
+                face:enter_destroy()
             end
             -- (The state byte alone: his action and phase stay.)
-            me.lifecycle = "destroy"
+            me.lifecycle = Lifecycle.destroy
         end
     end
 
@@ -152,7 +152,7 @@ function numbrman.make(spec: NumberManSpec): NumberMan
         local s = me.state :: State
         local sprite = me.sprite
         sprite:load(spec.sprite)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me.anim, me.anim_loaded = 0, 0xFF
         sprite.palette = s.palette
         sprite:face(me)
@@ -160,19 +160,19 @@ function numbrman.make(spec: NumberManSpec): NumberMan
         me:set_coordinates_from_panel()
         local p = me.pos
         me.pos = Vec3.new(p.x, p.y, 0)
-        me:set_lifecycle("update")
+        me:enter_update()
     end
 
     local kind = new.kind {
         id = spec.id,
-        pool = "actor",
+        pool = Pool.actor,
         state = { controller = schema.object, palette = schema.u8, face = schema.object, busy = schema.bool },
         -- EXE5's 0x080BB34C, EXE4's 0x080B87AC.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 local action = ACTIONS[me.action]
                 if not action then
                     error(string.format("NumberMan action %#x reads past his table", me.action))

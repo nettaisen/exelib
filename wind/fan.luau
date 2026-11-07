@@ -84,7 +84,7 @@ function fan.make(look: FanLook): Fan
     -- Done: off the field, hidden, destroyed next update.
     local function leave(me: Object)
         me.visible = false
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- `sub_80CD0E0`: placed: the sound, and on.
@@ -161,13 +161,13 @@ function fan.make(look: FanLook): Fan
     -- always as broken: `removal_explodes`.)
     local function destroyed(me: Object)
         local how = if look.removal_explodes then "broken" else obstacle.removal(me)
-        if how == "broken" then
+        if how == ObstacleRemoval.broken then
             battle.play_sound(look.break_sound)
             battle.effect(me.pos, look.explosion)
         elseif not look.absorbs then
             -- EXE5's (0x080CE90E): any removal leaves a puff.
             puff(me)
-        elseif how == "absorbed" then
+        elseif how == ObstacleRemoval.absorbed then
             local absorbed = (me.state :: State).variant.absorbed
             if absorbed == nil then
                 error("an absorbed fan without an absorbed look")
@@ -175,9 +175,9 @@ function fan.make(look: FanLook): Fan
             obstacle.fly_to_absorber(me, absorbed)
         else
             local blink = obstacle.blink_out(me)
-            if blink == "blinking" then
+            if blink == BlinkOut.blinking then
                 return
-            elseif blink == "no" then
+            elseif blink == BlinkOut.no then
                 puff(me)
             end
         end
@@ -209,7 +209,7 @@ function fan.make(look: FanLook): Fan
     local function tick(me: Object)
         me.visible = true
         me.sprite.white = false
-        obstacle.take_hits(me, "keeps_damage")
+        obstacle.take_hits(me, ObstaclePush.keeps_damage)
         obstacle.tick_lifetime(me)
         local a = obstacle.react(me, look.crush)
         if a then
@@ -231,7 +231,7 @@ function fan.make(look: FanLook): Fan
         local sprite = me.sprite
         sprite:load(look.sprite)
         -- sprite_noShadow: the first part is drawn with the sprite.
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         sprite.palette = v.palette
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
@@ -253,20 +253,20 @@ function fan.make(look: FanLook): Fan
         me:setup_collision(look.is, look.hits, HIT_MOD)
         me.collision:set_region(regions.single)
         me.collision:present()
-        me.lifecycle = "update"
+        me.lifecycle = Lifecycle.update
         tick(me)
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { variant = FAN_VARIANT, row_counter = schema.u32 },
         -- `sub_80CCFDC`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()
@@ -285,7 +285,7 @@ function fan.make(look: FanLook): Fan
         o.panel_x, o.panel_y = x, y
         o.alliance, o.flip = owner.alliance, owner.flip
         o.run_while_dimmed = true
-        obstacle.register(o, o.alliance, "one_a_side")
+        obstacle.register(o, o.alliance, ObstacleClass.one_a_side)
         return o
     end
 

@@ -28,7 +28,7 @@ function heal.make(look: TangoHealLook): TangoHeal
         me.visible = true
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
         sprite:step()
@@ -37,7 +37,7 @@ function heal.make(look: TangoHealLook): TangoHeal
         local x, y = field.center(s.target_x, s.target_y)
         me.vel = look.trajectory.in_ticks(me.pos, x, y, 0, FLIGHT_TICKS, GRAVITY, me.alliance)
         me.timer = FLIGHT_TICKS
-        me.lifecycle = "update"
+        me.lifecycle = Lifecycle.update
     end
 
     -- `sub_80DE088` (EXE5's 0x080DA734): the arc; landed, the heal.
@@ -57,7 +57,7 @@ function heal.make(look: TangoHealLook): TangoHeal
         local tango = me.related1 :: Object
         local her = tango.state :: { healing: boolean }
         her.healing = false
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
         battle.effect(me.pos, look.sparkle)
         local navi = battle.player(me.alliance)
         if not navi then
@@ -74,9 +74,9 @@ function heal.make(look: TangoHealLook): TangoHeal
     -- `sub_80DE000` (EXE5's 0x080DA6AC): by state, then its sprite.
     local function update(me: Object)
         local l = me.lifecycle
-        if l == "init" then
+        if l == Lifecycle.init then
             init(me)
-        elseif l == "update" then
+        elseif l == Lifecycle.update then
             tick(me)
         else
             me:destroy()
@@ -86,7 +86,7 @@ function heal.make(look: TangoHealLook): TangoHeal
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { target_x = schema.u8, target_y = schema.u8 },
         update = update,
     }

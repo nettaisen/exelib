@@ -62,13 +62,13 @@ function crush.make(spec: ShadeManCrushSpec): ShadeManCrush
     -- data.)
     local function tick(me: Object)
         if battle.over() then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         local left = me.timer - 1
         me.timer = int.u16(left)
         if left <= 0 then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         if me.timer == spec.second_at then
@@ -85,7 +85,7 @@ function crush.make(spec: ShadeManCrushSpec): ShadeManCrush
         local s = me.state :: State
         local sprite = me.sprite
         sprite:load(spec.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.visible = true
         me.anim, me.anim_loaded = 11, 11
         sprite:set_animation(11)
@@ -96,20 +96,20 @@ function crush.make(spec: ShadeManCrushSpec): ShadeManCrush
         spec.place(me)
         hit(me, me.panel_x, me.panel_y, regions.single)
         battle.play_sound(spec.sound)
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     local kind = new.kind {
         id = spec.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { palette = schema.u8, hit_mod = schema.u8, status = schema.status, bug = schema.u8, bug_arg = schema.u8 },
         -- EXE5's 0x080CB4AC, EXE4's 0x080D3748.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

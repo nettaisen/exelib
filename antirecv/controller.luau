@@ -92,7 +92,7 @@ function controller.make(spec: Spec): { kind: Kind }
     -- `sub_80E3728` (states) and `sub_80E3748` (`off_80E375C`, by action).
     local kind = new.kind {
         id = spec.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { busy = schema.bool },
         update = dimming_chips.phases {
             name = "AntiRecv's counterattack",

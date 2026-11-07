@@ -118,7 +118,7 @@ local function destroyed(me: Object)
     obstacle.release_tracking(me)
     obstacle.unregister(me)
     me.visible = false
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- `sub_80CDDFC`: hits (a push keeps the damage), its action
@@ -127,7 +127,7 @@ end
 -- again.
 local function tick(me: Object, look: Look)
     me.sprite.white = false
-    obstacle.take_hits(me, "keeps_damage")
+    obstacle.take_hits(me, ObstaclePush.keeps_damage)
     local a = obstacle.current(me)
     if a == 0 then
         hopping(me, look)
@@ -186,7 +186,7 @@ local function init(me: Object, look: Look)
     me.visible = true
     local sprite = me.sprite
     sprite:load(look.sprite)
-    sprite.shadow = "with_sprite"
+    sprite.shadow = Shadow.with_sprite
     me.anim, me.anim_loaded = 0, 0
     sprite:set_animation(0)
     -- (sub_8002EAC sets a drawing flag of the sprite's.)
@@ -216,7 +216,7 @@ local function init(me: Object, look: Look)
     me:setup_collision(look.self_type, look.target, HIT_MOD)
     me.collision:set_region(nil)
     me.collision:present()
-    me:set_lifecycle("update")
+    me:enter_update()
     tick(me, look)
 end
 
@@ -233,9 +233,9 @@ function land_mine.make_kind(look: Look): Kind
     -- `sub_80CDD44`.
     local function update(me: Object)
         local l = me.lifecycle
-        if l == "init" then
+        if l == Lifecycle.init then
             init(me, look)
-        elseif l == "update" then
+        elseif l == Lifecycle.update then
             tick(me, look)
         else
             blow_up(me, look)
@@ -244,7 +244,7 @@ function land_mine.make_kind(look: Look): Kind
 
     return new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { targets = schema.array(schema.u8, 18), count = schema.u32, index = schema.u32, hop_ticks = schema.u8 },
         update = update,
     }
@@ -261,7 +261,7 @@ function land_mine.spawn(kind: Kind, side: number, damage: number): Object?
     o.alliance = side
     o.damage_word = damage
     o.run_while_dimmed = true
-    obstacle.register(o, side, "two_a_side")
+    obstacle.register(o, side, ObstacleClass.two_a_side)
     return o
 end
 

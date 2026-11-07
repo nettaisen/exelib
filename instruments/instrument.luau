@@ -60,7 +60,7 @@ function instrument.make_kind(id: string, look: InstrumentLook): Kind
         me.collision:set_region(nil)
         me:unreserve_panel(me.future_panel_x, me.future_panel_y)
         me.visible = false
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- `sub_80D4198`: standing, it plays the appearing sound and rests.
@@ -158,20 +158,20 @@ function instrument.make_kind(id: string, look: InstrumentLook): Kind
     -- always as broken: `removal_explodes`.)
     local function destroyed(me: Object)
         local how = if look.removal_explodes then "broken" else obstacle.removal(me)
-        if how == "broken" then
+        if how == ObstacleRemoval.broken then
             battle.play_sound(look.sounds.broken)
             local p = me.pos
             battle.effect(Vec3.new(p.x, p.y, p.z + 0x14_0000), look.explosion)
         elseif look.removal_puffs then
             -- (EXE5's 0x080D53D4: removed any way, a puff.)
             puff(me)
-        elseif how == "absorbed" then
+        elseif how == ObstacleRemoval.absorbed then
             obstacle.fly_to_absorber(me, (me.state :: State).instrument.absorbed or look.absorbed :: AbsorbedLook)
         else
             local blink = obstacle.blink_out(me)
-            if blink == "blinking" then
+            if blink == BlinkOut.blinking then
                 return
-            elseif blink == "no" then
+            elseif blink == BlinkOut.no then
                 puff(me)
             end
         end
@@ -197,7 +197,7 @@ function instrument.make_kind(id: string, look: InstrumentLook): Kind
     local function tick(me: Object)
         me.visible = true
         me.sprite.white = false
-        obstacle.take_hits(me, "keeps_damage")
+        obstacle.take_hits(me, ObstaclePush.keeps_damage)
         obstacle.tick_lifetime(me)
         local a = obstacle.react(me, look.crush)
         if a then
@@ -217,7 +217,7 @@ function instrument.make_kind(id: string, look: InstrumentLook): Kind
         me.visible = true
         local sprite = me.sprite
         sprite:load(i.sprite or look.sprite)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
         sprite:step()
@@ -236,20 +236,20 @@ function instrument.make_kind(id: string, look: InstrumentLook): Kind
         end
         me:setup_collision(look.body.is, look.body.hits, HIT_MOD)
         me.collision:present()
-        me.lifecycle = "update"
+        me.lifecycle = Lifecycle.update
         tick(me)
     end
 
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { instrument = INSTRUMENT, effect_in = schema.u32, tune_in = schema.u32 },
         -- `sub_80D4088`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()
@@ -270,7 +270,7 @@ function instrument.spawn_kind(kind: Kind, owner: Object, x: number, y: number, 
     o.panel_x, o.panel_y = x, y
     o.alliance, o.flip = owner.alliance, owner.flip
     o.run_while_dimmed = true
-    obstacle.register(o, o.alliance, "one_a_side")
+    obstacle.register(o, o.alliance, ObstacleClass.one_a_side)
     local s = o.state :: State
     s.instrument = i
     return o

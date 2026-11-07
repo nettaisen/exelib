@@ -92,7 +92,7 @@ local function blink(me: Object, _look: Look)
     local t = me.timer - 1
     me.timer = t
     if t == 0 then
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
         return
     end
     me.visible = bit32.btest(t, 2)
@@ -110,7 +110,7 @@ local function tick(me: Object, look: Look)
     end
     if battle.over() then
         c:set_region(nil)
-        me.lifecycle = "destroy"
+        me.lifecycle = Lifecycle.destroy
         return
     end
     local action = ACTIONS[me.action]
@@ -133,7 +133,7 @@ local function init(me: Object, look: Look)
     local sprite = me.sprite
     sprite:load(look.sprite)
     -- sprite_noShadow: the first part is drawn with the sprite.
-    sprite.shadow = "with_sprite"
+    sprite.shadow = Shadow.with_sprite
     me.anim, me.anim_loaded = 0, 0xFF
     local s = me.state :: State
     local thrower = me.related1 :: Object
@@ -148,7 +148,7 @@ local function init(me: Object, look: Look)
     me:setup_collision(look.self_type, look.target, s.hit_mod)
     me.collision:set_region(nil)
     me.collision:present()
-    me:set_lifecycle("update")
+    me:enter_update()
     tick(me, look)
 end
 
@@ -156,7 +156,7 @@ end
 function shuriken.make_kind(look: Look): Kind
     return new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = {
             from_x = schema.i32,
             from_y = schema.i32,
@@ -168,9 +168,9 @@ function shuriken.make_kind(look: Look): Kind
         -- `sub_80DD764`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, look)
             else
                 me:destroy()

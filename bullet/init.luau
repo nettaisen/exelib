@@ -28,7 +28,7 @@ end
 local function finish(me: Object)
     me.collision:set_region(nil)
     me.visible = false
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- `sub_80C6A08`: a panel forward; off the field it ends.
@@ -88,7 +88,7 @@ local function tick(me: Object, look: BulletLook)
     else
         -- `sub_80C6AAC`: its hit landed; done.
         c:set_region(nil)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
     c:present()
 end
@@ -104,21 +104,21 @@ local function init(me: Object, look: BulletLook)
     me:setup_collision(look.probe, look.target, {})
     me.collision.element = Element.null
     me.collision:present()
-    me:set_lifecycle("update")
+    me:enter_update()
 end
 
 -- A bullet kind (`id`) of `look`.
 function bullet.make_kind(id: string, look: BulletLook): Kind
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { variant = BULLET_VARIANT },
         -- `sub_80C6946`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, look)
             else
                 me:destroy()

@@ -91,7 +91,7 @@ local function init(me: Object, s: State, look: BoomerangLook)
     local v = s.variant
     local sprite = me.sprite
     sprite:load(v.sprite or look.sprite)
-    sprite.shadow = v.shadow or "ground"
+    sprite.shadow = v.shadow or Shadow.ground
     me.visible = true
     local anim = if me.panel_y ~= 1 then v.off_row_1_anim or 0 else 0
     me.anim, me.anim_loaded = anim, anim
@@ -117,7 +117,7 @@ local function init(me: Object, s: State, look: BoomerangLook)
     c:present()
     grow_grass(me, s)
     battle.play_sound(look.sound)
-    me:set_lifecycle("update")
+    me:enter_update()
 end
 
 -- Turn onto the next leg, back on the center of the panel it was on.
@@ -168,7 +168,7 @@ local function fly(me: Object, s: State)
         me:set_panel_from_coordinates()
     end
     me:update_collision_panels()
-    if me.collision.direction ~= "none" then
+    if me.collision.direction ~= MoveDirection.none then
         grow_grass(me, s)
     end
 end
@@ -185,7 +185,7 @@ local function tick(me: Object, s: State)
     me:hit_spark()
     if battle.over() then
         c:set_region(nil)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
         return
     end
     if c:hit_any(HIT) then
@@ -206,14 +206,14 @@ local function tick(me: Object, s: State)
         return
     end
     c:set_region(nil)
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- A game's boomerang kind.
 function boomerang.make_kind(look: BoomerangLook): Kind
     return new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = {
             variant = BOOMERANG_VARIANT,
             turns = schema.bool,
@@ -226,9 +226,9 @@ function boomerang.make_kind(look: BoomerangLook): Kind
         update = function(me: Object)
             local s = me.state :: State
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, s, look)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, s)
             else
                 me:destroy()

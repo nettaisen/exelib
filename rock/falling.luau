@@ -67,7 +67,7 @@ function falling.make_kind(look: Look): Kind
         me.visible = true
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me.anim = 0
         sprite:set_animation(0)
         sprite:face(me)
@@ -80,7 +80,7 @@ function falling.make_kind(look: Look): Kind
         me.collision:set_hit_effect(look.spark)
         me.collision:set_region(nil)
         me.collision:present()
-        me:set_lifecycle("update")
+        me:enter_update()
         return true
     end
 
@@ -106,7 +106,7 @@ function falling.make_kind(look: Look): Kind
             battle.effect(me.pos, look.puff)
         end
         me.collision:set_region(nil)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- EXE6's `sub_80C7E24`, EXE4's 0x080D095C: resolve its hit (and the spark); a hit breaks it.
@@ -116,7 +116,7 @@ function falling.make_kind(look: Look): Kind
         if me.collision.hit then
             shatter(me)
             me.collision:set_region(nil)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         if me.action ~= 0 then
@@ -129,15 +129,15 @@ function falling.make_kind(look: Look): Kind
 
     return new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         -- EXE6's `sub_80C7D78`, EXE4's 0x080D08BC.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 if init(me) then
                     update(me)
                 end
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 update(me)
             else
                 me:destroy()

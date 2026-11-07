@@ -37,7 +37,7 @@ local HITS: HitNames = {
 
 local function finish(me: Object)
     me.collision:set_region(nil)
-    me.lifecycle = "destroy"
+    me.lifecycle = Lifecycle.destroy
 end
 
 -- `sub_80CF8F8`: forward by its speed; its panel and its collision's from
@@ -90,7 +90,7 @@ local function init(me: Object, look: Look)
     me.visible = true
     local sprite = me.sprite
     sprite:load(look.sprite)
-    sprite.shadow = "with_sprite"
+    sprite.shadow = Shadow.with_sprite
     me.anim = 0
     sprite:set_animation(0)
     sprite:step()
@@ -120,7 +120,7 @@ local function init(me: Object, look: Look)
     me:setup_collision(look.is, look.hits, s.hit_mod)
     me.collision:set_region(regions.wide)
     me.collision:present()
-    me:set_lifecycle("update")
+    me:enter_update()
     tick(me)
 end
 
@@ -128,14 +128,14 @@ end
 function sonic_boom.make_kind(id: string, look: Look): Kind
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { hit_mod = schema.u8, pierces = schema.bool },
         -- `sub_80CF7F0`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

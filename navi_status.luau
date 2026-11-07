@@ -12,9 +12,9 @@ end
 
 -- `sub_8012EA8`: the charge drops, its level, counter and source, and the hold requests.
 function navi_status.reset_charge(navi: Object)
-    navi.charge_level = "none"
+    navi.charge_level = ChargeLevel.none
     navi.charge_counter = 0
-    navi.charge_source = "none"
+    navi.charge_source = ChargeSource.none
     navi.requests.a_held = false
     navi.requests.b_held = false
 end
@@ -38,14 +38,14 @@ end
 function navi_status.gain_mood(side: number, n: number)
     local stats = battle.navi(side)
     local mood = stats.mood
-    if mood ~= 0 and mood ~= "full_synchro" then
+    if mood ~= 0 and mood ~= Mood.full_synchro then
         stats.mood = math.min((mood :: number) + n, 254)
     end
 end
 
 -- A mood as the game's arithmetic on it takes it: Full Synchro is the gauge's top, the byte 0xFF.
-function navi_status.mood_number(mood: Mood): number
-    return if mood == "full_synchro" then 0xFF else mood
+function navi_status.mood_number(mood: NaviMood): number
+    return if mood == Mood.full_synchro then 0xFF else mood :: number
 end
 
 -- `sub_8015C12` (EXE5's 0x08012820): the side's mood falls by `n`, to 1 at least; a mood of 0 stays (Full Synchro falls

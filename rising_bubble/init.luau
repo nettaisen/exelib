@@ -29,7 +29,7 @@ local function rise(me: Object)
     local p = me.pos
     me.pos = Vec3.new(p.x, p.y, p.z + me.vel.z)
     if me.sprite.steps >= RISE_STEPS then
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 end
 
@@ -38,12 +38,12 @@ local function init(me: Object, SPRITE: SpriteAsset)
     me.visible = true
     local sprite = me.sprite
     sprite:load(SPRITE)
-    sprite.shadow = "with_sprite"
+    sprite.shadow = Shadow.with_sprite
     me.anim, me.anim_loaded = ANIM, ANIM
     sprite:set_animation(ANIM)
     sprite.palette = (me.state :: State).palette
     me.vel = Vec3.new(me.vel.x, me.vel.y, RISE)
-    me.lifecycle = "update"
+    me.lifecycle = Lifecycle.update
     rise(me)
 end
 
@@ -51,14 +51,14 @@ end
 function rising_bubble.make_kind(id: string, sprite: SpriteAsset): Kind
     return new.kind {
         id = id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { palette = schema.u8 },
         -- `sub_80E1CF8`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, sprite)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 rise(me)
             else
                 -- `sub_80E1D72`: object_freeMemory.

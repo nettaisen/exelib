@@ -63,7 +63,7 @@ end
 
 local function finish(me: Object)
     me.collision:set_region(nil)
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- `sub_80CB628`: rise until the animation ends; then over the next column
@@ -164,7 +164,7 @@ local function init(me: Object, look: WideWaveLook)
     local v = s.variant
     local sprite = me.sprite
     sprite:load(v.sprite or look.sprite)
-    sprite.shadow = "with_sprite"
+    sprite.shadow = Shadow.with_sprite
     me.visible = true
     me.anim, me.anim_loaded = ANIM_RISE, ANIM_RISE
     sprite:set_animation(ANIM_RISE)
@@ -194,7 +194,7 @@ local function init(me: Object, look: WideWaveLook)
         sprite.palette = palette
     end
     s.trail = TRAIL_FIRST
-    me:set_lifecycle("update")
+    me:enter_update()
     tick(me, look)
     battle.play_sound(look.sound)
 end
@@ -203,17 +203,17 @@ end
 function wave.make_kind(look: WideWaveLook): Kind
     return new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { variant = WAVE_VARIANT, hit_mod = schema.u8, hit_panel = schema.u32, trail = schema.i32 },
         -- `sub_80CB49C`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
                 if not me.active then
                     return
                 end
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, look)
             else
                 -- `sub_80CB4C0`.

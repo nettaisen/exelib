@@ -70,13 +70,13 @@ function face.make(spec: NumberManFaceSpec): NumberManFace
         local owner = me.related1 :: Object
         local sprite = me.sprite
         sprite:load(spec.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
         sprite:step()
         sprite:face(me)
         sprite.palette = owner.sprite.palette
-        me:set_lifecycle("update")
+        me:enter_update()
         local s = me.state :: State
         s.hidden = false
         if spec.follows_in_fight then
@@ -93,14 +93,14 @@ function face.make(spec: NumberManFaceSpec): NumberManFace
 
     local kind = new.kind {
         id = spec.id,
-        pool = "actor",
+        pool = Pool.actor,
         state = { hidden = schema.bool },
         -- EXE5's 0x080C412E, EXE4's 0x080CCC9C.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 update(me)
             else
                 me:free()

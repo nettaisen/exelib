@@ -87,7 +87,7 @@ local function become(me: Object, chip: Chip)
         error(string.format("VarSwrd's pick %s has no action", chip.id :: string))
     end
     me.attack_chip = chip
-    me:set_attack(a, "plain")
+    me:set_attack(a, AttackKind.plain)
 end
 
 -- A game's VarSwrd-like action: `spec`'s sequences and picks, `game`'s sound and souls.

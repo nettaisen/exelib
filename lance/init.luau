@@ -88,7 +88,7 @@ function lance.make_kind(id: string, look: LanceLook): Kind
                 me.collision:set_region(nil)
             end
             me.visible = false
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         if not bit32.btest(left, 2) then
@@ -130,7 +130,7 @@ function lance.make_kind(id: string, look: LanceLook): Kind
         sprite:load(look.sprite)
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         sprite:face_side(battle.other_side(me.facing_side))
         me:set_coordinates_from_panel()
         local facing = me.facing
@@ -153,24 +153,24 @@ function lance.make_kind(id: string, look: LanceLook): Kind
             me.collision:present()
         end
         battle.play_sound(look.sound)
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
         return true
     end
 
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { palette = schema.u8, hit = LANCE_HIT },
         -- `sub_80D2460`; an attack's panel highlighted while its region
         -- stands (EXE4's 0x080D73D4).
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 if not init(me) then
                     return
                 end
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

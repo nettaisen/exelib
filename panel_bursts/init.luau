@@ -62,7 +62,7 @@ local function tick(me: Object)
     local n = s.count - 1
     s.count = int.u8(n)
     if n < 0 then
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
         return
     end
     local p = s.targets[n + 1]
@@ -86,16 +86,16 @@ local function init(me: Object)
     for i = 1, n do
         s.targets[i] = list[i]
     end
-    me.lifecycle = "update"
+    me.lifecycle = Lifecycle.update
     tick(me)
 end
 
 -- `sub_80E2F56`.
 local function update(me: Object)
     local l = me.lifecycle
-    if l == "init" then
+    if l == Lifecycle.init then
         init(me)
-    elseif l == "update" then
+    elseif l == Lifecycle.update then
         tick(me)
     else
         me:free()
@@ -106,7 +106,7 @@ end
 function panel_bursts.make_kind(id: string): Kind
     return new.kind {
         id = id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { targets = schema.array(schema.u8, 28), count = schema.u8, effect = schema.effect, sound = schema.sound },
         update = update,
     }

@@ -60,10 +60,10 @@ function cube.make(look: CubeLook): Cube
 
     local kind = new.kind {
         id = look.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = {
             variant = rock.ROCK_VARIANT,
-            class = { "two_a_side", "one_a_side" },
+            class = schema.choice(ObstacleClass),
             entrance = { "rise", "instant", "fall", "placed" },
         },
         -- `sub_80E4634`.
@@ -78,7 +78,7 @@ function cube.make(look: CubeLook): Cube
                     o.pos = look.position(user, spec)
                 end
                 local s = o.state :: State
-                s.variant, s.class, s.entrance = placed.variant, placed.class or "two_a_side", placed.entrance or "rise"
+                s.variant, s.class, s.entrance = placed.variant, placed.class or ObstacleClass.two_a_side, placed.entrance or "rise"
             end
             return o
         end

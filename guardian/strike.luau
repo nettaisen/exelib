@@ -46,7 +46,7 @@ function strike.make(look: StrikeLook): Strike
 
     local kind = new.kind {
         id = look.id,
-        pool = "effect",
+        pool = Pool.effect,
         -- EXE6's `sub_80E680C`.
         update = dimming_chips.phases { name = "the Guardian strike", effect = effect },
     }

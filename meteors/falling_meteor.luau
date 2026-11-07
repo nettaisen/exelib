@@ -99,7 +99,7 @@ function falling_meteor.make_kind(id: string, look: MeteorLook): Kind
         end
         me.visible = false
         me.collision:set_region(nil)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- `sub_80CF488`: resolve last tick's hits, the action, present.
@@ -127,7 +127,7 @@ function falling_meteor.make_kind(id: string, look: MeteorLook): Kind
         local sprite = me.sprite
         sprite:load(look.sprite)
         -- sprite_noShadow: the first part is drawn with the sprite.
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim, me.anim_loaded = ANIM, ANIM
         sprite:set_animation(ANIM)
         sprite:step()
@@ -152,19 +152,19 @@ function falling_meteor.make_kind(id: string, look: MeteorLook): Kind
         me.collision:present()
         local side = if look.marker_takes_side then me.alliance else 0
         marker.spawn(look.marker, side, me.panel_x, me.panel_y, marker.meteor, regions.single)
-        me.lifecycle = "update"
+        me.lifecycle = Lifecycle.update
     end
 
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { row = METEOR_ROW },
         -- `sub_80CF3BE`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

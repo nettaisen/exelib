@@ -123,7 +123,7 @@ function shot.make_kind(look: Look): Kind
         me.vel = Vec3.new(int.mul32(KICK * f, -1), vy, me.vel.z)
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.visible = true
         me.anim = ANIM
         me.anim_loaded = ANIM
@@ -141,7 +141,7 @@ function shot.make_kind(look: Look): Kind
         me.timer = FIRST_TICKS
         me.timer2 = PUSH_TICKS
         battle.play_sound(look.sound)
-        me:set_lifecycle("update")
+        me:enter_update()
     end
 
     -- `sub_80DD584`: its region off, bursting (the animation after its
@@ -149,7 +149,7 @@ function shot.make_kind(look: Look): Kind
     local function burst(me: Object)
         me.collision:set_region(nil)
         me.anim = ANIM + 1
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- `sub_80DD6F4`: an afterimage every 6 ticks (a seeking one).
@@ -337,7 +337,7 @@ function shot.make_kind(look: Look): Kind
         end
         action(me)
         if
-            me.lifecycle ~= "destroy"
+            me.lifecycle ~= Lifecycle.destroy
             and c.region == nil
             and bit32.bor(me.panel_x, bit32.lshift(me.panel_y, 8)) ~= s.hit_panel
         then
@@ -363,7 +363,7 @@ function shot.make_kind(look: Look): Kind
 
     return new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = {
             hit_panel = schema.u32,
             trails = schema.bool,
@@ -375,9 +375,9 @@ function shot.make_kind(look: Look): Kind
         -- `sub_80DD34C`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 bursting(me)

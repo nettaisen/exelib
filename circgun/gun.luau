@@ -196,7 +196,7 @@ function gun.make_kind(id: string, look: CircGunLook, shot_kind: Kind): Kind
         if c and c.active then
             (c.state :: Waiting).busy = false
         end
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- `sub_80D65E0`.
@@ -219,7 +219,7 @@ function gun.make_kind(id: string, look: CircGunLook, shot_kind: Kind): Kind
         local sprite = me.sprite
         sprite:load(look.sprite)
         -- sprite_noShadow: the first part is drawn with the sprite.
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim, me.anim_loaded = ANIM, 0xFF
         sprite:set_animation(0xFF)
         sprite:step()
@@ -230,13 +230,13 @@ function gun.make_kind(id: string, look: CircGunLook, shot_kind: Kind): Kind
         me.vel = Vec3.new(-me.facing, 1, me.vel.z)
         me.timer2 = TIMEOUT
         s.shots_left = AIMING
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = {
             variant = shot.CIRCGUN_VARIANT,
             controller = schema.object,
@@ -247,9 +247,9 @@ function gun.make_kind(id: string, look: CircGunLook, shot_kind: Kind): Kind
         -- `sub_80D655C`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

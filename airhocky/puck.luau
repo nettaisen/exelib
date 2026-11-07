@@ -165,7 +165,7 @@ end
 local function burst(me: Object, look: Look)
     battle.effect(me.pos, look.burst)
     me.collision:set_region(nil)
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- The panel under a position (`sub_800E258`), as `side` has it
@@ -239,7 +239,7 @@ local function tick(me: Object, look: Look)
     if not s.across and other_side(me, c.panel_x, c.panel_y) then
         s.across = true
     end
-    if me.lifecycle ~= "destroy" and (c.panel_x ~= was_x or c.panel_y ~= was_y) then
+    if me.lifecycle ~= Lifecycle.destroy and (c.panel_x ~= was_x or c.panel_y ~= was_y) then
         c:set_region(regions.single)
     end
     c:present()
@@ -251,7 +251,7 @@ local function init(me: Object, look: Look)
     local sprite = me.sprite
     sprite:load(look.sprite)
     sprite:set_animation(0)
-    sprite.shadow = "ground"
+    sprite.shadow = Shadow.ground
     me.visible = true
     me.anim = 0
     me.anim_loaded = 0xFF
@@ -273,7 +273,7 @@ local function init(me: Object, look: Look)
     me.collision:set_hit_effect(look.spark)
     me.collision:present()
     battle.play_sound(look.sound)
-    me:set_lifecycle("update")
+    me:enter_update()
     tick(me, look)
 end
 
@@ -281,7 +281,7 @@ end
 function puck.make_kind(id: string, look: Look): Kind
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = {
             variant = HOCKEY_PUCK_VARIANT,
             down = schema.bool,
@@ -295,12 +295,12 @@ function puck.make_kind(id: string, look: Look): Kind
         -- `sub_80C9824`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
                 if not me.active then
                     return
                 end
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, look)
             else
                 me:destroy()

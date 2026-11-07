@@ -172,9 +172,9 @@ function statue.make(look: Look): Statue
         me.collision:set_region(nil)
         me:unreserve_panel(me.future_panel_x, me.future_panel_y)
         local how = if look.reads_no_removal then "broken" else obstacle.removal(me)
-        if absorbed and how == "absorbed" then
+        if absorbed and how == ObstacleRemoval.absorbed then
             obstacle.fly_to_absorber(me, absorbed)
-        elseif how ~= "broken" then
+        elseif how ~= ObstacleRemoval.broken then
             local blink = if absorbed then obstacle.blink_out(me) else "no"
             if blink == "blinking" then
                 return
@@ -192,7 +192,7 @@ function statue.make(look: Look): Statue
             obstacle.release_tracking(me)
         end
         obstacle.unregister(me)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- The statue's action table (`off_80CF1B8`): its own actions and the framework's shared ones (a push knocks it
@@ -222,7 +222,7 @@ function statue.make(look: Look): Statue
     local function tick(me: Object)
         me.visible = true
         me.sprite.white = false
-        obstacle.take_hits(me, "keeps_damage")
+        obstacle.take_hits(me, ObstaclePush.keeps_damage)
         obstacle.tick_lifetime(me)
         local a = obstacle.react(me, look.crush)
         if a then
@@ -243,7 +243,7 @@ function statue.make(look: Look): Statue
         me.visible = true
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me.anim, me.anim_loaded = v.anim, v.anim
         sprite:set_animation(v.anim)
         sprite:face(me)
@@ -266,20 +266,20 @@ function statue.make(look: Look): Statue
         me:setup_collision(look.is, look.hits, HIT_MOD)
         me.collision:set_region(nil)
         me.collision:present()
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { variant = ANUBIS_VARIANT, bubble_in = schema.u32 },
         -- `sub_80CF0D0`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()
@@ -304,7 +304,7 @@ function statue.make(look: Look): Statue
         if o.flip then
             error("sub_80CF374 registers a flipped user's Anubis statue past the field-object registry (alliance + 0x100)")
         end
-        obstacle.register(o, o.alliance, "one_a_side")
+        obstacle.register(o, o.alliance, ObstacleClass.one_a_side)
         return o
     end
 

@@ -57,7 +57,7 @@ function stand_in.parts(me: Object, user: Object)
 end
 
 function stand_in.overlay(me: Object, user: Object)
-    if user.actor_type == "player" then
+    if user.actor_type == ActorType.player then
         overlays.add_overlay_of(me, user)
     end
 end
@@ -73,7 +73,7 @@ function stand_in.init(me: Object, wear: Wear?): Object
     end
     local sprite = me.sprite
     looks.load_like(sprite, user)
-    sprite.shadow = "ground"
+    sprite.shadow = Shadow.ground
     me.anim, me.anim_loaded = 0, 0xFF
     me.visible = true
     me.pos = user.pos
@@ -100,7 +100,7 @@ function stand_in.leave(me: Object)
     local user = me.related1 :: Object
     overlays.remove_parts_of(me, user)
     me.visible = false
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
     dimming.show_user(user)
     local c = (me.state :: State).controller
     if c and c.active then

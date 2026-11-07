@@ -128,7 +128,7 @@ function actor.make(look: Look): Actor
         local user = me.related1 :: Object
         look.unwear(me, user)
         me.visible = false
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
         dimming.show_user(user)
         local c = s.controller
         if c and c.active then
@@ -157,19 +157,19 @@ function actor.make(look: Look): Actor
     local function init(me: Object)
         stand_in.init(me, look.wear)
         me.anim = look.stand_anim
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "actor",
+        pool = Pool.actor,
         state = { controller = schema.object, held = schema.object },
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:free()

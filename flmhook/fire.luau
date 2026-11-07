@@ -119,7 +119,7 @@ function fire.make(look: Look, sine: (angle: number) -> number): {
             s.trail = n
         end
         if swing(me, s) == 0 then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             me.collision:set_region(nil)
         end
         me:set_panel_from_coordinates()
@@ -138,7 +138,7 @@ function fire.make(look: Look, sine: (angle: number) -> number): {
                 battle.shake_camera(SHAKE_MAGNITUDE, SHAKE_TICKS)
             end
             -- A white flash that goes on while dimmed.
-            battle.palette_flash("one_layer", FLASH_TICKS, true)
+            battle.palette_flash(PaletteFlashVariant.one_layer, FLASH_TICKS, true)
         end
         local x, y = me.panel_x, me.panel_y
         local a = me.action
@@ -146,7 +146,7 @@ function fire.make(look: Look, sine: (angle: number) -> number): {
             error(string.format("The hook's flame action %#x reads past its table", a))
         end
         burn(me, s)
-        if me.lifecycle ~= "destroy" and (me.panel_x ~= x or me.panel_y ~= y) and field.valid(me.panel_x, me.panel_y) then
+        if me.lifecycle ~= Lifecycle.destroy and (me.panel_x ~= x or me.panel_y ~= y) and field.valid(me.panel_x, me.panel_y) then
             c:set_region(regions.long)
         end
         me:highlight_collision_panels()
@@ -183,7 +183,7 @@ function fire.make(look: Look, sine: (angle: number) -> number): {
         -- its flip its object's.
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim, me.anim_loaded = if s.swing ~= 0 then 1 else 0, 0xFF
         if not me:create_collision() then
             -- The game goes on without one, writing through a null pointer.
@@ -198,20 +198,20 @@ function fire.make(look: Look, sine: (angle: number) -> number): {
         c:set_hit_effect(s.spark :: Spark)
         c:set_region(nil)
         battle.play_sound(look.sound)
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { swing = schema.u8, variant = FLMHOOK_FIRE_VARIANT, spark = schema.spark, center_x = schema.i32, center_y = schema.i32, trail = schema.u32 },
         -- `sub_80DE7F4`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

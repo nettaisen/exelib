@@ -12,7 +12,7 @@ function registry.set(slots: WindSlots, me: Object, side: number, source: WindSo
     local slot = slots(side)
     local old = slot.object
     if old ~= nil then
-        old:set_lifecycle("destroy")
+        old:enter_destroy()
     end
     slot.object, slot.source = me, source
 end

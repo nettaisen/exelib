@@ -139,7 +139,7 @@ function tango.make(look: TangoLook): SupportActor
                 return
             end
             battle.effect(me.pos, look.puff)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         else
             error(string.format("Tango's phase %#x reads past its table (off_80C37D0)", p))
         end
@@ -150,7 +150,7 @@ function tango.make(look: TangoLook): SupportActor
     local function init(me: Object)
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
         sprite:face(me)
@@ -158,7 +158,7 @@ function tango.make(look: TangoLook): SupportActor
         place(me, look.pixel_nudge ~= false)
         me.timer = 0x28
         battle.play_sound(look.arrive_sound)
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
@@ -166,9 +166,9 @@ function tango.make(look: TangoLook): SupportActor
     -- does nothing).
     local function update(me: Object)
         local l = me.lifecycle
-        if l == "init" then
+        if l == Lifecycle.init then
             init(me)
-        elseif l == "update" then
+        elseif l == Lifecycle.update then
             tick(me)
         else
             -- sub_80C3900: the controller's flag cleared, gone.
@@ -182,7 +182,7 @@ function tango.make(look: TangoLook): SupportActor
 
     local kind = new.kind {
         id = look.id,
-        pool = "actor",
+        pool = Pool.actor,
         state = { healing = schema.bool },
         update = update,
     }

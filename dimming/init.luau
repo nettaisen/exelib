@@ -38,9 +38,9 @@ function dimming_chips.phases(spec: Phases): (me: Object) -> ()
     local undim = spec.undim or dimming.undim_screen
     return function(me: Object)
         local l = me.lifecycle
-        if l == "init" then
+        if l == Lifecycle.init then
             dimming.begin(me)
-        elseif l == "update" then
+        elseif l == Lifecycle.update then
             local a = me.action
             if a == DIM then
                 dim(me)

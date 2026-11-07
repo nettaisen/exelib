@@ -40,7 +40,7 @@ controller.UNDIM = UNDIM
 function controller.make(id: string, effect: (me: Object) -> ()): Kind
     return new.kind {
         id = id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { chip = schema.chip, bonus = schema.u16, balls = schema.u8, busy = schema.bool },
         -- `sub_80E7F38`: `object_timefreezeBegin` at its init; by its action
         -- `object_dimScreen`, `sub_800BDB2` (AntiNavi), `sub_800BA8A` (the
@@ -48,9 +48,9 @@ function controller.make(id: string, effect: (me: Object) -> ()): Kind
         -- `object_timefreezeEnd` when it is destroyed.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 dimming.begin(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 local s = me.state :: State
                 local a = me.action
                 if a == DIM then

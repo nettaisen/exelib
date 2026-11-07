@@ -118,7 +118,7 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
             if me.sprite.steps >= (if me.sprite.animation == 2 then LEAVE_STEPS else PERCHED_STEPS) then
                 me.visible = false
                 -- (0x080E6AAA: the state byte alone; its phase stays.)
-                me.lifecycle = "destroy"
+                me.lifecycle = Lifecycle.destroy
             end
         else
             error(string.format("BlakWing's perch: phase %#x reads past 0x080E6A60", p))
@@ -127,24 +127,24 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
 
     local perch = new.kind {
         id = look.perch_id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { going = schema.bool },
         -- 0x080E69F0.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 -- 0x080E6A10: shown, 0c-42's animation 0 stepped once, on its panel.
                 me.visible = true
                 local sprite = me.sprite
                 sprite:load(look.sprite)
-                sprite.shadow = "with_sprite"
+                sprite.shadow = Shadow.with_sprite
                 me.anim, me.anim_loaded = 0, 0
                 sprite:set_animation(0)
                 sprite:step()
                 me:set_coordinates_from_panel()
-                me:set_lifecycle("update")
+                me:enter_update()
                 perch_update(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 perch_update(me)
             else
                 me:free()
@@ -175,7 +175,7 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
         battle.effect(me.pos, look.puff)
         me.collision:set_region(nil)
         me.visible = false
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- 0x080D6480: the hits against it resolve and spark; a hit ends it; else it falls.
@@ -188,7 +188,7 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
         if c.hit then
             me.visible = false
             c:set_region(nil)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         if me.action ~= 0 then
@@ -201,18 +201,18 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
 
     local wing = new.kind {
         id = look.wing_id,
-        pool = "attack",
+        pool = Pool.attack,
         -- 0x080D63EC.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 -- 0x080D640C: shown on its panel, 0c-42's animation 3, falling; its collision (row 0x25, hits navis,
                 -- hit modifier 1, the plain spark); a panel's ticks; the first update at once.
                 me:set_coordinates_from_panel()
                 me.visible = true
                 local sprite = me.sprite
                 sprite:load(look.sprite)
-                sprite.shadow = "with_sprite"
+                sprite.shadow = Shadow.with_sprite
                 me.anim, me.anim_loaded = 3, 3
                 sprite:set_animation(3)
                 sprite:face(me)
@@ -225,9 +225,9 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
                 me.collision:set_hit_effect(look.spark)
                 me.collision:present()
                 me.timer = PANEL_TICKS
-                me:set_lifecycle("update")
+                me:enter_update()
                 wing_tick(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 wing_tick(me)
             else
                 me:destroy()
@@ -341,7 +341,7 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
         local left = me.timer2 - 1
         me.timer2 = int.u16(left)
         if int.i16(me.timer2) < 0 then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         strike(me, s)
@@ -365,7 +365,7 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
 
     local flock = new.kind {
         id = look.flock_id,
-        pool = "attack",
+        pool = Pool.attack,
         state = {
             every = schema.u16,
             perch1 = schema.object,
@@ -379,7 +379,7 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
         -- 0x080D6230.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 -- 0x080D6250: no perch, gone (the controller let go); else the first index at random, 30 ticks to
                 -- the first wing, the start's sound.
                 local s = me.state :: FlockState
@@ -398,9 +398,9 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
                 me.timer = 30
                 s.flap = 1
                 battle.play_sound(look.sounds.start)
-                me:set_lifecycle("update")
+                me:enter_update()
                 flock_tick(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 flock_tick(me)
             else
                 flock_end(me)
@@ -453,7 +453,7 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
 
     local controller = new.kind {
         id = look.controller_id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { bonus = schema.u16, busy = schema.bool },
         -- 0x080E6920.
         update = dimming_chips.phases { name = "BlakWing", effect = effect },

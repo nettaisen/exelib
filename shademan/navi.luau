@@ -117,7 +117,7 @@ function shademan.make(spec: ShadeManSpec): ShadeMan
                 me.timer = 5
                 me:set_action(0xC)
             else
-                me:set_lifecycle("destroy")
+                me:enter_destroy()
             end
         end
     end
@@ -125,7 +125,7 @@ function shademan.make(spec: ShadeManSpec): ShadeMan
     -- Action 0xC (EXE5's 0x080BD278): then he goes.
     local function leave(me: Object)
         if past_zero(me) then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
@@ -145,7 +145,7 @@ function shademan.make(spec: ShadeManSpec): ShadeMan
         local s = me.state :: State
         local sprite = me.sprite
         sprite:load(spec.sprite)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me.visible = true
         me.anim, me.anim_loaded = spec.appear_anim, spec.appear_anim
         sprite:set_animation(spec.appear_anim)
@@ -162,13 +162,13 @@ function shademan.make(spec: ShadeManSpec): ShadeMan
         end
         s.commanded = false
         carry(s, spec.uncommanded())
-        me:set_lifecycle("update")
+        me:enter_update()
         act(me)
     end
 
     local kind = new.kind {
         id = spec.id,
-        pool = "actor",
+        pool = Pool.actor,
         state = {
             controller = schema.object,
             palette = schema.u8,
@@ -180,9 +180,9 @@ function shademan.make(spec: ShadeManSpec): ShadeMan
         -- EXE5's 0x080BD0E8, EXE4's 0x080BAD70.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 act(me)
             else
                 -- EXE5's 0x080BD10C, EXE4's 0x080BAD94: EXE4's puff 16 pixels above him (effect row 0x13); the

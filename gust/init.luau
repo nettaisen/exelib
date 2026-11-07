@@ -51,7 +51,7 @@ end
 local function finish(me: Object)
     me.collision:set_region(nil)
     me.visible = false
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- A game's gust kind, keyed `id`, of `look`.
@@ -86,7 +86,7 @@ function gust.make_kind(id: string, look: GustLook): Kind
         if ends then
             c:set_region(nil)
             untrack(s)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
@@ -121,7 +121,7 @@ function gust.make_kind(id: string, look: GustLook): Kind
         end
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim = 0
         me.anim_loaded = 0
         sprite:set_animation(0)
@@ -149,20 +149,20 @@ function gust.make_kind(id: string, look: GustLook): Kind
         me:setup_collision(look.is, look.hits, if weak then WEAK_PUSH else PUSH)
         me.collision.self_damage = 0
         me.collision:present()
-        me.lifecycle = "update"
+        me.lifecycle = Lifecycle.update
         tick(me)
     end
 
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { stop_on_hit = schema.bool, holder = schema.object, slot = schema.u8, pulls = schema.bool, unseen = schema.bool },
         -- (EXE6's `sub_80CD2EC`.)
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

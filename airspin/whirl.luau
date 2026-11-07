@@ -192,7 +192,7 @@ function whirl.make(look: SeekingWhirlLook): { kind: Kind, sender: AirSpinSender
         local t = me.timer - 1
         me.timer = t
         if t <= 0 then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
@@ -248,7 +248,7 @@ function whirl.make(look: SeekingWhirlLook): { kind: Kind, sender: AirSpinSender
         local sprite = me.sprite
         sprite:load(look.sprite)
         sprite:set_animation(0)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim = 0
         me.anim_loaded = 0xFF
         if not me:create_collision() then
@@ -260,13 +260,13 @@ function whirl.make(look: SeekingWhirlLook): { kind: Kind, sender: AirSpinSender
         me.collision:set_region(nil)
         me.collision:present()
         battle.play_sound(look.sound)
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = {
             target_x = schema.i32,
             target_y = schema.i32,
@@ -280,9 +280,9 @@ function whirl.make(look: SeekingWhirlLook): { kind: Kind, sender: AirSpinSender
         -- `sub_80DFFB8`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

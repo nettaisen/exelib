@@ -107,7 +107,7 @@ function controller.make(look: Look): Controller
 
     local kind = new.kind {
         id = look.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { bonus = schema.u16, left = schema.i32, order = schema.array(schema.u8, 3), out = schema.array(schema.bool, 4) },
         update = dimming_chips.phases { name = "MetaGel", effect = effect },
     }

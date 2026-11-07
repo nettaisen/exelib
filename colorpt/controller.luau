@@ -83,7 +83,7 @@ function controller.make(spec: Spec): { kind: Kind, hook: (p: ColorPoint) -> (us
 
     local kind = new.kind {
         id = spec.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { point = COLORPT_POINT, out = schema.array(schema.bool, 3) },
         update = dimming_chips.phases { name = "ColorPt", effect = effect },
     }

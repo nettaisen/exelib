@@ -77,7 +77,7 @@ local function roll(me: Object, look: Look)
     end
     if not field.any(me.panel_x, me.panel_y, SOLID) or not field.valid(me.panel_x, me.panel_y) then
         c:set_region(nil)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 end
 
@@ -100,7 +100,7 @@ local function init(me: Object, look: Look)
     me:set_panel_from_coordinates()
     local sprite = me.sprite
     sprite:load(look.sprite)
-    sprite.shadow = "ground"
+    sprite.shadow = Shadow.ground
     me.visible = true
     me.anim, me.anim_loaded = look.anim, look.anim
     sprite:set_animation(look.anim)
@@ -123,24 +123,24 @@ local function init(me: Object, look: Look)
     me.collision:set_hit_effect(nil)
     me.collision:present()
     s.growth = if look.growth == "damage" then damage_word.amount(me.damage_word) else look.growth :: number
-    me:set_lifecycle("update")
+    me:enter_update()
 end
 
 -- A game's snowball kind.
 function ball.make_kind(look: Look): Kind
     return new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { roller = schema.object, growth = schema.u16, size = schema.u8 },
         -- `sub_80DB994`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
                 if not me.active then
                     return
                 end
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, look)
             else
                 me:destroy()

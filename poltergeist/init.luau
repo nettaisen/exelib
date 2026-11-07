@@ -147,7 +147,7 @@ function poltergeist.make(id: string): Poltergeist
         end
         s.count = n
         if n == 0 then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         local facing_left = me.facing_side ~= 0
@@ -168,7 +168,7 @@ function poltergeist.make(id: string): Poltergeist
                 end
             end
         end
-        me:set_lifecycle("update")
+        me:enter_update()
     end
 
     -- 0x080E8DD8: throw each, then wait until the field has none left.
@@ -204,20 +204,20 @@ function poltergeist.make(id: string): Poltergeist
         local t = me.timer - 1
         me.timer = int.u16(t)
         if t < 0 then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
     local kind = new.kind {
         id = id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { holder = schema.object, taken = schema.array(schema.object, 8), count = schema.u8, nearest = schema.bool },
         -- 0x080E8CFC.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 take(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 local p = me.phase
                 if p == 0 then
                     throw_all(me)

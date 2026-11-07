@@ -50,7 +50,7 @@ function panel_chips.make(spec: Spec): PanelChips
 
     local kind = new.kind {
         id = spec.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { change = panel_changer.PANEL_CHANGE, busy = schema.bool },
         update = dimming_chips.phases { name = "the panel chips", effect = effect },
     }

@@ -15,9 +15,9 @@ local parts = {}
 -- its Beast forms' arms, its lib/swords/parts).
 function parts.arm_anim(me: Object, base: ((side: number) -> number)?): number
     local kind, ai = me.actor_type, me.ai_index
-    if kind == "navi" then
+    if kind == ActorType.navi then
         return if ai < 0x0D then ai else 0
-    elseif kind == "player" then
+    elseif kind == ActorType.player then
         if ai ~= 0 then
             return if ai == 0x13 then 0x0E else ai
         end
@@ -34,7 +34,7 @@ end
 -- `sub_80EBB78`: added to the blade's palette: 0xC for navi AI 0x12's
 -- version 4, else 0.
 function parts.blade_palette(me: Object): number
-    if me.actor_type == "navi" and me.ai_index == 0x12 then
+    if me.actor_type == ActorType.navi and me.ai_index == 0x12 then
         -- The game compares AIData+0x16, a navi AI's version, which this
         -- engine's actors (players) don't have.
         error("sub_80EBB78: navi AI 0x12's version (AIData+0x16) is not modeled")

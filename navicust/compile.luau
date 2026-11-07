@@ -111,7 +111,7 @@ function compile.check(
     local size = board.SIZE
     if #parts > 0 and not compiles then
         problem({
-            kind = "not_taken",
+            kind = SetupProblemKind.not_taken,
             field = "navicust_programs",
             text = "a NaviCust, but the navi's stats aren't a NaviCust's (only MegaMan's compiles)",
         })
@@ -120,7 +120,7 @@ function compile.check(
     local layout = board.boards[expansions + 1]
     if layout == nil then
         problem({
-            kind = "range",
+            kind = SetupProblemKind.range,
             field = "navicust_expansions",
             value = expansions,
             least = 0,
@@ -136,11 +136,11 @@ function compile.check(
         local name = battle.name(def)
         local what = string.format("navicust program %d (%s)", i, name)
         if table.find(def.colors, p.color) == nil then
-            problem({ kind = "invalid", field = "navicust_programs", entry = i, text = string.format("%s: a color it doesn't come in", what) })
+            problem({ kind = SetupProblemKind.invalid, field = "navicust_programs", entry = i, text = string.format("%s: a color it doesn't come in", what) })
         end
         if p.rotation > 3 then
             problem({
-                kind = "range",
+                kind = SetupProblemKind.range,
                 field = "navicust_programs",
                 entry = i,
                 value = p.rotation,
@@ -173,7 +173,7 @@ function compile.check(
         end
         if not (fits and on) then
             problem({
-                kind = "off_board",
+                kind = SetupProblemKind.off_board,
                 field = "navicust_programs",
                 entry = i,
                 text = string.format("%s at (%d, %d): off the board", what, p.x, p.y),
@@ -184,7 +184,7 @@ function compile.check(
                 local other = grid[at]
                 if other ~= nil then
                     problem({
-                        kind = "overlap",
+                        kind = SetupProblemKind.overlap,
                         field = "navicust_programs",
                         entry = i,
                         other = other,
@@ -201,7 +201,7 @@ function compile.check(
             compression[key] = p.compressed
         elseif seen ~= p.compressed then
             problem({
-                kind = "invalid",
+                kind = SetupProblemKind.invalid,
                 field = "navicust_programs",
                 entry = i,
                 text = string.format("%s: compressed and not (a save compresses every copy of a program in one color)", what),

@@ -42,7 +42,7 @@ local function make(id: string, place: (me: Object) -> ())
 
     local kind = new.kind {
         id = id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { bonus = schema.u16, variant = countdown.COUNTDOWN_VARIANT },
         -- `sub_80E31D8`.
         update = dimming_chips.phases { name = "TimeBom", effect = effect },

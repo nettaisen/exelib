@@ -49,10 +49,10 @@ local function raise_arm_for(look: BusterLook, navi: Object, holder: Object, whi
         attachment.attach(look.attachment, holder, arm, which, arm_options(anim, palette_add, param3))
     end
     local kind = navi.actor_type
-    if kind == "virus" then
+    if kind == ActorType.virus then
         attach(look.arm, 0, 0)
         return
-    elseif kind == "navi" then
+    elseif kind == ActorType.navi then
         attach(look.navi_arm, navi.ai_index - 1, 0xD)
         return
     elseif navi.ai_index ~= 0 then

@@ -85,7 +85,7 @@ function beam.make_kind(look: Look): Kind
         local n = me.timer2 - 1
         me.timer2 = int.u16(n)
         if n <= 0 then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
@@ -114,7 +114,7 @@ function beam.make_kind(look: Look): Kind
         local sprite = me.sprite
         sprite:load(look.sprite)
         -- sprite_noShadow: the first part is drawn with the sprite.
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim, me.anim_loaded = int.u8(s.distance * 2), 0xFF
         sprite:set_animation(0xFF)
         sprite:step()
@@ -123,19 +123,19 @@ function beam.make_kind(look: Look): Kind
         me:set_coordinates_from_panel()
         me.pos = Vec3.new(int.i32(me.pos.x + me.facing * DRAWN_AHEAD * 0x10000), me.pos.y, me.pos.z)
         s.ticks = 0
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     return new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { distance = schema.u8, ticks = schema.u8 },
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

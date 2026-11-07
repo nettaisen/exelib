@@ -133,7 +133,7 @@ local function tick(me: Object)
     if c.change_sound then
         battle.play_sound(c.change_sound)
     end
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- `sub_80E28C8`: the change's start sound, if any (EXE4's); list the panels; the timer; and the first update at once.
@@ -148,7 +148,7 @@ local function init(me: Object)
     end
     s.count = #list
     me.timer = s.change.ticks
-    me.lifecycle = "update"
+    me.lifecycle = Lifecycle.update
     tick(me)
 end
 
@@ -165,14 +165,14 @@ end
 function panel_changer.make_kind(id: string): Kind
     return new.kind {
         id = id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { change = PANEL_CHANGE, list = schema.array(schema.u8, 18), count = schema.u8, holder = schema.object },
         -- `sub_80E28A8`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 finish(me)

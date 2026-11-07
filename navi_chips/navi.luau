@@ -119,7 +119,7 @@ function navi_chips.leave(me: Object, controller: Object?)
     if controller then
         navi_left(controller)
     end
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- The same, with the original's byte store of the state alone: his action and phase stay as they were (EXE5's
@@ -128,7 +128,7 @@ function navi_chips.leave_keeping_action(me: Object, controller: Object?)
     if controller then
         navi_left(controller)
     end
-    me.lifecycle = "destroy"
+    me.lifecycle = Lifecycle.destroy
 end
 
 return navi_chips

@@ -189,7 +189,7 @@ local function fly(me: Object, look: Look)
     if h then
         h.run_while_dimmed = true
     end
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- `sub_80D2FC2`: the leap, by phase: its animation; the sound at the animation's end; the flight.
@@ -214,7 +214,7 @@ end
 -- `sub_80D2F3C`: gone once off the field; else the action and the sprite.
 local function tick(me: Object, look: Look)
     if not field.valid(me.panel_x, me.panel_y) then
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
         return
     end
     local a = me.action
@@ -244,12 +244,12 @@ local function init(me: Object, look: Look)
     me.visible = true
     local sprite = me.sprite
     sprite:load(look.sprite)
-    sprite.shadow = "with_sprite"
+    sprite.shadow = Shadow.with_sprite
     me.anim = 0
     sprite:set_animation(0)
     sprite:face(me)
     aim(me, look)
-    me:set_lifecycle("update")
+    me:enter_update()
     tick(me, look)
 end
 
@@ -257,14 +257,14 @@ end
 function snake.make_kind(id: string, look: Look): Kind
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { target_x = schema.u32, target_y = schema.u32, nest = schema.object, slot = schema.u8 },
         -- `sub_80D2EBC`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, look)
             else
                 -- sub_80D3048: out of the nest; freed.

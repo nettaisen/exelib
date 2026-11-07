@@ -60,7 +60,7 @@ end
 local function finish(me: Object)
     me.collision:set_region(nil)
     me.visible = false
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- `sub_80D9E94`: fly until the ticks run out or it comes down; then land on its target panel, 10 pixels up.
@@ -96,7 +96,7 @@ local function fly(me: Object, look: Look, s: State)
     rising_bubble.spawn(look.bubble, Vec3.new(p.x, p.y, 0), 0)
     me.collision:set_region(nil)
     me.visible = false
-    me.lifecycle = "destroy"
+    me.lifecycle = Lifecycle.destroy
 end
 
 -- `sub_80D9F2C` (EXE4's 0x080DC238): sit; then burst (EXE4's at once on a crushing hit).
@@ -135,7 +135,7 @@ local function tick(me: Object, look: Look)
         return
     end
     local crushed = look.crushing_hit == "explodes" and me.collision:hit_any(CRUSHED)
-    if me:take_damage("damage_sound") == "broken" or crushed then
+    if me:take_damage(TakeDamageMode.damage_sound) == DamageTaken.broken or crushed then
         battle.effect(me.pos, look.crushed)
         battle.play_sound(look.crushed_sound)
         finish(me)
@@ -150,7 +150,7 @@ local function tick(me: Object, look: Look)
         elseif a == 8 then
             -- `sub_80D9F84`: burst; gone.
             me.collision:set_region(nil)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         else
             error(string.format("BugBomb action %#x reads past its table", a))
         end
@@ -169,7 +169,7 @@ local function init(me: Object, look: Look, s: State)
     -- the real one.)
     sprite:set_animation(0xFF)
     sprite:step()
-    sprite.shadow = "ground"
+    sprite.shadow = Shadow.ground
     me.future_panel_x, me.future_panel_y = s.target_x, s.target_y
     local tx, ty = field.center(s.target_x, s.target_y)
     local p = me.pos
@@ -190,7 +190,7 @@ local function init(me: Object, look: Look, s: State)
     me.collision.status_base = look.status
     me.collision:set_region(nil)
     me.collision:present()
-    me.lifecycle = "update"
+    me.lifecycle = Lifecycle.update
     tick(me, look)
 end
 
@@ -198,14 +198,14 @@ end
 function bomb.make_kind(id: string, look: Look): Kind
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { angle = schema.u8, target_x = schema.u8, target_y = schema.u8 },
         -- `sub_80D9D4C`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look, me.state :: State)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, look)
             else
                 me:destroy()

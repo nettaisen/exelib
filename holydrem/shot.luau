@@ -37,7 +37,7 @@ local EDGE = 160
 local function finish(me: Object)
     me.visible = false
     me.collision:set_region(nil)
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- EXE5's 0x080D6B34, EXE4's 0x080DDAC0: 10 ticks still.
@@ -94,7 +94,7 @@ function shot.make(look: Look): Shot
     local function init(me: Object)
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim, me.anim_loaded = 0, 0xFF
         me.visible = true
         sprite:face(me)
@@ -109,19 +109,19 @@ function shot.make(look: Look): Shot
         me.collision:set_hit_effect(look.spark)
         me.collision:present()
         battle.play_sound(look.sound)
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         -- EXE5's 0x080D6A60, EXE4's 0x080DD9EC.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 -- EXE5's 0x080138F2, EXE4's 0x08010560: its collision, then itself, freed.

@@ -121,7 +121,7 @@ function countdown.make_kind(id: string, look: CountdownLook): Kind
             obstacle.release_tracking(me)
         end
         obstacle.unregister(me)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- `sub_80CDA1C`: once the rising animation is over, stand if the panel
@@ -229,7 +229,7 @@ function countdown.make_kind(id: string, look: CountdownLook): Kind
         end
         me.collision:set_region(nil)
         local how = obstacle.removal(me)
-        if how == "broken" then
+        if how == ObstacleRemoval.broken then
             if me.hp == 0 and variant(me).bursts_when_broken then
                 if battle.dimmed() then
                     return
@@ -243,13 +243,13 @@ function countdown.make_kind(id: string, look: CountdownLook): Kind
             -- (EXE5's 0x080CF21C: removed any way, a puff.)
             local p = me.pos
             battle.effect(Vec3.new(p.x, p.y, p.z + 0xC_0000), look.puff)
-        elseif how == "absorbed" then
+        elseif how == ObstacleRemoval.absorbed then
             obstacle.fly_to_absorber(me, look.absorbed :: AbsorbedLook)
         else
             local blink = obstacle.blink_out(me)
-            if blink == "blinking" then
+            if blink == BlinkOut.blinking then
                 return
-            elseif blink == "no" then
+            elseif blink == BlinkOut.no then
                 local p = me.pos
                 battle.effect(Vec3.new(p.x, p.y, p.z + 0xC_0000), look.puff)
             end
@@ -301,7 +301,7 @@ function countdown.make_kind(id: string, look: CountdownLook): Kind
         if battle.over() then
             me.hp = 0
         end
-        obstacle.take_hits(me, "keeps_damage")
+        obstacle.take_hits(me, ObstaclePush.keeps_damage)
         local a = obstacle.react(me, look.crush)
         if a then
             act(me, a)
@@ -319,7 +319,7 @@ function countdown.make_kind(id: string, look: CountdownLook): Kind
         sprite:load(SPRITE)
         me.anim, me.anim_loaded = v.appear_anim, v.appear_anim
         sprite:set_animation(v.appear_anim)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         -- (sub_8002EAC sets a drawing flag of the sprite's.)
         me.pos = Vec3.new(me.pos.x, me.pos.y, 0)
         me.future_panel_x, me.future_panel_y = me.panel_x, me.panel_y
@@ -335,16 +335,16 @@ function countdown.make_kind(id: string, look: CountdownLook): Kind
         me:setup_collision(v.collision.is, v.collision.hits, HIT_MOD)
         me.collision:set_region(nil)
         me.collision:present()
-        me.lifecycle = "update"
+        me.lifecycle = Lifecycle.update
         tick(me)
     end
 
     -- `sub_80CD8EC`.
     local function update(me: Object)
         local l = me.lifecycle
-        if l == "init" then
+        if l == Lifecycle.init then
             init(me)
-        elseif l == "update" then
+        elseif l == Lifecycle.update then
             tick(me)
         else
             me:destroy()
@@ -353,7 +353,7 @@ function countdown.make_kind(id: string, look: CountdownLook): Kind
 
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { variant = COUNTDOWN_VARIANT },
         update = update,
     }

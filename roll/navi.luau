@@ -510,7 +510,7 @@ function roll.make(spec: Spec): Roll
             end
         end
         if countdown(me, 0x5A) then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
@@ -545,7 +545,7 @@ function roll.make(spec: Spec): Roll
         me.visible = true
         local sprite = me.sprite
         sprite:load(spec.sprite)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me.anim = 0
         me.anim_loaded = 0
         sprite:set_animation(0)
@@ -557,7 +557,7 @@ function roll.make(spec: Spec): Roll
         sprite:face(me)
         sprite.palette = (me.state :: State).palette
         sprite.color_shader = 0x7FFF
-        me:set_lifecycle("update")
+        me:enter_update()
         update_state(me)
     end
 
@@ -572,7 +572,7 @@ function roll.make(spec: Spec): Roll
 
     local kind = new.kind {
         id = spec.id,
-        pool = "actor",
+        pool = Pool.actor,
         state = {
             home_x = schema.u8,
             home_y = schema.u8,
@@ -592,9 +592,9 @@ function roll.make(spec: Spec): Roll
         -- `sub_80C07BC`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 update_state(me)
             else
                 finish(me)

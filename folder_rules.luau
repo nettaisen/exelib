@@ -52,9 +52,9 @@ local function count(chips: { { chip: Chip, code: string } }): Counts
         counts.copies[c] = (counts.copies[c] or 0) + 1
         if is_dark(c) then
             counts.dark += 1
-        elseif c.class == "mega" then
+        elseif c.class == ChipClass.mega then
             counts.mega += 1
-        elseif c.class == "giga" then
+        elseif c.class == ChipClass.giga then
             counts.giga += 1
         end
     end
@@ -72,7 +72,7 @@ function folder_rules.problems(game: FolderRules, stats: Navi, setup: any, f: Ch
     local chips = f.chips
     if f.complete and #chips ~= game.size then
         say({
-            kind = "folder_size",
+            kind = SetupProblemKind.folder_size,
             used = #chips,
             limit = game.size,
             text = string.format("the folder has %d chips; a folder is %d", #chips, game.size),
@@ -82,7 +82,7 @@ function folder_rules.problems(game: FolderRules, stats: Navi, setup: any, f: Ch
         local c = e.chip
         if not game.in_pack(c) then
             say({
-                kind = "chip_not_allowed",
+                kind = SetupProblemKind.chip_not_allowed,
                 entry = i,
                 chip = c,
                 text = string.format("entry %d: %s is no chip a folder can hold", i - 1, name(c)),
@@ -90,7 +90,7 @@ function folder_rules.problems(game: FolderRules, stats: Navi, setup: any, f: Ch
         end
         if not has(c.codes, e.code) then
             say({
-                kind = "chip_code",
+                kind = SetupProblemKind.chip_code,
                 entry = i,
                 chip = c,
                 code = e.code,
@@ -103,7 +103,7 @@ function folder_rules.problems(game: FolderRules, stats: Navi, setup: any, f: Ch
         local n, allowed = counts.copies[c], game.copies(c)
         if n > allowed and game.in_pack(c) then
             say({
-                kind = "copies",
+                kind = SetupProblemKind.copies,
                 chip = c,
                 used = n,
                 limit = allowed,
@@ -113,7 +113,7 @@ function folder_rules.problems(game: FolderRules, stats: Navi, setup: any, f: Ch
     end
     if counts.mega > stats.mega_level then
         say({
-            kind = "mega",
+            kind = SetupProblemKind.mega,
             used = counts.mega,
             limit = stats.mega_level,
             text = string.format("%d Mega chips, past the navi's %d", counts.mega, stats.mega_level),
@@ -121,7 +121,7 @@ function folder_rules.problems(game: FolderRules, stats: Navi, setup: any, f: Ch
     end
     if counts.giga > stats.giga_level then
         say({
-            kind = "giga",
+            kind = SetupProblemKind.giga,
             used = counts.giga,
             limit = stats.giga_level,
             text = string.format("%d Giga chips, past the navi's %d", counts.giga, stats.giga_level),
@@ -129,7 +129,7 @@ function folder_rules.problems(game: FolderRules, stats: Navi, setup: any, f: Ch
     end
     if game.dark ~= nil and counts.dark > game.dark then
         say({
-            kind = "dark",
+            kind = SetupProblemKind.dark,
             used = counts.dark,
             limit = game.dark,
             text = string.format("%d dark chips, past %d", counts.dark, game.dark),
@@ -139,12 +139,12 @@ function folder_rules.problems(game: FolderRules, stats: Navi, setup: any, f: Ch
         local e = chips[f.regular]
         if e == nil then
             say({
-                kind = "regular_entry",
+                kind = SetupProblemKind.regular_entry,
                 text = string.format("the Regular chip is entry %d, past the folder", f.regular - 1),
             })
         elseif mb(e.chip) > stats.regular_memory then
             say({
-                kind = "regular_memory",
+                kind = SetupProblemKind.regular_memory,
                 entry = f.regular,
                 chip = e.chip,
                 used = mb(e.chip),
@@ -163,19 +163,19 @@ function folder_rules.problems(game: FolderRules, stats: Navi, setup: any, f: Ch
         local x, y = chips[a], chips[b]
         local tag_memory = game.tag_memory
         if tag_memory == nil then
-            say({ kind = "no_tags", text = "tag chips, but the game's folders have none" })
+            say({ kind = SetupProblemKind.no_tags, text = "tag chips, but the game's folders have none" })
         elseif a == b then
-            say({ kind = "tag_entries", text = string.format("the tag chips are both entry %d", a - 1) })
+            say({ kind = SetupProblemKind.tag_entries, text = string.format("the tag chips are both entry %d", a - 1) })
         elseif x == nil or y == nil then
             say({
-                kind = "tag_entries",
+                kind = SetupProblemKind.tag_entries,
                 text = string.format("the tag chips are entries %d and %d, past the folder", a - 1, b - 1),
             })
         else
             local together = mb(x.chip) + mb(y.chip)
             if together > tag_memory then
                 say({
-                    kind = "tag_memory",
+                    kind = SetupProblemKind.tag_memory,
                     used = together,
                     limit = tag_memory,
                     text = string.format(
@@ -188,7 +188,7 @@ function folder_rules.problems(game: FolderRules, stats: Navi, setup: any, f: Ch
                 })
             end
             if f.regular == a or f.regular == b then
-                say({ kind = "tag_regular", text = "the Regular chip is a tag chip" })
+                say({ kind = SetupProblemKind.tag_regular, text = "the Regular chip is a tag chip" })
             end
         end
     end
@@ -207,10 +207,10 @@ function folder_rules.view(game: FolderRules, stats: Navi, setup: any, f: Checke
         local held = counts.copies[c] or 0
         local dark_limit = game.dark
         if not game.in_pack(c) then
-            return { kind = "chip_not_allowed", chip = c, text = string.format("%s is no chip a folder can hold", name(c)) }
+            return { kind = SetupProblemKind.chip_not_allowed, chip = c, text = string.format("%s is no chip a folder can hold", name(c)) }
         elseif full then
             return {
-                kind = "folder_size",
+                kind = SetupProblemKind.folder_size,
                 chip = c,
                 used = #f.chips,
                 limit = game.size,
@@ -218,7 +218,7 @@ function folder_rules.view(game: FolderRules, stats: Navi, setup: any, f: Checke
             }
         elseif held >= game.copies(c) then
             return {
-                kind = "copies",
+                kind = SetupProblemKind.copies,
                 chip = c,
                 used = held,
                 limit = game.copies(c),
@@ -227,24 +227,24 @@ function folder_rules.view(game: FolderRules, stats: Navi, setup: any, f: Checke
         elseif is_dark(c) then
             if dark_limit ~= nil and counts.dark >= dark_limit then
                 return {
-                    kind = "dark",
+                    kind = SetupProblemKind.dark,
                     chip = c,
                     used = counts.dark,
                     limit = dark_limit,
                     text = string.format("%d dark chips already, of %d", counts.dark, dark_limit),
                 }
             end
-        elseif c.class == "mega" and counts.mega >= stats.mega_level then
+        elseif c.class == ChipClass.mega and counts.mega >= stats.mega_level then
             return {
-                kind = "mega",
+                kind = SetupProblemKind.mega,
                 chip = c,
                 used = counts.mega,
                 limit = stats.mega_level,
                 text = string.format("%d Mega chips already, of the navi's %d", counts.mega, stats.mega_level),
             }
-        elseif c.class == "giga" and counts.giga >= stats.giga_level then
+        elseif c.class == ChipClass.giga and counts.giga >= stats.giga_level then
             return {
-                kind = "giga",
+                kind = SetupProblemKind.giga,
                 chip = c,
                 used = counts.giga,
                 limit = stats.giga_level,
@@ -316,14 +316,14 @@ function folder_rules.validate(game: FolderRules, side: number, setup: any, prob
     if setup.regular_chip ~= nil then
         regular = place[setup.regular_chip]
         if regular == nil then
-            problem({ kind = "regular_entry", field = "folder", text = "folder: the Regular chip isn't a chip of the folder" })
+            problem({ kind = SetupProblemKind.regular_entry, field = "folder", text = "folder: the Regular chip isn't a chip of the folder" })
         end
     end
     local tags: { number }? = nil
     local t: { number } = if game.tag_memory ~= nil then setup.tag_chips else {}
     if #t == 2 then
         if place[t[1]] == nil or place[t[2]] == nil then
-            problem({ kind = "tag_entries", field = "folder", text = "folder: the tag chips aren't chips of the folder" })
+            problem({ kind = SetupProblemKind.tag_entries, field = "folder", text = "folder: the tag chips aren't chips of the folder" })
         else
             tags = { place[t[1]], place[t[2]] }
         end

@@ -44,7 +44,7 @@ function sparkles.make(look: SparklesLook): Sparkles
         local left = me.timer - 1
         if left <= 0 then
             me.timer = bit32.band(left, 0xFFFF)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         me.timer = left
@@ -65,20 +65,20 @@ function sparkles.make(look: SparklesLook): Sparkles
     end
     local kind = new.kind {
         id = look.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = state,
         -- `sub_80E19BC`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 -- `sub_80E19DC` (EXE4's 0x080E3348 keeps its object's position).
                 local s = me.state :: State
                 me.timer = s.ticks
                 if look.stays then
                     s.at = (me.related1 :: Object).pos
                 end
-                me:set_lifecycle("update")
-            elseif l == "update" then
+                me:enter_update()
+            elseif l == Lifecycle.update then
                 if me.action ~= 0 then
                     error(string.format("sparkles action %#x reads past off_80E1A08", me.action))
                 end

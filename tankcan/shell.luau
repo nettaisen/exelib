@@ -40,7 +40,7 @@ local FIRST_EXPLOSION, EXPLOSION_INTERVAL, EXPLOSION_Z = 0xE, 4, 0x6_0000
 -- Done: off its panels, and freed at the next update.
 local function finish(me: Object)
     me.collision:set_region(nil)
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- The edge blast (`sub_80CB7BC`'s end), over (x, y): the last column the shell crossed.
@@ -120,7 +120,7 @@ local function explode(me: Object, look: Look, s: State)
     n -= 1
     me.timer2 = n
     if n < 0 then
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 end
 
@@ -162,7 +162,7 @@ local function init(me: Object, look: Look)
     me.collision:set_hit_effect(nil)
     me.collision:present()
     me.timer2 = WAIT
-    me:set_lifecycle("update")
+    me:enter_update()
     tick(me, look)
     battle.play_sound(look.sound)
 end
@@ -171,17 +171,17 @@ end
 function shell.make_kind(id: string, look: Look): Kind
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { hit_mod = schema.u8, cracks = schema.bool, shift = schema.u8, spots = schema.array(schema.u8, 3) },
         -- `sub_80CB6F8`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
                 if not me.active then
                     return
                 end
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, look)
             else
                 me:destroy()

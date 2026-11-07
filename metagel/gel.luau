@@ -129,7 +129,7 @@ function gel.make(look: Look): Gel
         if battle.over() then
             gone(me)
             -- (EXE5's 0x080CE0C6: the state byte alone.)
-            me.lifecycle = "destroy"
+            me.lifecycle = Lifecycle.destroy
             return
         end
         local a = me.action
@@ -158,7 +158,7 @@ function gel.make(look: Look): Gel
                 gone(me)
                 puff(me)
                 -- (EXE5's 0x080CE206: the state byte alone.)
-                me.lifecycle = "destroy"
+                me.lifecycle = Lifecycle.destroy
             end
         else
             error(string.format("MetaGel's gel action %#x reads past its table", a))
@@ -168,26 +168,26 @@ function gel.make(look: Look): Gel
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { holder = schema.object, slot = schema.u8 },
         -- EXE5's 0x080CE02C.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 -- EXE5's 0x080CE04C: high over its panel.
                 me.visible = true
                 local sprite = me.sprite
                 sprite:load(look.sprite)
-                sprite.shadow = "with_sprite"
+                sprite.shadow = Shadow.with_sprite
                 sprite:face(me)
                 me.anim, me.anim_loaded = 0, 0xFF
                 me.vel = Vec3.new(me.vel.x, me.vel.y, DROP)
                 local cx, cy = field.center(me.panel_x, me.panel_y)
                 me.pos = Vec3.new(cx, cy, START_Z)
                 battle.play_sound(look.drop)
-                me:set_lifecycle("update")
+                me:enter_update()
                 tick(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:free()

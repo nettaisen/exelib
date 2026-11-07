@@ -145,7 +145,7 @@ function doll.make(look: DollLook): Doll
         me.collision:set_region(nil)
         me:unreserve_panel(me.future_panel_x, me.future_panel_y)
         me.visible = false
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- An effect `up` pixels (16.16) over it.
@@ -208,16 +208,16 @@ function doll.make(look: DollLook): Doll
     local function leave_exe6(me: Object)
         local s = me.state :: State
         local blink = obstacle.blink_out(me)
-        if blink == "blinking" then
+        if blink == BlinkOut.blinking then
             return
-        elseif blink == "done" or me.status.carried then
+        elseif blink == BlinkOut.done or me.status.carried then
             go(me)
             return
         end
         local how = obstacle.removal(me)
-        if how ~= "broken" then
+        if how ~= ObstacleRemoval.broken then
             local absorbed = look.absorbed
-            if how == "absorbed" and absorbed then
+            if how == ObstacleRemoval.absorbed and absorbed then
                 obstacle.fly_to_absorber(me, absorbed)
                 go(me)
             else
@@ -277,7 +277,7 @@ function doll.make(look: DollLook): Doll
         end
         me.phase, me.phase_init = CURSING, 0
         me.visible = false
-        if obstacle.removal(me) ~= "broken" then
+        if obstacle.removal(me) ~= ObstacleRemoval.broken then
             effect_up(me, look.puff, CURSE_PUFF_UP)
         else
             effect_up(me, exe5.flash, PUFF_UP)
@@ -295,7 +295,7 @@ function doll.make(look: DollLook): Doll
         obstacle.unregister(me)
         me.collision:set_region(nil)
         me:unreserve_panel(me.future_panel_x, me.future_panel_y)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- Action 2 (EXE6's `sub_80D4888`, EXE5's 0x080D57D4): by phase.
@@ -341,7 +341,7 @@ function doll.make(look: DollLook): Doll
     local function tick(me: Object)
         local s = me.state :: State
         me.visible = true
-        obstacle.take_hits(me, "keeps_damage")
+        obstacle.take_hits(me, ObstaclePush.keeps_damage)
         me:hit_spark()
         obstacle.tick_lifetime(me)
         local c = me.collision
@@ -353,7 +353,7 @@ function doll.make(look: DollLook): Doll
             s.damage_taken = taken
             c:set_region(nil)
         end
-        local a = obstacle.react(me, look.crush or "breaks")
+        local a = obstacle.react(me, look.crush or ObstacleCrush.breaks)
         if a then
             local action = ACTIONS[a]
             if not action then
@@ -371,7 +371,7 @@ function doll.make(look: DollLook): Doll
         me.visible = true
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me.anim, me.anim_loaded = 1, 0
         sprite:set_animation(1)
         sprite:step()
@@ -391,13 +391,13 @@ function doll.make(look: DollLook): Doll
         me.collision:set_region(nil)
         me.collision:set_hit_effect(look.spark)
         me.collision:present()
-        me.lifecycle = "update"
+        me.lifecycle = Lifecycle.update
         tick(me)
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = {
             target_x = schema.u8,
             target_y = schema.u8,
@@ -408,9 +408,9 @@ function doll.make(look: DollLook): Doll
         -- EXE6's `sub_80D46B8`, EXE5's 0x080D5618.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()
@@ -433,7 +433,7 @@ function doll.make(look: DollLook): Doll
                     o.damage_word = damage
                     o.alliance, o.flip = user.alliance, user.flip
                     o.run_while_dimmed = true
-                    obstacle.register(o, user.alliance, "one_a_side")
+                    obstacle.register(o, user.alliance, ObstacleClass.one_a_side)
                 end
                 return o
             end,

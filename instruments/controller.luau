@@ -49,7 +49,7 @@ function instruments.make(
 
     local kind = new.kind {
         id = id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { instrument = instrument.INSTRUMENT },
         update = dimming_chips.phases { name = "the instrument chips", effect = effect },
     }

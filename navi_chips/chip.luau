@@ -83,7 +83,7 @@ function chip.maker(game: Game): (spec: Spec) -> NaviChip
             -- chip's action registers as the side's dimming.
             hook = function(user: Object, dspec: DimmingChipSpec): Object?
                 local trap = battle.linked(battle.other_side(user.alliance)).chip
-                if trap and trap.trap == "anti_recovery" then
+                if trap and trap.trap == TrapKind.anti_recovery then
                     return navi_chip.spring_anti_recovery(user, counterattack(dspec.damage), true)
                 end
                 return brings(user, dspec)

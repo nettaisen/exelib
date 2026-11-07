@@ -74,7 +74,7 @@ function pile.make_kind(look: Look): Kind
         if count_down(me) then
             if (me.state :: State).distance == NONE then
                 release(me)
-                me:set_lifecycle("destroy")
+                me:enter_destroy()
                 return
             end
             me:set_action(8)
@@ -104,7 +104,7 @@ function pile.make_kind(look: Look): Kind
         end
         if count_down(me) then
             release(me)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
@@ -127,7 +127,7 @@ function pile.make_kind(look: Look): Kind
         local sprite = me.sprite
         sprite:load(look.sprite)
         -- sprite_noShadow: the first part is drawn with the sprite.
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim, me.anim_loaded = 0, 0xFF
         sprite:set_animation(0xFF)
         sprite:step()
@@ -135,19 +135,19 @@ function pile.make_kind(look: Look): Kind
         sprite:face(me)
         me:set_coordinates_from_panel()
         me.pos = Vec3.new(me.pos.x, me.pos.y, 0)
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     return new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { controller = schema.object, slot = schema.u8, distance = schema.u8 },
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

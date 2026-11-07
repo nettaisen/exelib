@@ -103,7 +103,7 @@ function hook.make(spec: Spec): {
         local left = me.timer - 1
         me.timer = left
         if left <= 0 then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
@@ -123,15 +123,15 @@ function hook.make(spec: Spec): {
 
     local kind = new.kind {
         id = spec.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { flames = FLMHOOK_FLAMES, controller = schema.object },
         -- `sub_80EA010`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
-                me:set_lifecycle("update")
+            if l == Lifecycle.init then
+                me:enter_update()
                 tick(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 -- sub_80EA10A: through its controller's flag, 0: the

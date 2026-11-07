@@ -57,7 +57,7 @@ function heart.make(spec: Spec): Heart
             if spec.heals_side_navi then
                 local navi = battle.player(me.alliance)
                 if not navi then
-                    me:set_lifecycle("destroy")
+                    me:enter_destroy()
                     return
                 end
                 user = navi
@@ -80,7 +80,7 @@ function heart.make(spec: Spec): Heart
         if left ~= 0 then
             return
         end
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     local ACTIONS = { [0] = sink, [4] = heal }
@@ -104,24 +104,24 @@ function heart.make(spec: Spec): Heart
         me.anim_loaded = 0
         sprite:set_animation(spec.anim)
         sprite:step()
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me:set_coordinates_from_panel()
         local p = me.pos
         me.pos = Vec3.new(p.x, p.y, HEIGHT * 0x10000)
         me.timer = 0
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     local kind = new.kind {
         id = spec.id,
-        pool = "attack",
+        pool = Pool.attack,
         -- `sub_80CE118`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:free()

@@ -34,17 +34,17 @@ end
 function marker.make_kind(look: LifeSyncMarkerLook): Kind
     return new.kind {
         id = look.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { ticks = schema.u8 },
         -- `sub_80E76F8`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 -- sub_80E7718: animation 0xB, stepped once, its palette (EXE4's: on its panel, at its height); on at
                 -- once.
                 local s = me.sprite
                 s:load(look.sprite)
-                s.shadow = "with_sprite"
+                s.shadow = Shadow.with_sprite
                 me.anim, me.anim_loaded = ANIM, ANIM
                 s:set_animation(ANIM)
                 s:step()
@@ -55,9 +55,9 @@ function marker.make_kind(look: LifeSyncMarkerLook): Kind
                     local p = me.pos
                     me.pos = Vec3.new(p.x, p.y, look.height)
                 end
-                me:set_lifecycle("update")
+                me:enter_update()
                 tick(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:free()

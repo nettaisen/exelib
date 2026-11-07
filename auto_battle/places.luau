@@ -151,7 +151,7 @@ function places.validate(stated: { Place }, problem: (p: SetupProblem) -> ())
         local things = (if p.chip ~= nil then 1 else 0) + (if p.pattern > 0 then 1 else 0) + (if p.zero then 1 else 0)
         if things > 1 then
             problem({
-                kind = "invalid",
+                kind = SetupProblemKind.invalid,
                 field = "auto_battle_places",
                 entry = i,
                 text = string.format("%s is a chip, a pattern or a 0, not more", where),
@@ -159,7 +159,7 @@ function places.validate(stated: { Place }, problem: (p: SetupProblem) -> ())
         end
         if p.pattern > places.RECORDS then
             problem({
-                kind = "range",
+                kind = SetupProblemKind.range,
                 field = "auto_battle_places",
                 entry = i,
                 value = p.pattern,
@@ -170,9 +170,9 @@ function places.validate(stated: { Place }, problem: (p: SetupProblem) -> ())
         end
         local chip: Chip? = p.chip
         if chip ~= nil then
-            if list.own_class and chip.class ~= list.name then
+            if list.own_class and chip.class ~= (ChipClass :: { [string]: ChipClass })[list.name] then
                 problem({
-                    kind = "chip_not_allowed",
+                    kind = SetupProblemKind.chip_not_allowed,
                     field = "auto_battle_places",
                     entry = i,
                     chip = chip,
@@ -180,7 +180,7 @@ function places.validate(stated: { Place }, problem: (p: SetupProblem) -> ())
                         "%s holds %s, a chip of class `%s`: the list holds `%s` chips alone",
                         where,
                         battle.name(chip),
-                        chip.class or "none",
+                        if chip.class then tostring(chip.class) else "none",
                         list.name
                     ),
                 })
@@ -189,7 +189,7 @@ function places.validate(stated: { Place }, problem: (p: SetupProblem) -> ())
             -- table.)
             if (chip :: any).auto_battle == nil then
                 problem({
-                    kind = "chip_not_allowed",
+                    kind = SetupProblemKind.chip_not_allowed,
                     field = "auto_battle_places",
                     entry = i,
                     chip = chip,

@@ -77,7 +77,7 @@ local function spring(me: Object, look: ElemTrapLook)
         dimming.start(user.alliance, true, counter, user, { chip = s.chip, bonus = s.bonus })
     end
     battle.clear_linked(me.alliance)
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- `sub_80CE034`: the first of fire, aqua, elec and wood with damage this
@@ -145,7 +145,7 @@ local function init(me: Object, look: ElemTrapLook)
     me.collision:present()
     local s = me.state :: State
     s.armed = false
-    me:set_lifecycle("update")
+    me:enter_update()
     tick(me, look)
     s.armed = true
 end
@@ -154,14 +154,14 @@ end
 function trap.make_kind(id: string, look: ElemTrapLook): Kind
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { chip = schema.chip, bonus = schema.u16, armed = schema.bool, sprung_by = { "null", "fire", "aqua", "elec", "wood" } },
         -- `sub_80CDF84`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, look)
             else
                 me:destroy()

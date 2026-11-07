@@ -98,7 +98,7 @@ function flame.make_kind(look: Look): ElemFlame
         end
         if ended then
             c:set_region(nil)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             me.visible = false
             return
         end
@@ -131,7 +131,7 @@ function flame.make_kind(look: Look): ElemFlame
         me.visible = true
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim, me.anim_loaded = 0, 0xFF
         sprite:face(me)
         me:set_coordinates_from_panel()
@@ -150,7 +150,7 @@ function flame.make_kind(look: Look): ElemFlame
         me.collision:set_hit_effect(look.spark(me.element))
         me.collision:set_region(nil)
         me.collision:present()
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
@@ -160,7 +160,7 @@ function flame.make_kind(look: Look): ElemFlame
     end
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = {
             count = schema.u8,
             spread = schema.bool,
@@ -178,12 +178,12 @@ function flame.make_kind(look: Look): ElemFlame
         -- its collision holds, with any of Param4's flags or a panel type to leave: the game tests the whole byte).
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
                 if not me.active then
                     return
                 end
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 -- EXE5's 0x080138F2, EXE4's 0x08010560: its collision, then itself, freed.

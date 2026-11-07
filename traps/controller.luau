@@ -68,7 +68,7 @@ local TRAP = schema.record_type("trap")
 function traps.make_kind(id: string): Kind
     return new.kind {
         id = id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { chip = schema.chip, bonus = schema.u16, trap = TRAP },
         -- `sub_80E34C0`.
         update = dimming_chips.phases { name = "a trap chip", effect = effect, hidden = true },

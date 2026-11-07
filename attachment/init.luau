@@ -51,7 +51,7 @@ local function init(me: Object, lifted: Lifted?)
     local owner = me.related1 :: Object
     local sprite = me.sprite
     sprite:load(k.sprite)
-    sprite.shadow = "with_sprite"
+    sprite.shadow = Shadow.with_sprite
     sprite.palette = k.palette + s.palette_add
     me.no_sprite_update = false
     local identity = owner.identity
@@ -77,7 +77,7 @@ local function init(me: Object, lifted: Lifted?)
     elseif k.attach_point then
         x, z = owner:attach_point(k.attach_point)
     end
-    me:set_lifecycle("update")
+    me:enter_update()
     slot.follow(me, owner, s.slot, {
         offset = Vec3.new(x * 0x10000, -lift, z * 0x10000 - lift),
         looks = WORN,
@@ -90,7 +90,7 @@ end
 function attachment.make_kind(id: string, lifted: Lifted?): Kind
     return new.kind {
         id = id,
-        pool = "actor",
+        pool = Pool.actor,
         state = {
             slot = slot.TYPE,
             look = ATTACHMENT_LOOK,
@@ -99,7 +99,7 @@ function attachment.make_kind(id: string, lifted: Lifted?): Kind
             palette_add = schema.u8,
         },
         update = function(me: Object)
-            if me.lifecycle == "init" then
+            if me.lifecycle == Lifecycle.init then
                 init(me, lifted)
             else
                 me:free()
@@ -138,7 +138,7 @@ end
 function attachment.holder(kind: Kind, arm_anims: { number }, players_only: boolean?): (me: Object, look: AttachmentLook, which: Slot) -> ()
     return function(me: Object, look: AttachmentLook, which: Slot)
         local anim = 0
-        if not players_only or me.actor_type == "player" then
+        if not players_only or me.actor_type == ActorType.player then
             local a = arm_anims[me.ai_index + 1]
             if a == nil then
                 error(string.format("AI index %d reads past the arms' table", me.ai_index))

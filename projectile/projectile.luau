@@ -66,7 +66,7 @@ end
 -- `object_clearCollisionRegion`, then the end (the next update frees it).
 local function finish(me: Object)
     me.collision:set_region(nil)
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- `sub_80C5050` and `sub_80C5014`: the burst on (x, y): the effect over
@@ -173,7 +173,7 @@ local function init(me: Object, look: Look)
     if sprite then
         me.sprite:load(sprite)
         -- sprite_noShadow
-        me.sprite.shadow = "with_sprite"
+        me.sprite.shadow = Shadow.with_sprite
         me.visible = true
         me.anim = v.anim or 0
         me.anim_loaded = 0xFF
@@ -197,7 +197,7 @@ local function init(me: Object, look: Look)
         c.bug, c.bug_arg = bug, v.bug_arg or 0
     end
     c:present()
-    me:set_lifecycle("update")
+    me:enter_update()
     tick(me, look)
 end
 
@@ -205,17 +205,17 @@ end
 function projectile.make_kind(look: Look): Kind
     return new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { variant = PROJECTILE_VARIANT, row = schema.i8 },
         -- `sub_80C4E58`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
                 if not me.active then
                     return
                 end
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, look)
             else
                 me:destroy()
@@ -225,7 +225,7 @@ function projectile.make_kind(look: Look): Kind
             -- In flight, its row's step taken, the engine flies it (`Object:fly`, the ticks `tick` would fly) until it
             -- hits, the battle is over or its step would leave the field: then `tick` runs again.
             local s = me.state :: State
-            if me.lifecycle == "update" and s.row == 0 then
+            if me.lifecycle == Lifecycle.update and s.row == 0 then
                 me:fly(s.variant.climbs == true)
             end
         end,

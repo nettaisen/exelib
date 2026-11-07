@@ -84,7 +84,7 @@ local function tick(me: Object, look: MoonBladeLook)
     local t = me.timer + 1
     me.timer = t
     if t > 9 then
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 end
 
@@ -93,12 +93,12 @@ local function init(me: Object, look: MoonBladeLook)
     local sprite = me.sprite
     sprite:load(look.sprite)
     sprite:set_animation(0)
-    sprite.shadow = "with_sprite"
+    sprite.shadow = Shadow.with_sprite
     me.anim = 0
     me.anim_loaded = 0
     sprite:face(me)
     me.visible = true
-    me:set_lifecycle("update")
+    me:enter_update()
     if look.ds then
         tick(me, look)
     end
@@ -108,14 +108,14 @@ end
 function blade.make_kind(id: string, look: MoonBladeLook): Kind
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { plain = schema.bool },
         -- `sub_80D5C48`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, look)
             else
                 me:destroy()

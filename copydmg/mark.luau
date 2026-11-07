@@ -73,7 +73,7 @@ end
 -- Gone: hidden, then freed.
 local function vanish(me: Object)
     me.visible = false
-    me:set_lifecycle("finish")
+    me:enter_finish()
 end
 
 -- A mark of `look`'s game: its kind and `spawn`.
@@ -96,7 +96,7 @@ function mark.make(look: CopyDamageMarkLook): CopyDamageMark
                 if look.over_navi == "position" then
                     me.pos = (me.related1 :: Object).pos
                 end
-                me:set_lifecycle("destroy")
+                me:enter_destroy()
                 return
             end
             return vanish(me)
@@ -177,7 +177,7 @@ function mark.make(look: CopyDamageMarkLook): CopyDamageMark
             me.anim_loaded = 0xFF
         end
         sprite:set_animation(look.anim)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         sprite:step()
         me:set_coordinates_from_panel()
         me.vel = Vec3.new(me.facing, me.vel.y, me.vel.z)
@@ -188,23 +188,23 @@ function mark.make(look: CopyDamageMarkLook): CopyDamageMark
         end
         me:setup_collision(look.is, look.hits, {})
         me.collision:present()
-        me:set_lifecycle("update")
+        me:enter_update()
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         -- `sub_80C8FFC` (EXE5's 0x080C9A6C, EXE4's 0x080D1C24).
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
                 if not me.active then
                     return
                 end
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 fly(me)
-            elseif l == "destroy" then
+            elseif l == Lifecycle.destroy then
                 marking(me)
             else
                 me:destroy()

@@ -81,22 +81,22 @@ function batch.make(spec: SnakeBatchSpec): SnakeBatch
             end
         end
         if s.flags == 0 then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
     local nest = new.kind {
         id = spec.nest_id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { scan_x = schema.u8, scan_y = schema.u8, flags = schema.u32, holder = schema.object },
         -- EXE5's 0x080D0380 (EXE6's `sub_80D2BDC`).
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 me:set_coordinates_from_panel()
-                me:set_lifecycle("update")
+                me:enter_update()
                 nest_tick(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 nest_tick(me)
             else
                 -- The holder goes on; freed.
@@ -148,7 +148,7 @@ function batch.make(spec: SnakeBatchSpec): SnakeBatch
 
     local controller = new.kind {
         id = spec.controller_id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { bonus = schema.u16, busy = schema.bool },
         update = dimming_chips.phases { name = "Snake", effect = effect },
     }

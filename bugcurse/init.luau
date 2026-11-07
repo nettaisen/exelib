@@ -96,7 +96,7 @@ function bugcurse.make(look: BugCurseLook): (user: Object, spec: DimmingChipSpec
         me.timer = int.u16(left)
         if left <= 0 then
             release(me)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
@@ -115,7 +115,7 @@ function bugcurse.make(look: BugCurseLook): (user: Object, spec: DimmingChipSpec
     local function init(me: Object)
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim, me.anim_loaded = 0, 0xFF
         sprite:set_animation(0)
         sprite:step()
@@ -123,20 +123,20 @@ function bugcurse.make(look: BugCurseLook): (user: Object, spec: DimmingChipSpec
         sprite:face(me)
         me:set_coordinates_from_panel()
         battle.play_sound(look.sound)
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     local curse = new.kind {
         id = look.curse_id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { controller = schema.object },
         -- EXE5's 0x080D6534.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()
@@ -191,7 +191,7 @@ function bugcurse.make(look: BugCurseLook): (user: Object, spec: DimmingChipSpec
 
     local controller = new.kind {
         id = look.controller_id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { waiting = schema.bool },
         -- EXE5's 0x080E6AC8.
         update = dimming_chips.phases { name = "BugCurse", effect = effect },

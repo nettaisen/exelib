@@ -34,7 +34,7 @@ local GAP = 8
 local function stop(me: Object)
     me.collision:set_region(nil)
     me.visible = false
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- `sub_80D907C`: a panel on (its X velocity is a panel step, ±1).
@@ -73,7 +73,7 @@ function burst.make_kind(id: string, look: HyperBurstShotLook): Kind
         me.timer2 = left
         if left == 0 then
             me.collision:set_region(nil)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         me.timer = GAP
@@ -145,19 +145,19 @@ function burst.make_kind(id: string, look: HyperBurstShotLook): Kind
             me.collision.status_base = status
         end
         me.collision:present()
-        me:set_lifecycle("update")
+        me:enter_update()
     end
 
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { bursting = schema.bool, bursts = schema.u16 },
         -- `sub_80D8FC4` (it has no sprite).
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

@@ -44,7 +44,7 @@ function controller.make(spec: Spec): { kind: Kind, hook: (barrier: Barrier) -> 
 
     local kind = new.kind {
         id = spec.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { barrier = BARRIER },
         update = dimming_chips.phases { name = "the barrier chips", effect = effect },
     }

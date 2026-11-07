@@ -64,7 +64,7 @@ function controller.make(spec: Spec): Controller
 
     local kind = new.kind {
         id = spec.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { change = quake.GEDDON_CHANGE, busy = schema.bool },
         -- EXE6's `sub_80E24E4`.
         update = dimming_chips.phases { name = spec.name, effect = effect },

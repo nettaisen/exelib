@@ -62,7 +62,7 @@ local function fade(me: Object)
     local t = me.timer - 1
     me.timer = t
     if t < 0 then
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 end
 
@@ -105,7 +105,7 @@ function shield.make(spec: {
         local l = (me.state :: State).look
         local sprite = me.sprite
         sprite:load(l.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.visible = true
         me.anim = l.anim
         me.anim_loaded = 0xFF
@@ -114,20 +114,20 @@ function shield.make(spec: {
         sprite:face(me)
         battle.play_sound(spec.sound)
         me.vel = me.pos
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     local kind = new.kind {
         id = spec.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { slot = slot.TYPE, look = REFLECTOR_SHIELD_LOOK },
         -- `sub_80C96A0`: the state, then the sprite unless dimmed.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 -- object_freeMemory

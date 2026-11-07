@@ -70,7 +70,7 @@ function black_bomb.finish(me: Object)
     obstacle.release_tracking(me)
     obstacle.unregister(me)
     me:unreserve_panel(me.future_panel_x, me.future_panel_y)
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- Out of the field-object registry (and its tracking, where the game has it).
@@ -130,7 +130,7 @@ local function fly(me: Object, look: Look)
     if look.tracked then
         obstacle.release_tracking(me)
     end
-    me.lifecycle = "destroy"
+    me.lifecycle = Lifecycle.destroy
 end
 
 -- `sub_80CD6FC`: set down, nothing to do.
@@ -161,7 +161,7 @@ local function tick(me: Object, k: Kinded)
     if not (me.state :: State).placed then
         obstacle.tick_lifetime(me)
     end
-    local a = obstacle.react(me, k.crush, "always")
+    local a = obstacle.react(me, k.crush, ObstacleHold.always)
     if a then
         local action = k.actions[a]
         if not action then
@@ -212,7 +212,7 @@ local function init(me: Object, s: State, k: Kinded)
     sprite:load(k.sprite)
     me.anim, me.anim_loaded = 0, 0
     sprite:set_animation(0)
-    sprite.shadow = "ground"
+    sprite.shadow = Shadow.ground
     if k.identity then
         me.identity = k.identity
     end
@@ -248,7 +248,7 @@ local function init(me: Object, s: State, k: Kinded)
     me.collision:set_region(nil)
     me.collision:set_hit_effect(k.spark)
     me.collision:present()
-    me.lifecycle = "update"
+    me.lifecycle = Lifecycle.update
     tick(me, k)
 end
 
@@ -295,14 +295,14 @@ function black_bomb.make_kind(id: string, look: Look): Kind
     }
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { angle = schema.u8, set_off = schema.bool, placed = schema.bool, target_x = schema.u8, target_y = schema.u8 },
         -- `sub_80CD4EC`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, me.state :: State, k)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, k)
             elseif k.bursts_as_freed then
                 -- `sub_80CD78E`.
@@ -339,7 +339,7 @@ function black_bomb.thrower(bomb_kind: Kind): Thrower
                 o.damage_word = damage
                 o.alliance = user.alliance
                 o.run_while_dimmed = true
-                obstacle.register(o, user.alliance, "one_a_side")
+                obstacle.register(o, user.alliance, ObstacleClass.one_a_side)
             end
             return o
         end,

@@ -52,7 +52,7 @@ function ball.make(look: CannonballLook, aim: Trajectory): Cannonball
         local x, y = me.panel_x, me.panel_y
         if not field.solid(x, y) then
             battle.effect(me.pos, look.puff)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         -- (Its region once landed, by its kind: one panel.)
@@ -71,12 +71,12 @@ function ball.make(look: CannonballLook, aim: Trajectory): Cannonball
         if battle.over() then
             battle.effect(me.pos, look.puff)
             me.collision:set_region(nil)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         if me.collision.hit then
             me.collision:set_region(nil)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         local a = me.action
@@ -86,7 +86,7 @@ function ball.make(look: CannonballLook, aim: Trajectory): Cannonball
             -- EXE5's 0x080CB7A4.
             me.collision:set_region(nil)
             me.visible = false
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         else
             error(string.format("the cannonball's action %#x reads past its table", a))
         end
@@ -95,16 +95,16 @@ function ball.make(look: CannonballLook, aim: Trajectory): Cannonball
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { target_x = schema.u8, target_y = schema.u8 },
         -- EXE5's 0x080CB5C8.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 -- EXE5's 0x080CB5EC.
                 local sprite = me.sprite
                 sprite:load(look.sprite)
-                sprite.shadow = "ground"
+                sprite.shadow = Shadow.ground
                 me.visible = true
                 me.anim, me.anim_loaded = ANIM, ANIM
                 sprite:set_animation(ANIM)
@@ -118,9 +118,9 @@ function ball.make(look: CannonballLook, aim: Trajectory): Cannonball
                 me.collision:set_hit_effect(nil)
                 me.collision:set_region(nil)
                 me.collision:present()
-                me:set_lifecycle("update")
+                me:enter_update()
                 tick(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

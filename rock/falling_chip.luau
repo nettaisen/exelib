@@ -29,14 +29,14 @@ function falling_chip.make_kind(id: string, sprite: SpriteAsset): Chips
         me.visible = true
         local sp = me.sprite
         sp:load(sprite)
-        sp.shadow = "ground"
+        sp.shadow = Shadow.ground
         me.anim = 1
         sp:set_animation(1)
         sp:step()
         sp.priority = s.priority
         me.timer = 10
         sp:face(me)
-        me:set_lifecycle("update")
+        me:enter_update()
     end
 
     -- EXE6's `sub_80E1028`, EXE4's 0x080E299C: fly and fall; under the ground, on to blinking.
@@ -81,14 +81,14 @@ function falling_chip.make_kind(id: string, sprite: SpriteAsset): Chips
 
     local kind = new.kind {
         id = id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { priority = schema.u8 },
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, me.state :: State)
                 tick(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:free()

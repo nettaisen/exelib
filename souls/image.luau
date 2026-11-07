@@ -22,7 +22,7 @@ end
 -- The look of a navi that wears a body overlay's part (an identity of its own wears it): put on as the image comes, its
 -- sprite stepping even while paused, and taken off as it goes.
 function image.wearing(sprite: SpriteAsset, part: BodyPart): SoulImage
-    local worn = new.identity { class = "navi", parts = { body = part } }
+    local worn = new.identity { class = IdentityClass.navi, parts = { body = part } }
     return image.look {
         sprite = sprite,
         put_on = function(me: Object)
@@ -44,7 +44,7 @@ export type State = {
 export type Spec = {
     -- The kind's id, and the pool it is of.
     id: string,
-    pool: "actor" | "effect",
+    pool: Pool,
     -- The sound as it comes (EXE5's 0x080C03E8, EXE4's 0x080E369A).
     sound: Sound,
     -- The game's sine table (its rules/math's: 384 values, the cosine 64 on).
@@ -150,7 +150,7 @@ function image.make(spec: Spec): Image
             if take_off ~= nil then
                 take_off(me)
             end
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         me.sprite.alpha = me.timer * 2
@@ -175,7 +175,7 @@ function image.make(spec: Spec): Image
         local look = look_of(me)
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "hidden"
+        sprite.shadow = Shadow.hidden
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
         me:update_sprite()
@@ -189,7 +189,7 @@ function image.make(spec: Spec): Image
         if look.put_on ~= nil then
             look.put_on(me)
         end
-        me:set_lifecycle("update")
+        me:enter_update()
         if spec.ticks_at_init then
             tick(me)
         end
@@ -202,9 +202,9 @@ function image.make(spec: Spec): Image
         -- EXE5's 0x080C0394, EXE4's 0x080E361C
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

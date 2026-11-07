@@ -128,7 +128,7 @@ function bomb.make(look: BoyBombLook): BoyBomb
         end
         obstacle.unregister(me)
         me.collision:set_region(nil)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- EXE5's 0x080CCF9C: standing (phase 0), or counting down (4).
@@ -150,7 +150,7 @@ function bomb.make(look: BoyBombLook): BoyBomb
         end
         local p = me.pos
         local removed = look.removed
-        if removed and obstacle.removal(me) == "removed" then
+        if removed and obstacle.removal(me) == ObstacleRemoval.removed then
             battle.effect(Vec3.new(p.x, p.y, p.z + 0xC_0000), removed)
         else
             battle.play_sound(look.break_sound)
@@ -161,7 +161,7 @@ function bomb.make(look: BoyBombLook): BoyBomb
         if look.releases_tracking then
             obstacle.release_tracking(me)
         end
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     local actions: { [number]: (Object) -> () } = { [APPEAR] = appear, [DESTROYED] = destroyed, [IDLE] = idle }
@@ -201,7 +201,7 @@ function bomb.make(look: BoyBombLook): BoyBomb
         local sprite = me.sprite
         sprite:load(look.sprite)
         -- (`sprite_noShadow`: the first part is drawn with the sprite.)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.visible = true
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
@@ -230,19 +230,19 @@ function bomb.make(look: BoyBombLook): BoyBomb
             me.future_panel_x, me.future_panel_y = me.panel_x, me.panel_y
             me:reserve_panel(me.panel_x, me.panel_y)
         end
-        me:set_lifecycle("update")
+        me:enter_update()
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { doomed = schema.bool, hit = schema.bool, last_hp = schema.u16 },
         -- EXE5's 0x080CCDF4.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 -- EXE5's 0x080CCE14 (its holder's record, a Param1 0 bomb's, isn't kept here).
@@ -265,7 +265,7 @@ function bomb.make(look: BoyBombLook): BoyBomb
                 o.flip = controller.flip
             end
             o.run_while_dimmed = true
-            obstacle.register(o, o.alliance, "two_a_side")
+            obstacle.register(o, o.alliance, ObstacleClass.two_a_side)
         end
         return o
     end

@@ -40,7 +40,7 @@ function controller.make(spec: Spec): (Object, DimmingChipSpec) -> Object?
 
     local kind = new.kind {
         id = spec.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { busy = schema.bool },
         update = dimming_chips.phases { name = "NrthWind", effect = effect },
     }

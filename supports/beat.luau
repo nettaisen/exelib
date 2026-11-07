@@ -108,7 +108,7 @@ function beat.make(look: BeatLook): SupportActor
             if me.timer ~= 0 then
                 return
             end
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         else
             error(string.format("Beat's phase %#x reads past its table (off_80C356C)", p))
         end
@@ -121,13 +121,13 @@ function beat.make(look: BeatLook): SupportActor
     local function init(me: Object)
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
         sprite:face(me)
         me.visible = true
         place(me)
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
@@ -135,9 +135,9 @@ function beat.make(look: BeatLook): SupportActor
     -- does nothing).
     local function update(me: Object)
         local l = me.lifecycle
-        if l == "init" then
+        if l == Lifecycle.init then
             init(me)
-        elseif l == "update" then
+        elseif l == Lifecycle.update then
             tick(me)
         else
             -- sub_80C36A0: the controller's flag cleared, gone.
@@ -151,7 +151,7 @@ function beat.make(look: BeatLook): SupportActor
 
     local kind = new.kind {
         id = look.id,
-        pool = "actor",
+        pool = Pool.actor,
         update = update,
     }
 

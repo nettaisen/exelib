@@ -23,7 +23,7 @@ local function linger(me: Object, look: ImmobilizerLook)
         if look.sprite then
             me.visible = false
         end
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
     me.sprite:step()
 end
@@ -37,7 +37,7 @@ local function init(me: Object, look: ImmobilizerLook)
     if mark then
         local sprite = me.sprite
         sprite:load(mark)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         sprite.under_objects = true
         me.anim, me.anim_loaded = look.anim or 0, look.anim or 0
         sprite:set_animation(look.anim or 0)
@@ -62,7 +62,7 @@ local function init(me: Object, look: ImmobilizerLook)
         status = look.status,
     })
     battle.play_sound(look.sound)
-    me:set_lifecycle("update")
+    me:enter_update()
     linger(me, look)
 end
 
@@ -70,13 +70,13 @@ end
 function immobilizer.make_kind(id: string, look: ImmobilizerLook): Kind
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         -- `sub_80CC044`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 linger(me, look)
             else
                 me:free()

@@ -174,7 +174,7 @@ export type Grab = {
 function grab.make(spec: Spec): Grab
     local kind = new.kind {
         id = spec.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { bonus = schema.u16, whole_column = schema.bool },
         update = dimming_chips.phases {
             name = "AreaGrab",

@@ -89,7 +89,7 @@ function scope.make(spec: Spec): Scope
         local s = me.state :: State
         local sprite = me.sprite
         sprite:load(if s.sight then spec.sight :: SpriteAsset else spec.scope)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
         sprite.palette = 0
@@ -106,7 +106,7 @@ function scope.make(spec: Spec): Scope
         me.visible = true
         local p = me.pos
         me.pos = Vec3.new(p.x, p.y, 0)
-        me:set_lifecycle("update")
+        me:enter_update()
         me.action = 4
     end
 
@@ -226,7 +226,7 @@ function scope.make(spec: Spec): Scope
         local left = me.timer - 1
         me.timer = int.u16(left)
         if left <= 0 then
-            me.lifecycle = "destroy"
+            me.lifecycle = Lifecycle.destroy
         end
     end
 
@@ -247,7 +247,7 @@ function scope.make(spec: Spec): Scope
 
     local kind = new.kind {
         id = spec.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = {
             sweep = schema.u8,
             sight = schema.bool,
@@ -261,10 +261,10 @@ function scope.make(spec: Spec): Scope
         -- 0x080E5208.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
                 tick(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:free()

@@ -66,7 +66,7 @@ function crack.make(look: Look): Crack
         local t = me.timer - 1
         me.timer = t
         if t < 0 then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
@@ -75,24 +75,24 @@ function crack.make(look: Look): Crack
         local sprite = me.sprite
         sprite:load(look.sprite)
         -- sprite_noShadow: the first part is drawn with the sprite.
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.visible = true
         me.anim, me.anim_loaded = 0, 0xFF
         me:set_coordinates_from_panel()
         sprite:face(me)
         battle.play_sound(look.sound)
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

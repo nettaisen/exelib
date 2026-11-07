@@ -37,7 +37,7 @@ end
 
 -- The mood: 0xFF is Full Synchro.
 local function mood(s: Navi, v: number)
-    s.mood = if v == 0xFF then "full_synchro" else v
+    s.mood = if v == 0xFF then Mood.full_synchro else v
 end
 
 -- The element, by its byte.
@@ -97,10 +97,10 @@ local function form(name: string): Write
     end
 end
 
-local GAUGES: { [number]: "normal" | "fast" | "slow" } = { [0] = "normal", [1] = "fast", [2] = "slow" }
+local GAUGES: { [number]: GaugeSpeed } = { [0] = GaugeSpeed.normal, [1] = GaugeSpeed.fast, [2] = GaugeSpeed.slow }
 
 local function gauge(s: Navi, v: number)
-    local g: ("normal" | "fast" | "slow")? = GAUGES[v]
+    local g: GaugeSpeed? = GAUGES[v]
     if not g then
         error(string.format("bug code sets the gauge speed to %d, which is not modeled", v))
     end
@@ -227,7 +227,7 @@ end
 
 -- The rules' `navi_bug`: "edited" where the stats changed (the abilities and form flags come back), "spared" where
 -- nothing may follow (not even the weapons' reload).
-local function navi_bug(game: Game, side: number, navi: Object): ("edited" | "spared")?
+local function navi_bug(game: Game, side: number, navi: Object): BugOutcome?
     local code, arg = navi.collision.inflicted_bug, navi.collision.inflicted_bug_arg
     local s = battle.navi(side)
     if code == 0 then
@@ -236,21 +236,21 @@ local function navi_bug(game: Game, side: number, navi: Object): ("edited" | "sp
         local name = if code == 0x18 then "hp_drain" else "custom_drain"
         local level = drained(game, s[name], arg)
         if level == nil then
-            return "spared"
+            return BugOutcome.spared
         end
         s[name] = level
-        return "edited"
+        return BugOutcome.edited
     elseif code == 0x54 then
         -- (A byte store of the halfword plus the argument.)
         local d = s.custom_damage
         s.custom_damage = bit32.bor(bit32.band(d, 0xFF00), bit32.band(d + arg, 0xFF))
-        return "edited"
+        return BugOutcome.edited
     end
     local special = game.specials[code]
     if special ~= nil then
         if special.kind == "blanks" then
             s.buster_blanks = 4
-            return "edited"
+            return BugOutcome.edited
         elseif special.kind == "panel_trail" then
             s.panel_trail = special.trail
             s.panel_trail_level = special.level
@@ -269,7 +269,7 @@ local function navi_bug(game: Game, side: number, navi: Object): ("edited" | "sp
     end
     if code < game.block then
         write(game, s, code, arg)
-        return "edited"
+        return BugOutcome.edited
     elseif game.past_block == "nothing" then
         return nil
     end
@@ -277,12 +277,12 @@ local function navi_bug(game: Game, side: number, navi: Object): ("edited" | "sp
     if side == 0 and code < 2 * game.block then
         write(game, battle.navi(1), code - game.block, arg)
     end
-    return "edited"
+    return BugOutcome.edited
 end
 
 -- A game's rules' `navi_bug` for its part.
-function bugs.navi_bug(game: Game): (side: number, navi: Object) -> ("edited" | "spared")?
-    return function(side: number, navi: Object): ("edited" | "spared")?
+function bugs.navi_bug(game: Game): (side: number, navi: Object) -> BugOutcome?
+    return function(side: number, navi: Object): BugOutcome?
         return navi_bug(game, side, navi)
     end
 end

@@ -139,7 +139,7 @@ function rush.make(look: RushLook): SupportActor
             end
             local target = battle.player(battle.other_side(me.alliance))
             if not target then
-                me:set_lifecycle("destroy")
+                me:enter_destroy()
                 return
             end
             me.panel_x, me.panel_y = target.panel_x, target.panel_y
@@ -184,7 +184,7 @@ function rush.make(look: RushLook): SupportActor
             end
             local at = me.pos
             dust(Vec3.new(at.x - enemy_direction(me) * 0x8_0000, at.y, 0x20_0000))
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         else
             error(string.format("Rush's phase %#x reads past its table (off_80C3334)", p))
         end
@@ -211,7 +211,7 @@ function rush.make(look: RushLook): SupportActor
     local function init(me: Object)
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
         sprite:face(me)
@@ -227,7 +227,7 @@ function rush.make(look: RushLook): SupportActor
         me:setup_collision(look.is, look.hits, {})
         me.collision.status_base = look.status
         me.collision:set_region(nil)
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
@@ -246,9 +246,9 @@ function rush.make(look: RushLook): SupportActor
     -- does nothing).
     local function update(me: Object)
         local l = me.lifecycle
-        if l == "init" then
+        if l == Lifecycle.init then
             init(me)
-        elseif l == "update" then
+        elseif l == Lifecycle.update then
             tick(me)
         else
             leave(me)
@@ -258,7 +258,7 @@ function rush.make(look: RushLook): SupportActor
 
     local kind = new.kind {
         id = look.id,
-        pool = "actor",
+        pool = Pool.actor,
         state = if look.spared then { eaten = schema.chip } else nil,
         update = update,
     }

@@ -117,7 +117,7 @@ function otenko.make(look: Look): Otenko
             if s.count >= MOST then
                 return
             end
-            battle.add_special_bonus(side, "attack", 1)
+            battle.add_special_bonus(side, SpecialBonus.attack, 1)
             s.count += 1
             return
         end
@@ -148,7 +148,7 @@ function otenko.make(look: Look): Otenko
         me:unreserve_panel(me.future_panel_x, me.future_panel_y)
         obstacle.release_tracking(me)
         obstacle.unregister(me)
-        if absorbed and obstacle.removal(me) == "absorbed" then
+        if absorbed and obstacle.removal(me) == ObstacleRemoval.absorbed then
             obstacle.fly_to_absorber(me, absorbed)
         else
             local blink = if absorbed then obstacle.blink_out(me) else "no"
@@ -167,7 +167,7 @@ function otenko.make(look: Look): Otenko
             end
         end
         me.visible = false
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- The statue's action table (`off_80DB174`): its own actions and the framework's shared ones (a push slides it
@@ -189,9 +189,9 @@ function otenko.make(look: Look): Otenko
     local function tick(me: Object)
         me.visible = true
         me.sprite.white = false
-        obstacle.take_hits(me, "ignored")
+        obstacle.take_hits(me, ObstaclePush.ignored)
         obstacle.tick_lifetime(me)
-        local a = obstacle.react(me, "spares_bodies")
+        local a = obstacle.react(me, ObstacleCrush.spares_bodies)
         if a then
             local action = actions[a]
             if not action then
@@ -209,7 +209,7 @@ function otenko.make(look: Look): Otenko
         me.pos = Vec3.new(me.pos.x, me.pos.y, 0)
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me.anim, me.anim_loaded = 0, 0xFF
         if not me:create_collision() then
             -- (The original skips the flip and presents through a null pointer.)
@@ -223,20 +223,20 @@ function otenko.make(look: Look): Otenko
         me.hp, me.max_hp = HP, HP
         local s = me.state :: State
         s.entry, s.count, s.turn = 0xFF, 0, 0
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     local statue = new.kind {
         id = look.statue_id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { entry = schema.u32, turn = schema.u32, count = schema.u32 },
         -- `sub_80DB0E4`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()
@@ -285,7 +285,7 @@ function otenko.make(look: Look): Otenko
 
     local controller = new.kind {
         id = look.controller_id,
-        pool = "effect",
+        pool = Pool.effect,
         -- `sub_80E7624`.
         update = dimming_chips.phases { name = "Otenko", effect = effect },
     }

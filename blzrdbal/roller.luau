@@ -56,7 +56,7 @@ local function leave(me: Object)
     if ball and ball.active then
         (ball.state :: BallState).roller = nil
     end
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- `sub_80DC3B2`'s test: a field object by its identity, but those
@@ -65,7 +65,7 @@ end
 -- object's.)
 local function swallowable(o: Object): boolean
     local identity = o.identity
-    return identity ~= nil and identity.class == "field_object" and identity.scrap ~= false
+    return identity ~= nil and identity.class == IdentityClass.field_object and identity.scrap ~= false
 end
 
 local SOLID: PanelFlags = { solid = true }
@@ -152,21 +152,21 @@ local function init(me: Object, look: Look)
     me:setup_collision(look.self_type, look.target, {})
     me.collision:set_hit_effect(nil)
     me.collision:present()
-    me:set_lifecycle("update")
+    me:enter_update()
 end
 
 -- A game's roller kind.
 function roller.make_kind(look: Look): Kind
     return new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { swallowed = schema.bool },
         -- `sub_80DC260`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

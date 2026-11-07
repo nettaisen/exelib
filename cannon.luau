@@ -79,7 +79,7 @@ function cannon.action(spec: CannonSpec, look: Look): Action
             facing = flip,
             lifetime = AFTERIMAGE_TICKS,
             color_shader = AFTERIMAGE_SHADER,
-            shadow = "ground",
+            shadow = Shadow.ground,
         })
         -- (The game's more: EXE5's Hub Style shade.)
         local more = look.more_afterimages

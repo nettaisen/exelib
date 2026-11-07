@@ -133,7 +133,7 @@ function zsaver.make(look: ZSaverLook): Action
             if hold == nil then
                 local held = me.overlay
                 if held then
-                    held:set_lifecycle("destroy")
+                    held:enter_destroy()
                 end
             end
             me:set_animation(ANIM_SWING)
@@ -161,7 +161,7 @@ function zsaver.make(look: ZSaverLook): Action
                 facing = me.facing_side,
                 color_shader = AFTERIMAGE_SHADER,
                 lifetime = 0x1E,
-                shadow = "with_sprite",
+                shadow = Shadow.with_sprite,
             })
         end
         if s.timer == HIT_TICK then

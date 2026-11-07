@@ -135,7 +135,7 @@ function numberman.make(look: NumbrBlNumberManLook): NumbrBlNumberMan
             (c.state :: ControllerState).busy = false
         end
         -- (The state byte alone; his action and phase stay.)
-        me.lifecycle = "destroy"
+        me.lifecycle = Lifecycle.destroy
     end
 
     local ACTIONS: { [number]: (Object) -> () } = { [0] = appear, [4] = stand, [8] = throws, [0xC] = leave }
@@ -146,7 +146,7 @@ function numberman.make(look: NumbrBlNumberManLook): NumbrBlNumberMan
     local function init(me: Object)
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         if look.loads_standing then
             me.anim, me.anim_loaded = ANIM_STAND, 0xFF
             sprite:set_animation(ANIM_STAND)
@@ -158,19 +158,19 @@ function numberman.make(look: NumbrBlNumberManLook): NumbrBlNumberMan
         me:set_coordinates_from_panel()
         local p = me.pos
         me.pos = Vec3.new(p.x, p.y, 0)
-        me:set_lifecycle("update")
+        me:enter_update()
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "actor",
+        pool = Pool.actor,
         state = { controller = schema.object, balls = schema.u8 },
         -- EXE5's 0x080C2018: by state, then the sprite (stepping while dimmed).
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 local act = ACTIONS[me.action]
                 if not act then
                     error(string.format("NumbrBl's NumberMan: action %#x reads past its table", me.action))

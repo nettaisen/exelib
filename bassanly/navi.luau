@@ -118,7 +118,7 @@ function bassanly.make(spec: Spec): { kind: Kind, summon: (user: Object, control
         if spec.arm then
             local held = (me.state :: State).held
             if held then
-                held:set_lifecycle("destroy")
+                held:enter_destroy()
             end
         end
         me.anim = spec.anims.fire
@@ -155,7 +155,7 @@ function bassanly.make(spec: Spec): { kind: Kind, summon: (user: Object, control
         local left = me.timer - 1
         me.timer = left
         if left < 0 then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
@@ -180,7 +180,7 @@ function bassanly.make(spec: Spec): { kind: Kind, summon: (user: Object, control
         end
         action(me)
         if not field.valid(me.panel_x, me.panel_y) then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
@@ -189,7 +189,7 @@ function bassanly.make(spec: Spec): { kind: Kind, summon: (user: Object, control
     local function init(me: Object)
         local sprite = me.sprite
         sprite:load(spec.sprite)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me.visible = true
         me.anim = 0
         me.anim_loaded = 0
@@ -202,7 +202,7 @@ function bassanly.make(spec: Spec): { kind: Kind, summon: (user: Object, control
         me.related1 = battle.form_overlay(me, spec.cloak)
         battle.play_sound(spec.sounds.appear)
         me.timer = 0x32
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
@@ -214,7 +214,7 @@ function bassanly.make(spec: Spec): { kind: Kind, summon: (user: Object, control
         -- (Without one the game writes into ROM.)
         local cloak = me.related1
         if cloak then
-            cloak:set_lifecycle("destroy")
+            cloak:enter_destroy()
         end
         local controller = (me.state :: State).controller
         if controller then
@@ -225,14 +225,14 @@ function bassanly.make(spec: Spec): { kind: Kind, summon: (user: Object, control
 
     local kind = new.kind {
         id = spec.id,
-        pool = "actor",
+        pool = Pool.actor,
         state = { controller = schema.object, held = schema.object },
         -- `sub_80C3CE8`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 leave(me)

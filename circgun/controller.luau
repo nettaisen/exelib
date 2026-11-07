@@ -64,7 +64,7 @@ local function make(
 
     local kind = new.kind {
         id = id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { variant = shot.CIRCGUN_VARIANT, bonus = schema.u16, busy = schema.bool },
         -- `sub_80E7568`.
         update = dimming_chips.phases { name = "CircGun", effect = effect },

@@ -25,7 +25,7 @@ export type State = {
 export type Look = {
     -- The kind's id and pool (EXE5's an actor, EXE4's an attack).
     id: string,
-    pool: "actor" | "attack",
+    pool: Pool,
     -- What it wears of its user (EXE5's a player's overlay, `stand_in.overlay`; EXE4's nothing).
     wear: (me: Object, user: Object) -> (),
     -- Its sounds: a step of the sight, the shot, the blast and a panel broken.
@@ -241,7 +241,7 @@ function gunner.make(look: Look): Gunner
             me.timer = bit32.band(t, 0xFFFF)
             if t == 0 then
                 overlays.remove_parts_of(me, me.related1 :: Object)
-                me:set_lifecycle("destroy")
+                me:enter_destroy()
             end
         else
             error(string.format("Magnum's gunner: fire phase %#x reads past its table", phase))
@@ -260,13 +260,13 @@ function gunner.make(look: Look): Gunner
         update = function(me: Object)
             local s = me.state :: State
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 -- Drawn as the user, who vanishes.
                 stand_in.init(me, look.wear)
                 -- (`object_getEnemyDirection`: by side, whatever its facing.)
                 s.dir = 1 - 2 * me.alliance
-                me:set_lifecycle("update")
-            elseif l ~= "update" then
+                me:enter_update()
+            elseif l ~= Lifecycle.update then
                 -- The user back; it is gone.
                 dimming.show_user(me.related1 :: Object)
                 stage_up(me)

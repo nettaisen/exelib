@@ -85,7 +85,7 @@ function quake.make(look: Look): Quake
         local s = me.state :: State
         s.count -= 1
         if s.count < 0 then
-            me.lifecycle = "destroy"
+            me.lifecycle = Lifecycle.destroy
             return
         end
         local p = s.list[s.count + 1]
@@ -115,20 +115,20 @@ function quake.make(look: Look): Quake
         end
         s.count = #list
         me.timer = PERIOD
-        me.lifecycle = "update"
+        me.lifecycle = Lifecycle.update
         tick(me)
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { change = GEDDON_CHANGE, list = schema.array(schema.u8, 18), count = schema.i32, holder = schema.object },
         -- `sub_80E25D0`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 -- sub_80E268C: the holder goes on (the original clears the

@@ -72,7 +72,7 @@ function strike.make(look: Look): Strike
         -- sub_8011504(0xC62, 0x15050300)
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim, me.anim_loaded = 0, 0xFF
         if not me:create_collision() then
             -- The game goes on without one, writing through a null pointer.
@@ -90,7 +90,7 @@ function strike.make(look: Look): Strike
         local c = me.collision
         c:set_hit_effect(look.spark)
         c:set_region(nil)
-        me.lifecycle = "update"
+        me.lifecycle = Lifecycle.update
     end
 
     -- `sub_80DB4CE`: a camera shake (magnitude 3, 45 ticks), the landing's hits (running while dimmed) and dust.
@@ -155,7 +155,7 @@ function strike.make(look: Look): Strike
         if not field.solid(me.panel_x, me.panel_y) then
             battle.effect(me.pos, look.effects.puff)
             c:set_region(nil)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         if me.phase_init == 0 then
@@ -170,7 +170,7 @@ function strike.make(look: Look): Strike
         me.timer = left
         if left <= 0 then
             c:set_region(nil)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
@@ -193,13 +193,13 @@ function strike.make(look: Look): Strike
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         -- `sub_80DB304`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

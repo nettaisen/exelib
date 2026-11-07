@@ -44,31 +44,31 @@ function wind.make(spec: {
         local t = me.timer - 1
         me.timer = t
         if t == 0 then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
     local streak_kind = new.kind {
         id = spec.id .. "/streak",
-        pool = "effect",
+        pool = Pool.effect,
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 -- EXE6's `sub_80E4868`: its animation 0 in palette 0 (its first parameter).
                 me.visible = true
                 local sprite = me.sprite
                 sprite:load(spec.streak_sprite)
                 -- (`sprite_noShadow`: the first part is drawn with the sprite.)
-                sprite.shadow = "with_sprite"
+                sprite.shadow = Shadow.with_sprite
                 me.anim, me.anim_loaded = 0, 0
                 sprite:set_animation(0)
                 sprite.palette = 0
                 sprite:face(me)
                 me.vel = Vec3.new(me.facing * STREAK_SPEED, me.vel.y, STREAK_RISE)
                 me.timer = STREAK_TICKS
-                me.lifecycle = "update"
+                me.lifecycle = Lifecycle.update
                 streak_tick(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 streak_tick(me)
             else
                 me:free()
@@ -112,18 +112,18 @@ function wind.make(spec: {
             if holder then
                 (holder.state :: { busy: boolean }).busy = false
             end
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
         c:present()
     end
 
     local wind_kind = new.kind {
         id = spec.id .. "/wind",
-        pool = "attack",
+        pool = Pool.attack,
         state = { holder = schema.object },
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 -- EXE6's `sub_80CFC28`.
                 me.timer = WIND_TICKS
                 me.timer2 = STREAK_EVERY
@@ -134,9 +134,9 @@ function wind.make(spec: {
                 me:setup_collision(spec.is, spec.hits, {})
                 me.collision:set_region(nil)
                 battle.play_sound(spec.sound)
-                me.lifecycle = "update"
+                me.lifecycle = Lifecycle.update
                 wind_tick(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 wind_tick(me)
             else
                 -- EXE6's `sub_80CFC96` (EXE4's 0x080D8C58): its collision taken off the field and freed, then itself.

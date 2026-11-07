@@ -37,7 +37,7 @@ function controller.make(look: WindControllerLook): WindController
 
     local kind = new.kind {
         id = look.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { variant = fan.FAN_VARIANT },
         -- `sub_80E309C`.
         update = dimming_chips.phases { name = "Wind's controller", effect = effect },

@@ -49,12 +49,12 @@ end
 local function tick(me: Object)
     local s = me.state :: State
     if not battle.dimmed() and battle.over() then
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     else
         local t = me.timer - 1
         me.timer = t
         if t == 0 then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
     if s.lit_left > 0 then
@@ -80,7 +80,7 @@ local function init(me: Object)
     local s = me.state :: State
     me.timer = s.look.lifetime
     s.period_left, s.lit_left, s.shrink = s.look.period, s.look.lit, s.look.shrink
-    me:set_lifecycle("update")
+    me:enter_update()
     tick(me)
 end
 
@@ -88,7 +88,7 @@ end
 function marker.make_kind(id: string): Kind
     return new.kind {
         id = id,
-        pool = "effect",
+        pool = Pool.effect,
         state = {
             look = MARKER_LOOK,
             region = schema.region,
@@ -99,9 +99,9 @@ function marker.make_kind(id: string): Kind
         -- `sub_80E4344`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:free()

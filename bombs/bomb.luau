@@ -34,7 +34,7 @@ end
 local function finish(me: Object)
     me.visible = false
     me.collision:set_region(nil)
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- `sub_80C5C9C`: fly; on the last tick, land.
@@ -82,7 +82,7 @@ local function landed(me: Object, v: BombVariant)
     if v.after then
         v.after(me)
     end
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- `sub_80C5C40`: resolve last tick's hits; end with the battle or on a
@@ -118,7 +118,7 @@ local function init(me: Object, look: BombLook)
     local v = (me.state :: State).variant
     local sprite = me.sprite
     sprite:load(look.sprite)
-    sprite.shadow = "ground"
+    sprite.shadow = Shadow.ground
     me.visible = true
     me.anim = v.anim
     me.anim_loaded = 0xFF
@@ -130,7 +130,7 @@ local function init(me: Object, look: BombLook)
     me:setup_collision(v.collision.is, v.collision.hits, v.hit_mod)
     me.collision:set_hit_effect(nil)
     me.collision:present()
-    me:set_lifecycle("update")
+    me:enter_update()
     tick(me, look)
 end
 
@@ -138,17 +138,17 @@ end
 function bomb.make(look: BombLook): Bombs
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { variant = BOMB_VARIANT },
         -- `sub_80C5BB0`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
                 if not me.active then
                     return
                 end
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, look)
             else
                 me:destroy()

@@ -219,7 +219,7 @@ function controller.make(look: Look): (user: Object, spec: DimmingChipSpec) -> O
 
     local kind = new.kind {
         id = look.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = state,
         -- `sub_80E4188`.
         update = dimming_chips.phases { name = "Meteors", effect = effect },

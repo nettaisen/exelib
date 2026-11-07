@@ -11,7 +11,7 @@ function overlays.keep_stepping(o: Object)
     if part then
         part.run_while_paused = true
         part.run_while_dimmed = true
-        part.stepping = "while_dimmed"
+        part.stepping = FormOverlayStepping.while_dimmed
     end
 end
 
@@ -69,7 +69,7 @@ function overlays.take_off_form(o: Object, form: FormDef)
         local part = o.related2
         o.related2 = nil
         if part then
-            part:set_lifecycle("destroy")
+            part:enter_destroy()
         end
     end
 end

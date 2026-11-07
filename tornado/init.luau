@@ -45,7 +45,7 @@ end
 local function finish(me: Object)
     me.collision:set_region(nil)
     me.visible = false
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- `sub_80CA0B0`: count down; re-arm the region every so many ticks.
@@ -74,7 +74,7 @@ local function tick(me: Object)
     if battle.time_up() then
         me.visible = false
         c:set_region(nil)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
         return
     end
     if c.hit then
@@ -117,7 +117,7 @@ local function init(me: Object, look: TornadoLook)
     me.visible = true
     local sprite = me.sprite
     sprite:load(look.sprite)
-    sprite.shadow = "with_sprite"
+    sprite.shadow = Shadow.with_sprite
     me.anim = 0
     me.anim_loaded = 0
     sprite:set_animation(0)
@@ -146,7 +146,7 @@ local function init(me: Object, look: TornadoLook)
     end
     c:present()
     battle.play_sound(look.sound)
-    me:set_lifecycle("update")
+    me:enter_update()
     tick(me)
 end
 
@@ -154,14 +154,14 @@ end
 function tornado.make_kind(id: string, look: TornadoLook): Kind
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { variant = TORNADO_VARIANT, status = schema.status, rearm_step = schema.u32, rearm_ticks = schema.u32 },
         -- `sub_80C9F78`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

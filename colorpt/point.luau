@@ -127,11 +127,11 @@ function point.make(look: Look): Point
                 chip_hand.add_bonus(side, cursor, "attack_bonus", s.bonus)
             end
         else
-            battle.add_special_bonus(side, "attack", s.bonus)
+            battle.add_special_bonus(side, SpecialBonus.attack, s.bonus)
         end
         battle.play_sound(look.sounds.arrive)
         release(me)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- `sub_80E6580`: in its look on its panel, aimed at its side's navi; with no navi, it is gone at once.
@@ -139,13 +139,13 @@ function point.make(look: Look): Point
         local s = me.state :: State
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         -- (The next sprite update loads animation 1.)
         me.anim, me.anim_loaded = 1, 0xFF
         local navi = battle.player(me.alliance)
         if not navi then
             release(me)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         s.target_x, s.target_y = navi.panel_x, navi.panel_y
@@ -153,13 +153,13 @@ function point.make(look: Look): Point
         sprite.palette = s.palette
         me:set_coordinates_from_panel()
         battle.play_sound(look.sounds.appear)
-        me:set_lifecycle("update")
+        me:enter_update()
         take(me)
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = {
             holder = schema.object,
             slot = schema.u8,
@@ -171,9 +171,9 @@ function point.make(look: Look): Point
         -- `sub_80E655C`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 local a = me.action
                 if a == TAKE then
                     take(me)

@@ -190,7 +190,7 @@ function effects.chip_recovery(n: number): PatchCardEffect
 end
 
 -- The custom gauge's speed.
-function effects.gauge(speed: "fast" | "slow" | "normal"): PatchCardEffect
+function effects.gauge(speed: GaugeSpeed): PatchCardEffect
     return effect({ kind = "gauge", gauge = speed })
 end
 

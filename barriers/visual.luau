@@ -132,7 +132,7 @@ end
 
 -- `sub_80E0DC0`: the visual is told to end (state 8: it frees itself at its next update, its link left as it is).
 function visual.finish(v: Object)
-    v:set_lifecycle("destroy")
+    v:enter_destroy()
 end
 
 function visual.make(spec: Spec): Visual
@@ -147,9 +147,9 @@ function visual.make(spec: Spec): Visual
         end
         local c = owner.collision
         local barrier = c.barrier
-        if barrier == "none" then
+        if barrier == BarrierState.none then
             go(me, DOWN)
-        elseif blows and barrier == "popped" then
+        elseif blows and barrier == BarrierState.popped then
             (me.state :: State).pop_hit_mod = c.barrier_pop_hit_mod
             go(me, BLOWN)
         elseif c.barrier_hp == 0 then
@@ -174,7 +174,7 @@ function visual.make(spec: Spec): Visual
         local last_frame = if me.sprite.animation == look.anim + 1
             then me.sprite.steps >= look.down_steps
             else (me.sprite.steps > 0 and me.sprite.steps % look.up_steps == 0)
-        if c.barrier ~= "none" then
+        if c.barrier ~= BarrierState.none then
             if c.barrier_hp ~= 0 and not (blows and owner.status.bubbled) then
                 me.anim = me.anim - 1
                 me.visible = true
@@ -234,7 +234,7 @@ function visual.make(spec: Spec): Visual
         local look = b.look
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.visible = true
         me.anim, me.anim_loaded = look.anim, look.anim
         sprite:set_animation(look.anim)
@@ -242,7 +242,7 @@ function visual.make(spec: Spec): Visual
         sprite.palette = look.palette
         if b.hidden_unless_local_megaman then
             local owner = owner_of(me)
-            local megaman = owner.actor_type == "player" and owner.ai_index == 0
+            local megaman = owner.actor_type == ActorType.player and owner.ai_index == 0
             local function hidden_on(side: number): HiddenParts
                 return if megaman and owner.alliance == side then look.hidden_parts else PART_6
             end
@@ -252,20 +252,20 @@ function visual.make(spec: Spec): Visual
         end
         -- (sub_8002EAC: its parts keep their own facing; drawn only.)
         battle.play_sound(b.sound)
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     local kind = new.kind {
         id = spec.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { barrier = controller.BARRIER, shown = schema.bool, pop_hit_mod = schema.u8 },
         -- `sub_80E0AD4`: by state, then its sprite (but while the fight is on and paused).
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 -- sub_8016C9C

@@ -172,7 +172,7 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
             facing = me.facing_side,
             color_shader = AFTERIMAGE_SHADER,
             lifetime = 0x14,
-            shadow = "ground",
+            shadow = Shadow.ground,
         })
         me.panel_x, me.panel_y = x :: number, y :: number
         me:set_coordinates_from_panel()
@@ -254,7 +254,7 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
                 facing = me.facing_side,
                 color_shader = AFTERIMAGE_SHADER,
                 lifetime = 0x1E,
-                shadow = "ground",
+                shadow = Shadow.ground,
             })
             battle.afterimage(me, me.pos, {
                 sprite = spec.blade.sprite,
@@ -262,7 +262,7 @@ function slash.action(spec: SlashSpec, attachment: Kind, game: SlashGame?): Acti
                 facing = me.facing_side,
                 color_shader = AFTERIMAGE_SHADER,
                 lifetime = 0x1E,
-                shadow = "with_sprite",
+                shadow = Shadow.with_sprite,
             })
         end
         if s.timer == 0x0C then

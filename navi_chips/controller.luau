@@ -95,7 +95,7 @@ local ANTI_NAVI_WAIT = 0x1E
 -- The other side's defensive chip is AntiNavi.
 local function anti_navi_waits(side: number): boolean
     local trap = battle.linked(battle.other_side(side)).chip
-    return trap ~= nil and trap.trap == "anti_navi"
+    return trap ~= nil and trap.trap == TrapKind.anti_navi
 end
 
 -- Count the timer down: true once it fell below 0.
@@ -291,13 +291,13 @@ function controller.make(spec: Spec): Controller
 
     local kind = new.kind {
         id = spec.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { chip = schema.chip, bonus = schema.u16, busy = schema.bool },
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 dimming.begin(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 local a = me.action
                 local chip = (me.state :: State).chip
                 if a == DIM then

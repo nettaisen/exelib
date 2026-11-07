@@ -47,27 +47,27 @@ function debris.make_kind(id: string, sprite: SpriteAsset, dust: Effect): Kind
         s:load(sprite)
         s:set_animation(bit32.band(battle.rng(), 1))
         s:step()
-        s.shadow = "with_sprite"
+        s.shadow = Shadow.with_sprite
         s.palette = (me.state :: State).palette
         local r = battle.rng()
         local function nibble(shift: number): number
             return bit32.band(bit32.rshift(r, shift), 0xF)
         end
         me.vel = Vec3.new((nibble(0) - 7) * 0x8000, (nibble(4) - 7) * 0x8000, (nibble(8) + 12) * 0x8000)
-        me.lifecycle = "update"
+        me.lifecycle = Lifecycle.update
         fly(me)
     end
 
     return new.kind {
         id = id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { palette = schema.u8 },
         -- `sub_80E46D8`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 fly(me)
             else
                 land(me)

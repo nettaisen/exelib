@@ -62,7 +62,7 @@ function dice.make(spec: DiceSpec): Dice
     local function go(me: Object)
         me.collision:set_region(nil)
         done(me)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- Its look of face 9 (EXE5's own), else the face's.
@@ -132,7 +132,7 @@ function dice.make(spec: DiceSpec): Dice
             me.collision:set_region(nil)
             battle.effect(me.pos, spec.puff)
             done(me)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         me:set_panel_from_coordinates()
@@ -183,7 +183,7 @@ function dice.make(spec: DiceSpec): Dice
                 local p = me.pos
                 battle.effect(Vec3.new(p.x, p.y, p.z + 0xA_0000), spec.quiet_puff)
                 done(me)
-                me:set_lifecycle("destroy")
+                me:enter_destroy()
                 return
             end
             me:set_action(0xC)
@@ -232,7 +232,7 @@ function dice.make(spec: DiceSpec): Dice
         battle.region_effects(me.panel_x, me.panel_y, regions.square, me.alliance, explosion(s))
         battle.play_sound(spec.burst)
         done(me)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     local ACTIONS = { [0] = fly, [4] = bounce, [8] = show, [0xC] = burst }
@@ -250,7 +250,7 @@ function dice.make(spec: DiceSpec): Dice
             go(me)
             return
         end
-        if me:take_damage("damage_sound") == "broken" or c:hit_any(ENEMY) then
+        if me:take_damage(TakeDamageMode.damage_sound) == DamageTaken.broken or c:hit_any(ENEMY) then
             battle.effect(me.pos, explosion(s))
             battle.play_sound(spec.blow_up)
             go(me)
@@ -273,7 +273,7 @@ function dice.make(spec: DiceSpec): Dice
         local s = me.state :: State
         local sprite = me.sprite
         sprite:load(spec.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.visible = true
         me.anim, me.anim_loaded = 6, 0xFF
         me.element = Element.null
@@ -299,13 +299,13 @@ function dice.make(spec: DiceSpec): Dice
         end
         c:set_hit_effect(nil)
         c:present()
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     local kind = new.kind {
         id = spec.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = {
             face = schema.u8,
             dimmed = schema.bool,
@@ -321,9 +321,9 @@ function dice.make(spec: DiceSpec): Dice
         -- EXE5's 0x080C4F2C, EXE4's 0x080CD9E8.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

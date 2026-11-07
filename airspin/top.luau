@@ -37,7 +37,7 @@ export type State = {
 -- Rolling speed (16.16), panels it rolls at most.
 local SPEED, MAX_PANELS = 0x4_0000, 4
 -- Its field-object class.
-local CLASS: ObstacleClass = "one_a_side"
+local CLASS: ObstacleClass = ObstacleClass.one_a_side
 -- Panel flags: where EXE6's can't be set down (other bodies and neutral
 -- objects); what stops its rolling (any body).
 local SET_DOWN_ON: PanelCondition = { solid = true, own_other_body = false, enemy_other_body = false, neutral = false }
@@ -117,7 +117,7 @@ function top.make(look: AirSpinTopLook): AirSpinTop
         obstacle.release_tracking(me)
         obstacle.unregister(me)
         me.collision:set_region(nil)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- ---- The actions -----------------------------------------------------------
@@ -260,9 +260,9 @@ function top.make(look: AirSpinTopLook): AirSpinTop
             obstacle.fly_to_absorber(me, absorbed)
         else
             local b = obstacle.blink_out(me)
-            if b == "blinking" then
+            if b == BlinkOut.blinking then
                 return
-            elseif b == "no" then
+            elseif b == BlinkOut.no then
                 puff(me, 0x0C)
             end
         end
@@ -287,7 +287,7 @@ function top.make(look: AirSpinTopLook): AirSpinTop
     local function tick(me: Object)
         local c = me.collision
         c:remove()
-        local broken = me:take_damage("damage_sound") == "broken" or c:hit_any(CRUSHING)
+        local broken = me:take_damage(TakeDamageMode.damage_sound) == DamageTaken.broken or c:hit_any(CRUSHING)
         if broken then
             battle.effect(me.pos, look.explosion)
             battle.play_sound(look.sounds.hit_bomb)
@@ -339,7 +339,7 @@ function top.make(look: AirSpinTopLook): AirSpinTop
         local sprite = me.sprite
         sprite:load(look.sprite)
         sprite:set_animation(0)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim = 0
         me.anim_loaded = 0xFF
         if not me:create_collision() then
@@ -358,20 +358,20 @@ function top.make(look: AirSpinTopLook): AirSpinTop
         aim(me)
         sprite.palette = (me.state :: State).palette
         battle.play_sound(look.sounds.set_down)
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { target_x = schema.i32, interval = schema.i32, spins = schema.u8, palette = schema.u8 },
         -- `sub_80D88E0` (EXE5's 0x080D9EE4).
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

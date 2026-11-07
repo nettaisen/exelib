@@ -109,7 +109,7 @@ function protoman.make(kind_spec: ProtoManKind): {
             return
         end
         if not field.solid(me.panel_x, me.panel_y) then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         me.future_panel_x = me.panel_x + me.facing
@@ -283,7 +283,7 @@ function protoman.make(kind_spec: ProtoManKind): {
             return
         end
         me.visible = false
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     local ACTIONS: { [number]: { [number]: (Object) -> () } } = {
@@ -317,7 +317,7 @@ function protoman.make(kind_spec: ProtoManKind): {
         local look = (me.state :: State).look
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me.anim = 0
         me.anim_loaded = 0
         sprite:set_animation(0)
@@ -330,7 +330,7 @@ function protoman.make(kind_spec: ProtoManKind): {
         sprite.palette = look.palette
         sprite.color_shader = 0x7FFF
         me.visible = true
-        me:set_lifecycle("update")
+        me:enter_update()
         update_state(me)
     end
 
@@ -345,14 +345,14 @@ function protoman.make(kind_spec: ProtoManKind): {
 
     local kind = new.kind {
         id = spec.id,
-        pool = "actor",
+        pool = Pool.actor,
         state = { gray = schema.u8, controller = schema.object, fresh = schema.u8, flip = schema.u8, look = PROTOMAN_LOOK },
         -- `sub_80C26F0`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 update_state(me)
             else
                 finish(me)

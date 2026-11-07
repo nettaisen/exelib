@@ -38,7 +38,7 @@ local HUM_TICKS = 11
 
 -- `sub_80E5D3E`: end the beam (its next update frees it).
 function beam.stop(o: Object)
-    o:set_lifecycle("destroy")
+    o:enter_destroy()
 end
 
 -- `sub_80E5CA0`: hidden while dimmed (unless it shows then too); otherwise follow the owner, or end once the slot
@@ -53,7 +53,7 @@ local function follow(me: Object, hum: Sound)
     local owner = me.related1 :: Object
     if not slot.occupied(owner, s.slot) then
         me.visible = false
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
         return
     end
     if s.ticks % HUM_TICKS == 0 then
@@ -71,7 +71,7 @@ local function init(me: Object, hum: Sound)
     sprite:load(s.sprite)
     sprite:set_animation(0)
     sprite:step()
-    sprite.shadow = "with_sprite"
+    sprite.shadow = Shadow.with_sprite
     sprite:face(me)
     sprite.palette = s.palette
     me.no_sprite_update = false
@@ -79,7 +79,7 @@ local function init(me: Object, hum: Sound)
     me.anim_loaded = 0
     me.visible = true
     s.ticks = 0
-    me:set_lifecycle("update")
+    me:enter_update()
     follow(me, hum)
 end
 
@@ -87,7 +87,7 @@ end
 function beam.make_kind(id: string, hum: Sound): Kind
     return new.kind {
         id = id,
-        pool = "effect",
+        pool = Pool.effect,
         state = {
             slot = slot.TYPE,
             offset = schema.vec3,
@@ -99,9 +99,9 @@ function beam.make_kind(id: string, hum: Sound): Kind
         -- `sub_80E5C2C`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, hum)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 follow(me, hum)
             else
                 me:free()

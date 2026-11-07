@@ -86,7 +86,7 @@ function poltrgst.make(spec: Spec): Poltrgst
         if spec.wears_overlay then
             overlays.remove_parts_of(me, user)
         end
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
         dimming.show_user(user)
         tell(me)
     end
@@ -99,41 +99,41 @@ function poltrgst.make(spec: Spec): Poltrgst
         if not user then
             error("Poltrgst's stand-in has no user (its init reads through a null pointer)")
         end
-        if spec.megaman_only and user.actor_type ~= "player" then
+        if spec.megaman_only and user.actor_type ~= ActorType.player then
             me:free()
             return false
         end
         local sprite = me.sprite
         looks.load_like(sprite, user)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me.anim, me.anim_loaded = spec.anim, 0xFF
         me.visible = true
         me.pos = user.pos
         me:set_panel_from_coordinates()
         -- `sub_801002C` (EXE4's 0x0800BFFE): the user's navi palette.
         sprite.palette = user.sprite.palette
-        if spec.wears_overlay and user.actor_type == "player" then
+        if spec.wears_overlay and user.actor_type == ActorType.player then
             overlays.add_overlay_of(me, user)
         end
         sprite:face(me)
         dimming.hide_user_sparing(user)
-        me:set_lifecycle("update")
+        me:enter_update()
         stand(me)
         return true
     end
 
     local stand_in = new.kind {
         id = spec.stand_in_id,
-        pool = "actor",
+        pool = Pool.actor,
         state = { busy = schema.bool, controller = schema.object, nearest = schema.bool },
         -- EXE5's 0x080C38E8, EXE4's 0x080CC624.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 if not stand_in_init(me) then
                     return
                 end
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 stand(me)
             else
                 if spec.destroy_tells_controller then
@@ -182,7 +182,7 @@ function poltrgst.make(spec: Spec): Poltrgst
 
     local controller = new.kind {
         id = spec.controller_id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { bonus = schema.u16, busy = schema.bool, nearest = schema.bool },
         -- EXE5's 0x080E8C1C, EXE4's 0x080EA05C.
         update = dimming_chips.phases { name = "Poltrgst", effect = effect },

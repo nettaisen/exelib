@@ -220,7 +220,7 @@ function bass.make(spec: Spec): Bass
     local function lower(me: Object)
         if spec.ending == "animation" then
             if me.sprite.steps >= (spec.last_steps :: number) then
-                me:set_lifecycle("destroy")
+                me:enter_destroy()
             end
             return
         end
@@ -237,7 +237,7 @@ function bass.make(spec: Spec): Bass
         local left = me.timer - 1
         me.timer = left
         if left == 0 then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
@@ -262,7 +262,7 @@ function bass.make(spec: Spec): Bass
         end
         action(me)
         if not field.valid(me.panel_x, me.panel_y) then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
@@ -270,7 +270,7 @@ function bass.make(spec: Spec): Bass
     local function init(me: Object)
         local sprite = me.sprite
         sprite:load(spec.sprite)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me.visible = true
         me.anim = 0
         me.anim_loaded = 0
@@ -281,10 +281,10 @@ function bass.make(spec: Spec): Bass
         local p = me.pos
         me.pos = Vec3.new(p.x, p.y, 0)
         me.related1 =
-            battle.form_overlay(me, { sprite = spec.sprite, stepping = "while_dimmed", anim_offset = spec.cape_anim_offset })
+            battle.form_overlay(me, { sprite = spec.sprite, stepping = FormOverlayStepping.while_dimmed, anim_offset = spec.cape_anim_offset })
         battle.play_sound(spec.appear)
         me.timer = 0x64
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
@@ -294,7 +294,7 @@ function bass.make(spec: Spec): Bass
         battle.effect(Vec3.new(p.x, p.y, p.z + 0x10_0000), spec.smoke)
         local cape = me.related1
         if cape then
-            cape:set_lifecycle("destroy")
+            cape:enter_destroy()
         end
         local controller = (me.state :: State).controller
         if controller then
@@ -305,14 +305,14 @@ function bass.make(spec: Spec): Bass
 
     local kind = new.kind {
         id = spec.id,
-        pool = "actor",
+        pool = Pool.actor,
         state = { controller = schema.object, cooldowns = schema.array(schema.u8, 18), columns = schema.array(schema.u8, 7) },
         -- `sub_80C3970`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 leave(me)

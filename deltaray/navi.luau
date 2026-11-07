@@ -141,7 +141,7 @@ local function burst_update(me: Object)
     local left = me.timer - 1
     me.timer = left
     if left <= 0 then
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 end
 
@@ -220,7 +220,7 @@ function deltaray.make(spec: Spec): {
             return
         end
         if not field.solid(me.panel_x, me.panel_y) then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         st(me).facing = me.facing_side
@@ -416,7 +416,7 @@ function deltaray.make(spec: Spec): {
     local function hit(me: Object)
         local s = st(me)
         if spec.flashes then
-            battle.palette_flash("one_layer", 5, true)
+            battle.palette_flash(PaletteFlashVariant.one_layer, 5, true)
         end
         local x, y = me.panel_x + (1 - 2 * s.facing), me.panel_y
         local box = battle.hitbox(me, {
@@ -504,7 +504,7 @@ function deltaray.make(spec: Spec): {
         end
         battle.play_sound(spec.sounds.burst)
         if spec.flashes then
-            battle.palette_flash("one_layer", 0x14, true)
+            battle.palette_flash(PaletteFlashVariant.one_layer, 0x14, true)
         end
     end
 
@@ -567,7 +567,7 @@ function deltaray.make(spec: Spec): {
             end
         end
         me.visible = false
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     local ACTIONS = { [0] = arriving, [4] = attacking, [8] = leave }
@@ -589,7 +589,7 @@ function deltaray.make(spec: Spec): {
     local function init(me: Object)
         local sprite = me.sprite
         sprite:load(spec.sprite)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me.anim = 0
         me.anim_loaded = 0
         sprite:set_animation(0)
@@ -603,7 +603,7 @@ function deltaray.make(spec: Spec): {
         sprite.palette = st(me).palette
         sprite.color_shader = 0x7FFF
         me.visible = true
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
@@ -618,7 +618,7 @@ function deltaray.make(spec: Spec): {
 
     local kind = new.kind {
         id = spec.id,
-        pool = "actor",
+        pool = Pool.actor,
         state = {
             controller = schema.object,
             facing = schema.u8,
@@ -635,9 +635,9 @@ function deltaray.make(spec: Spec): {
         -- `sub_80C2A78`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 gone(me)

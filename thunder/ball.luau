@@ -141,7 +141,7 @@ local function drift(me: Object, look: ThunderBallLook)
     if bit32.band(left, 0xFF) == 0 then
         me.anim += 1
         me.collision:set_region(nil)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
         return
     end
     aim(me, look)
@@ -150,7 +150,7 @@ end
 -- Out of the fight: its region cleared, then the burst.
 local function finish(me: Object)
     me.collision:set_region(nil)
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- `sub_80C94BC`.
@@ -179,7 +179,7 @@ local function init(me: Object, look: ThunderBallLook)
     local big = (s.fast or s.big) and look.big_sprite ~= nil
     local sprite = me.sprite
     sprite:load(if big then look.big_sprite :: SpriteAsset else look.sprite)
-    sprite.shadow = "with_sprite"
+    sprite.shadow = Shadow.with_sprite
     me.visible = true
     local anim = if big then look.big_anim :: number else look.small_anim
     me.anim = anim
@@ -206,7 +206,7 @@ local function init(me: Object, look: ThunderBallLook)
     c:present()
     aim(me, look)
     battle.play_sound(s.sound or look.sound)
-    me:set_lifecycle("update")
+    me:enter_update()
     tick(me, look)
 end
 
@@ -229,7 +229,7 @@ end
 function ball.make_kind(id: string, look: ThunderBallLook): Kind
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = {
             fast = schema.bool,
             panels = schema.u8,
@@ -242,9 +242,9 @@ function ball.make_kind(id: string, look: ThunderBallLook): Kind
         -- `sub_80C93CC`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, look)
             else
                 burst(me, look)

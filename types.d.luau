@@ -878,7 +878,7 @@ export type PatchCardEffect = {
     barrier: Barrier?,
     -- The form a card starts the navi in (EXE4's soul cards, kind "soul").
     form: FormDef?,
-    gauge: string?,
+    gauge: GaugeSpeed?,
     on: boolean?,
     trail: string?,
     level: number?,

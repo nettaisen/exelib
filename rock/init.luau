@@ -173,12 +173,12 @@ function rock.make(look: Look): Rock
         end
         obstacle.unregister(me)
         local how = if by_hp then (if me.hp ~= 0 then "removed" else "broken") else obstacle.removal(me)
-        if by_hp and how == "removed" then
+        if by_hp and how == ObstacleRemoval.removed then
             local p = me.pos
             battle.effect(Vec3.new(p.x, p.y, p.z + 0xC_0000), look.effects.puff)
-        elseif absorbed and how == "absorbed" then
+        elseif absorbed and how == ObstacleRemoval.absorbed then
             obstacle.fly_to_absorber(me, absorbed)
-        elseif how ~= "broken" then
+        elseif how ~= ObstacleRemoval.broken then
             local blink = if absorbed then obstacle.blink_out(me) else "no"
             if blink == "blinking" then
                 return
@@ -196,7 +196,7 @@ function rock.make(look: Look): Rock
             battle.play_sound(v.break_sound)
         end
         me.visible = false
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- `sub_80CFB28`.
@@ -249,7 +249,7 @@ function rock.make(look: Look): Rock
         me.anim = anim
         sprite:set_animation(anim)
         sprite:step()
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me:set_coordinates_from_panel()
         me.pos = Vec3.new(me.pos.x, me.pos.y, 0)
         me.future_panel_x, me.future_panel_y = me.panel_x, me.panel_y
@@ -267,7 +267,7 @@ function rock.make(look: Look): Rock
         me.collision:set_hit_effect(look.spark)
         me.collision:set_region(nil)
         me.collision:present()
-        me.lifecycle = "update"
+        me.lifecycle = Lifecycle.update
         tick(me)
     end
 
@@ -289,20 +289,20 @@ function rock.make(look: Look): Rock
         if entrance == "placed" then
             o.run_while_paused = true
         end
-        obstacle.register(o, side, spec.class or "two_a_side")
+        obstacle.register(o, side, spec.class or ObstacleClass.two_a_side)
         return o
     end
 
     kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { variant = ROCK_VARIANT, entrance = { "rise", "instant", "fall", "placed" } },
         -- `sub_80CF954`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

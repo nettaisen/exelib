@@ -101,7 +101,7 @@ function drill.make_kind(
         if done then
             c:set_region(nil)
             s.child = nil
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
         follow(me)
         c:present()
@@ -167,13 +167,13 @@ function drill.make_kind(
             -- (EXE5's 0x080D4154: sub_801A4D0.)
             c.bug, c.bug_arg = s.bug, s.bug_arg
         end
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     kind = new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = {
             slot = { "related", "child" },
             child = schema.object,
@@ -187,9 +187,9 @@ function drill.make_kind(
         -- `sub_80D2A94`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

@@ -87,7 +87,7 @@ function apply.check(installed: { InstalledPatchCard }, mb: number, problem: (p:
         for j = 1, i - 1 do
             if installed[j].card == c then
                 problem({
-                    kind = "twice",
+                    kind = SetupProblemKind.twice,
                     field = "patch_cards",
                     entry = i,
                     text = string.format("the patch card %s is installed twice", battle.name(c)),
@@ -99,7 +99,7 @@ function apply.check(installed: { InstalledPatchCard }, mb: number, problem: (p:
     end
     if total > mb then
         problem({
-            kind = "budget",
+            kind = SetupProblemKind.budget,
             field = "patch_cards",
             used = total,
             limit = mb,

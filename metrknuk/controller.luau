@@ -102,7 +102,7 @@ function controller.make(spec: Spec): { kind: Kind, hook: (user: Object, dspec: 
 
     local kind = new.kind {
         id = spec.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { bonus = schema.u16, last = targets.LAST, grid = targets.GRID },
         -- `sub_80E8B00`.
         update = dimming_chips.phases { name = "MetrKnuk", effect = effect },

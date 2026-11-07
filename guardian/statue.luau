@@ -128,7 +128,7 @@ end
 local function leave(me: Object)
     me.collision:set_region(nil)
     me.visible = false
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 local SOLID_NOT_OCCUPIED: PanelCondition = { solid = true, occupied = false }
@@ -161,11 +161,11 @@ function statue.make(look: Look): Statue
         end
         obstacle.unregister(me)
         local how = if look.reads_no_removal then "broken" else obstacle.removal(me)
-        if absorbed and how == "absorbed" then
+        if absorbed and how == ObstacleRemoval.absorbed then
             obstacle.fly_to_absorber(me, absorbed)
             leave(me)
             return
-        elseif how ~= "broken" then
+        elseif how ~= ObstacleRemoval.broken then
             local blink = if absorbed then obstacle.blink_out(me) else "no"
             if blink == "blinking" then
                 return
@@ -228,7 +228,7 @@ function statue.make(look: Look): Statue
         if not side then
             puff(me)
             me.visible = false
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         me.alliance = side
@@ -283,7 +283,7 @@ function statue.make(look: Look): Statue
         if battle.dimmed() then
             return
         end
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- `sub_80D4DCC`: striking back, by phase.
@@ -330,9 +330,9 @@ function statue.make(look: Look): Statue
     local function tick(me: Object)
         me.visible = true
         me.sprite.white = false
-        obstacle.take_hits(me, "keeps_damage")
+        obstacle.take_hits(me, ObstaclePush.keeps_damage)
         obstacle.tick_lifetime(me)
-        local a = obstacle.react(me, "destroys")
+        local a = obstacle.react(me, ObstacleCrush.destroys)
         if a then
             local action = actions[a]
             if not action then
@@ -349,7 +349,7 @@ function statue.make(look: Look): Statue
     local function init(me: Object)
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
         sprite:step()
@@ -374,7 +374,7 @@ function statue.make(look: Look): Statue
         me:setup_collision(look.is, look.hits, HIT_MOD)
         me.collision:set_region(nil)
         me.collision:present()
-        me.lifecycle = "update"
+        me.lifecycle = Lifecycle.update
     end
 
     -- The kind (below; its `place` spawns one).
@@ -404,20 +404,20 @@ function statue.make(look: Look): Statue
             o.run_while_paused = true
         end
         o.run_while_dimmed = true
-        obstacle.register(o, o.alliance, "one_a_side")
+        obstacle.register(o, o.alliance, ObstacleClass.one_a_side)
         return o
     end
 
     kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { staged = schema.bool, quiet = schema.bool, strike = schema.bool, avenger = schema.u8 },
         -- `sub_80D4C84`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

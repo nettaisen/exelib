@@ -30,7 +30,7 @@ end
 local function finish(me: Object)
     me.visible = false
     me.collision:set_region(nil)
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- `sub_80CE308`: fly; on the last tick, land.
@@ -55,14 +55,14 @@ local function fly(me: Object, look: SeedLook)
     me.collision.panel_x, me.collision.panel_y = x, y
     if not field.valid(x, y) then
         me.collision:set_region(nil)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
         me.visible = false
         return
     end
     if not field.solid(x, y) then
         battle.effect(me.pos, look.splash)
         me.collision:set_region(nil)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
         me.visible = false
         return
     end
@@ -83,7 +83,7 @@ local function burst(me: Object)
     regions.effects_on_panels(x, y, v.effect, r, dir, 0)
     regions.set_types(x, y, v.panel, r)
     battle.play_sound(v.sound)
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- `sub_80CE2B4`: resolve last tick's hits; end with the battle; stand
@@ -115,7 +115,7 @@ local function init(me: Object, look: SeedLook)
     me.element = v.element
     local sprite = me.sprite
     sprite:load(look.sprite)
-    sprite.shadow = "ground"
+    sprite.shadow = Shadow.ground
     me.anim = look.anim
     me.anim_loaded = 0xFF
     if not me:create_collision() then
@@ -131,7 +131,7 @@ local function init(me: Object, look: SeedLook)
     me.collision:present()
     sprite.palette = v.palette
     me.visible = true
-    me:set_lifecycle("update")
+    me:enter_update()
     tick(me, look)
 end
 
@@ -139,17 +139,17 @@ end
 function seed.make_kind(id: string, look: SeedLook): Kind
     return new.kind {
         id = id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { variant = SEED_VARIANT },
         -- `sub_80CE24C`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
                 if not me.active then
                     return
                 end
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, look)
             else
                 me:destroy()

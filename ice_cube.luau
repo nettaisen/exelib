@@ -69,7 +69,7 @@ function ice_cube.make(look: Look): IceCube
         battle.effect(Vec3.new(p.x, p.y, p.z + 0x10_0000), look.effects.burst)
         battle.play_sound(look.sounds.burst)
         me.visible = false
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- `sub_80D9930`: formed (after its forming animation for look 0), it waits for a push.
@@ -106,7 +106,7 @@ function ice_cube.make(look: Look): IceCube
         me.collision:set_region(nil)
         battle.effect(Vec3.new(me.pos.x, me.pos.y, me.pos.z + 0xC_0000), look.effects.puff)
         me.visible = false
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     local ACTIONS: { [number]: (Object) -> () } = { [0] = sit, [4] = slide, [8] = burst }
@@ -138,7 +138,7 @@ function ice_cube.make(look: Look): IceCube
         local sprite = me.sprite
         sprite:load(look.sprite)
         -- sprite_noShadow: the first part is drawn with the sprite.
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.visible = true
         me.anim, me.anim_loaded = s.look * 2, s.look * 2
         sprite:set_animation(s.look * 2)
@@ -152,21 +152,21 @@ function ice_cube.make(look: Look): IceCube
         me:setup_collision(look.is, look.hits, HIT_MOD)
         me.collision:set_hit_effect(look.spark)
         me.collision:present()
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
         battle.play_sound(look.sounds.form)
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { look = schema.u8 },
         -- `sub_80D984C`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

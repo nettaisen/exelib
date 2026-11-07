@@ -58,7 +58,7 @@ local function tick(me: Object, look: Look)
     local t = me.timer - 1
     me.timer = t
     if t <= 0 then
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 end
 
@@ -66,13 +66,13 @@ end
 local function init(me: Object, look: Look)
     local sprite = me.sprite
     sprite:load(look.sprite)
-    sprite.shadow = "with_sprite"
+    sprite.shadow = Shadow.with_sprite
     me.visible = true
     me.anim = 0
     me.anim_loaded = 0xFF
     me:set_coordinates_from_panel()
     battle.play_sound(look.sound)
-    me:set_lifecycle("update")
+    me:enter_update()
     tick(me, look)
 end
 
@@ -96,13 +96,13 @@ end
 function burst.make(look: Look): { kind: Kind, leave: (bomb: Object) -> () }
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         -- `sub_80C67F8`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me, look)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me, look)
             else
                 me:destroy()

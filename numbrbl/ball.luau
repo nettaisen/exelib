@@ -59,7 +59,7 @@ function ball.make(look: NumberBallLook): NumberBall
         hide_parts(me)
         if me.phase_init == 0 then
             me.anim = ANIM_ROLL
-            me.sprite.shadow = "ground"
+            me.sprite.shadow = Shadow.ground
             me.timer = (me.state :: State).wait
             me.phase_init = 4
         end
@@ -79,7 +79,7 @@ function ball.make(look: NumberBallLook): NumberBall
         me:update_collision_panels()
         if int.u32(int.asr(me.pos.x, 16) + REACH) > 2 * REACH then
             me.collision:set_region(nil)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
@@ -93,7 +93,7 @@ function ball.make(look: NumberBallLook): NumberBall
             battle.effect(me.pos, look.explosion)
             battle.play_sound(look.hit_sound)
             c:set_region(nil)
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
             return
         end
         local a = me.action
@@ -115,7 +115,7 @@ function ball.make(look: NumberBallLook): NumberBall
     local function init(me: Object)
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.visible = true
         me.anim, me.anim_loaded = 0, 0xFF
         sprite:set_animation(0)
@@ -128,24 +128,24 @@ function ball.make(look: NumberBallLook): NumberBall
         end
         me:setup_collision(look.is, look.hits, HIT_MOD)
         me.collision:present()
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { wait = schema.u8 },
         -- `sub_80D7278` (EXE5's 0x080D895C): by state, then the sprite
         -- (stepping while dimmed).
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
                 if not me.active then
                     return
                 end
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

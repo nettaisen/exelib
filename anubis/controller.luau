@@ -39,7 +39,7 @@ function controller.make(spec: Spec): { hook: (variant: AnubisVariant) -> (user:
 
     local kind = new.kind {
         id = spec.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { variant = statue.ANUBIS_VARIANT },
         -- `sub_80E40EC`.
         update = dimming_chips.phases { name = "Anubis", effect = effect },

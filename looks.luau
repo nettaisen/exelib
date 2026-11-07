@@ -29,17 +29,17 @@ end
 -- navi's), else a virus's, as the original's NameID 0 is for an object with none.
 function looks.actor_type(identity: Identity?): ActorType
     if identity == nil then
-        return "virus"
+        return ActorType.virus
     end
     if identity.actor_type ~= nil then
         return identity.actor_type
     end
-    if identity.class == "player" then
-        return "player"
-    elseif identity.class == "navi" then
-        return "navi"
+    if identity.class == IdentityClass.player then
+        return ActorType.player
+    elseif identity.class == IdentityClass.navi then
+        return ActorType.navi
     end
-    return "virus"
+    return ActorType.virus
 end
 
 -- `sub_800FC9E`: the battle sprite of `navi` in `form`: its form's if it changes form (it has `forms`), else its own.
@@ -51,7 +51,7 @@ end
 -- sprite (its side's navi's, or the form it is in). An error for an identity the content has no look for (a virus's).
 function looks.name_sprite(o: Object): SpriteAsset?
     local identity = o.identity
-    if identity ~= nil and identity.class == "field_object" then
+    if identity ~= nil and identity.class == IdentityClass.field_object then
         local look = identity.look
         if look == nil then
             error(`identity {identity.id} has no look in the content (sub_800F26C)`)
@@ -72,7 +72,7 @@ end
 -- identities' sprites, viruses' and bosses', aren't in the content: no netbattle object stands in for one.)
 function looks.load_like(sprite: Sprite, like: Object)
     local identity = like.identity
-    if looks.actor_type(identity) == "player" then
+    if looks.actor_type(identity) == ActorType.player then
         local stats = battle.navi(like.alliance)
         sprite:load(looks.navi_sprite(stats.navi, stats.form))
         return
@@ -91,7 +91,7 @@ end
 function looks.load_form_sprite(me: Object, form: FormDef)
     local sprite = me.sprite
     sprite:load(looks.navi_sprite(battle.navi(me.alliance).navi, form))
-    sprite.shadow = "ground"
+    sprite.shadow = Shadow.ground
     sprite:face(me)
     sprite.white = true
     me.anim, me.anim_loaded = 0, 0xFF
@@ -106,7 +106,7 @@ function looks.wear_form_image(me: Object, navi: NaviDef, form: FormDef)
     me.sprite:load(form.sprite)
     me.identity = identity
     me.anim, me.anim_loaded = 0, 0xFF
-    me.sprite.shadow = "ground"
+    me.sprite.shadow = Shadow.ground
     me.sprite.palette = form.palette or 0
 end
 
@@ -127,7 +127,7 @@ end
 -- would take an actor's sprite, `enemy_getStruct1`, which no field object is).
 function looks.wear_absorbed(me: Object, identity: Identity): boolean
     local look = identity.look
-    if identity.class ~= "field_object" or look == nil then
+    if identity.class ~= IdentityClass.field_object or look == nil then
         error(`identity {identity.id} has no absorbed look (enemy_getStruct1's sprite)`)
     end
     local id = look.sprite
@@ -139,7 +139,7 @@ function looks.wear_absorbed(me: Object, identity: Identity): boolean
     me.visible = true
     local anim = look.anim or 0
     me.anim, me.anim_loaded = anim, anim
-    sprite.shadow = if look.shadow then "ground" else "with_sprite"
+    sprite.shadow = if look.shadow then Shadow.ground else Shadow.with_sprite
     sprite:set_animation(anim)
     sprite.palette = look.palette or 0
     -- (The time bombs' looks keep their own flip, and the original sets a drawing bit instead: presentation.)

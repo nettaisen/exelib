@@ -81,7 +81,7 @@ end
 function gauge_speed.make(spec: Spec): GaugeSpeed
     local kind = new.kind {
         id = spec.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { fast = schema.bool },
         -- `sub_80E23A4`.
         update = dimming_chips.phases {

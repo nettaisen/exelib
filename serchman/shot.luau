@@ -52,7 +52,7 @@ function shot.make(spec: Spec): Shot
         me:setup_collision(if s.powered then spec.powered_type else spec.plain_type, spec.target, s.hit_mod)
         me.collision:set_hit_effect(if s.powered then spec.powered_spark else spec.plain_spark)
         me.collision:present()
-        me:set_lifecycle("update")
+        me:enter_update()
     end
 
     -- 0x080D0DDE (EXE4's 0x080D8814): its hits resolved; a miss's spark; gone.
@@ -72,14 +72,14 @@ function shot.make(spec: Spec): Shot
 
     local kind = new.kind {
         id = spec.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { powered = schema.bool, hit_mod = schema.u8 },
         -- 0x080D0D78.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

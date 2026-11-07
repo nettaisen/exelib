@@ -57,7 +57,7 @@ function follow_effect.make(spec: Spec): FollowEffect
         local s = me.state :: State
         local sprite = me.sprite
         sprite:load(spec.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.anim = spec.anim
         me.anim_loaded = spec.anim
         sprite:set_animation(spec.anim)
@@ -65,20 +65,20 @@ function follow_effect.make(spec: Spec): FollowEffect
         sprite:face_side(s.flip)
         me.visible = true
         me.hp = 0
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     local kind = new.kind {
         id = spec.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { flip = schema.u8, palette_add = schema.u8 },
         -- `sub_80E3D68`: its sprite steps unless held (HP bit 0).
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:free()
@@ -104,7 +104,7 @@ end
 
 -- `sub_80E3FC4`: end it (its next update frees it).
 function follow_effect.stop(o: Object)
-    o:set_lifecycle("destroy")
+    o:enter_destroy()
 end
 
 return follow_effect

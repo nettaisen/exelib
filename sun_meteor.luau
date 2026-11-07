@@ -75,7 +75,7 @@ function sun_meteor.make(look: Look): SunMeteors
         me.anim_loaded = r.anim
         sprite:set_animation(r.anim)
         sprite:step()
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         sprite:face(me)
         me:set_coordinates_from_panel()
         local front = me.facing
@@ -95,7 +95,7 @@ function sun_meteor.make(look: Look): SunMeteors
         c:set_region(nil)
         c:present()
         battle.play_sound(look.fall_sound)
-        me.lifecycle = "update"
+        me.lifecycle = Lifecycle.update
     end
 
     -- `sub_80DC000`, EXE4's 0x080DDF0C: a tick, then the fall.
@@ -149,7 +149,7 @@ function sun_meteor.make(look: Look): SunMeteors
     local function done(me: Object)
         me.visible = false
         me.collision:set_region(nil)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- `sub_80DBFC0`, EXE4's 0x080DDECC: resolve the hits, act, step the sprite, register again.
@@ -173,14 +173,14 @@ function sun_meteor.make(look: Look): SunMeteors
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { variant = SUN_METEOR },
         -- `sub_80DBEE6`, EXE4's 0x080DDDEE.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

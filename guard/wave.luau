@@ -38,7 +38,7 @@ end
 -- Done: off its panels, and freed at the next update.
 local function finish(me: Object)
     me.collision:set_region(nil)
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- At its animation's end (each time it comes round): out of sight, off its panels.
@@ -89,7 +89,7 @@ function wave.make(look: GuardWaveLook): GuardWaveSpawn
     -- EXE5's 0x080C7512: at its look's end, gone.
     local function fade(me: Object)
         if hide(me) then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
@@ -129,7 +129,7 @@ function wave.make(look: GuardWaveLook): GuardWaveSpawn
         local sprite = me.sprite
         sprite:load(look.sprite)
         -- (`sprite_noShadow`: the first part is drawn with the sprite.)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.visible = true
         me.anim, me.anim_loaded = v.anim, v.anim
         sprite:set_animation(v.anim)
@@ -147,22 +147,22 @@ function wave.make(look: GuardWaveLook): GuardWaveSpawn
         me.collision:set_hit_effect(nil)
         me.collision:present()
         battle.play_sound(look.sound)
-        me.lifecycle = "update"
+        me.lifecycle = Lifecycle.update
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { variant = SHOCK_WAVE_VARIANT },
         -- EXE5's 0x080C739C, EXE4's 0x080CFBB0.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
                 if not me.active then
                     return
                 end
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

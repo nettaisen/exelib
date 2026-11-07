@@ -118,7 +118,7 @@ function fist.make(look: Look): {
         local t = me.timer - 1
         me.timer = t
         if t == 0 then
-            me:set_lifecycle("destroy")
+            me:enter_destroy()
         end
     end
 
@@ -131,7 +131,7 @@ function fist.make(look: Look): {
         me.vel = Vec3.new(me.facing * FORWARD, me.vel.y, FALL)
         local sprite = me.sprite
         sprite:load(look.sprite)
-        sprite.shadow = "with_sprite"
+        sprite.shadow = Shadow.with_sprite
         me.visible = true
         me.anim, me.anim_loaded = look.anim, look.anim
         sprite:set_animation(look.anim)
@@ -141,20 +141,20 @@ function fist.make(look: Look): {
         if sound then
             battle.play_sound(sound)
         end
-        me:set_lifecycle("update")
+        me:enter_update()
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         -- `sub_80DBCEC`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 if look.ends_with_battle and battle.over() then
-                    me:set_lifecycle("destroy")
+                    me:enter_destroy()
                 else
                     local a = me.action
                     if a == 0 then

@@ -21,7 +21,7 @@ local function leave(me: Object)
     -- first clears the word its ExtraVars+0 points at: nothing set it, so
     -- the store lands at address 0.)
     obstacle.unregister(me)
-    me:set_lifecycle("destroy")
+    me:enter_destroy()
 end
 
 -- `sub_80E8326`: its target's panel: in a netbattle the other side's
@@ -102,17 +102,17 @@ function striker.make_kind(look: BodyGuardStrikerLook): Kind
 
     return new.kind {
         id = look.id,
-        pool = "effect",
+        pool = Pool.effect,
         -- `sub_80E8268`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 -- sub_80E8288
                 me.identity = look.identity
                 me.hp, me.max_hp = 1, 1
-                me:set_lifecycle("update")
+                me:enter_update()
                 tick(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:free()
@@ -132,7 +132,7 @@ function striker.spawn(kind: Kind, user: Object, element: Element, damage: numbe
     o.element = element
     o.alliance = user.alliance
     o.damage_word = damage
-    obstacle.register(o, user.alliance, "one_a_side")
+    obstacle.register(o, user.alliance, ObstacleClass.one_a_side)
     return o
 end
 

@@ -119,12 +119,12 @@ function boulder.make(look: Look): Kind
         me:unreserve_panel(me.future_panel_x, me.future_panel_y)
         obstacle.leave_stage(me)
         local how = if by_hp then (if me.hp ~= 0 then "removed" else "broken") else obstacle.removal(me)
-        if by_hp and how == "removed" then
+        if by_hp and how == ObstacleRemoval.removed then
             local p = me.pos
             battle.effect(Vec3.new(p.x, p.y, p.z + 0xC_0000), look.effects.puff)
-        elseif absorbed and how == "absorbed" then
+        elseif absorbed and how == ObstacleRemoval.absorbed then
             obstacle.fly_to_absorber(me, absorbed)
-        elseif how ~= "broken" then
+        elseif how ~= ObstacleRemoval.broken then
             local blink = if absorbed then obstacle.blink_out(me) else "no"
             if blink == "blinking" then
                 return
@@ -140,7 +140,7 @@ function boulder.make(look: Look): Kind
             battle.effect(Vec3.new(p.x, p.y, p.z + 0x10_0000), look.effects.splash)
         end
         me.collision:set_region(nil)
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     end
 
     -- The boulder's action table (`jt_80D2348`): its own actions and the framework's shared ones (or its look's).
@@ -184,7 +184,7 @@ function boulder.make(look: Look): Kind
         me.anim, me.anim_loaded = 0, 0
         sprite:set_animation(0)
         sprite:step()
-        sprite.shadow = "ground"
+        sprite.shadow = Shadow.ground
         me:set_coordinates_from_panel()
         me.future_panel_x, me.future_panel_y = me.panel_x, me.panel_y
         local p = me.pos
@@ -200,20 +200,20 @@ function boulder.make(look: Look): Kind
         end
         me:setup_collision(look.is, look.hits, HIT_MOD)
         me.collision:present()
-        me.lifecycle = "update"
+        me.lifecycle = Lifecycle.update
     end
 
     -- The kind (its `place` spawns one).
     local kind: Kind
     kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         -- `sub_80D2290`.
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

@@ -29,9 +29,9 @@ local LIFETIME = 30
 local function leave(me: Object, time_up: boolean)
     me.collision:set_region(nil)
     if time_up then
-        me:set_lifecycle("destroy")
+        me:enter_destroy()
     else
-        me.lifecycle = "destroy"
+        me.lifecycle = Lifecycle.destroy
     end
 end
 
@@ -88,19 +88,19 @@ function magnet.make(look: MagnetLook): MagnetSpawn
             c.status_base = look.paralysis
             c.hit_mod_base = {}
         end
-        me:set_lifecycle("update")
+        me:enter_update()
         tick(me)
     end
 
     local kind = new.kind {
         id = look.id,
-        pool = "attack",
+        pool = Pool.attack,
         state = { paralyzes = schema.bool, dx = schema.i32, dy = schema.i32 },
         update = function(me: Object)
             local l = me.lifecycle
-            if l == "init" then
+            if l == Lifecycle.init then
                 init(me)
-            elseif l == "update" then
+            elseif l == Lifecycle.update then
                 tick(me)
             else
                 me:destroy()

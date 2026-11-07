@@ -119,7 +119,7 @@ function controller.make(look: JealousyLook): (user: Object, spec: DimmingChipSp
 
     local kind = new.kind {
         id = look.id,
-        pool = "effect",
+        pool = Pool.effect,
         state = { left = schema.u32, bonus = schema.u16 },
         -- `sub_80E440C`.
         update = dimming_chips.phases { name = "Jealousy", effect = effect },

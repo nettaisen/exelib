@@ -56,7 +56,7 @@ function panel_types.grass(slows_at: number?): (Object) -> ()
             return
         end
         local slow = slows_at ~= nil and me.hp <= slows_at
-        if battle.cycle(if slow then "second" else "first") == 0 then
+        if battle.cycle(if slow then FightCycle.second else FightCycle.first) == 0 then
             me.hp = math.min(me.hp + 1, me.max_hp)
         end
     end
@@ -125,7 +125,7 @@ end
 -- wait (the move's end).
 function panel_types.road(me: Object): boolean
     if me.slide_cooldown == 0 and not off_the_floor(me) then
-        request_slide(me, "panel")
+        request_slide(me, SlideType.panel)
     end
     return true
 end
@@ -133,8 +133,8 @@ end
 -- The `slide` of a type that carries a body (EXE6's roads, EXE5's magnet: 0x08013564's type 5 where EXE6 tests 9
 -- to 12): a slide that reaches it, not floating or submerged, is carried on its way.
 function panel_types.carries(me: Object, how: SlideHow): SlideAnswer?
-    if how == "slide" and not off_the_floor(me) then
-        return "carry"
+    if how == SlideHow.slide and not off_the_floor(me) then
+        return SlideAnswer.carry
     end
     return nil
 end
@@ -149,7 +149,7 @@ function panel_types.magnet(me: Object)
     if me.slide_cooldown ~= 0 or off_the_floor(me) or me.form_traits.stands_on_magnet then
         return
     end
-    request_slide(me, "panel")
+    request_slide(me, SlideType.panel)
 end
 
 -- EXE5's sea's `move_end` (0x080171C2): a move's end on it holds the body there for `ticks` (immobilized: EXE6's
@@ -170,14 +170,14 @@ end
 
 -- EXE5's sea's `slide`: a slide stops on it.
 function panel_types.stops_a_slide(_me: Object, how: SlideHow): SlideAnswer?
-    return if how == "slide" then "stop" else nil
+    return if how == SlideHow.slide then SlideAnswer.stop else nil
 end
 
 -- Ice's `move_end` (EXE6's `sub_801A3DA`, EXE5's 0x080171F0): a body not of aqua, not floating or submerged, that ice
 -- affects, slides (slide type 2, "rows": the arena's rows by the move's direction).
 function panel_types.ice_slides(me: Object)
     if me.collision.element.primary ~= "aqua" and not off_the_floor(me) and me.status.affected_by_ice then
-        request_slide(me, "rows")
+        request_slide(me, SlideType.rows)
     end
 end
 
@@ -196,13 +196,13 @@ end
 
 -- Ice's `slide`: a slide, a drag or an obstacle's slide that reaches it goes a panel further, unless of aqua.
 function panel_types.ice(me: Object, _how: SlideHow): SlideAnswer?
-    return if me.collision.element.primary ~= "aqua" then "on" else nil
+    return if me.collision.element.primary ~= "aqua" then SlideAnswer.on else nil
 end
 
 -- EXE4's pitfall's `slide` (0x080102FC, 0x08010B54; an obstacle's, 0x080106B8 and its kin): a slide, a drag or an
 -- obstacle's slide stops on it, unless the body floats.
 function panel_types.pitfall(me: Object, _how: SlideHow): SlideAnswer?
-    return if me.status.float_shoe then nil else "stop"
+    return if me.status.float_shoe then nil else SlideAnswer.stop
 end
 
 -- EXE6's ice's `hit` (the hit kernel's aqua on ice): an aqua attack touching a body standing on it freezes the body
