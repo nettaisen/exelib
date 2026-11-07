@@ -151,10 +151,10 @@ function otenko.make(look: Look): Otenko
         if absorbed and obstacle.removal(me) == ObstacleRemoval.absorbed then
             obstacle.fly_to_absorber(me, absorbed)
         else
-            local blink = if absorbed then obstacle.blink_out(me) else "no"
-            if blink == "blinking" then
+            local blink = if absorbed then obstacle.blink_out(me) else BlinkOut.no
+            if blink == BlinkOut.blinking then
                 return
-            elseif blink == "no" then
+            elseif blink == BlinkOut.no then
                 local p = me.pos
                 if me.hp ~= 0 then
                     battle.effect(Vec3.new(p.x, p.y, p.z + 0xC_0000), look.effects.puff)

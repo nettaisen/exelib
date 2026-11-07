@@ -160,16 +160,16 @@ function statue.make(look: Look): Statue
             obstacle.release_tracking(me)
         end
         obstacle.unregister(me)
-        local how = if look.reads_no_removal then "broken" else obstacle.removal(me)
+        local how = if look.reads_no_removal then ObstacleRemoval.broken else obstacle.removal(me)
         if absorbed and how == ObstacleRemoval.absorbed then
             obstacle.fly_to_absorber(me, absorbed)
             leave(me)
             return
         elseif how ~= ObstacleRemoval.broken then
-            local blink = if absorbed then obstacle.blink_out(me) else "no"
-            if blink == "blinking" then
+            local blink = if absorbed then obstacle.blink_out(me) else BlinkOut.no
+            if blink == BlinkOut.blinking then
                 return
-            elseif blink == "done" then
+            elseif blink == BlinkOut.done then
                 if look.sounds.crumble then
                     battle.play_sound(look.sounds.crumble)
                 end

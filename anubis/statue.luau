@@ -171,14 +171,14 @@ function statue.make(look: Look): Statue
     local function destroyed(me: Object)
         me.collision:set_region(nil)
         me:unreserve_panel(me.future_panel_x, me.future_panel_y)
-        local how = if look.reads_no_removal then "broken" else obstacle.removal(me)
+        local how = if look.reads_no_removal then ObstacleRemoval.broken else obstacle.removal(me)
         if absorbed and how == ObstacleRemoval.absorbed then
             obstacle.fly_to_absorber(me, absorbed)
         elseif how ~= ObstacleRemoval.broken then
-            local blink = if absorbed then obstacle.blink_out(me) else "no"
-            if blink == "blinking" then
+            local blink = if absorbed then obstacle.blink_out(me) else BlinkOut.no
+            if blink == BlinkOut.blinking then
                 return
-            elseif blink == "no" then
+            elseif blink == BlinkOut.no then
                 local p = me.pos
                 battle.effect(Vec3.new(p.x, p.y, p.z + 0xC_0000), look.effects.puff)
             end

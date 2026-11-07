@@ -157,7 +157,7 @@ function instrument.make_kind(id: string, look: InstrumentLook): Kind
     -- puff), else broken (an explosion and its sound). (EXE4's, 0x080DC58C,
     -- always as broken: `removal_explodes`.)
     local function destroyed(me: Object)
-        local how = if look.removal_explodes then "broken" else obstacle.removal(me)
+        local how = if look.removal_explodes then ObstacleRemoval.broken else obstacle.removal(me)
         if how == ObstacleRemoval.broken then
             battle.play_sound(look.sounds.broken)
             local p = me.pos

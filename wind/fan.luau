@@ -160,7 +160,7 @@ function fan.make(look: FanLook): Fan
     -- (a puff, or blinking out: EXE6's), or absorbed (EXE6's); no longer its side's wind. (EXE4's, 0x080D664C,
     -- always as broken: `removal_explodes`.)
     local function destroyed(me: Object)
-        local how = if look.removal_explodes then "broken" else obstacle.removal(me)
+        local how = if look.removal_explodes then ObstacleRemoval.broken else obstacle.removal(me)
         if how == ObstacleRemoval.broken then
             battle.play_sound(look.break_sound)
             battle.effect(me.pos, look.explosion)
