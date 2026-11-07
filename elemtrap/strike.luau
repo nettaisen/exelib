@@ -54,7 +54,8 @@ local function hit_panels(me: Object, look: ElemTrapStrikeLook)
         return
     end
     local e = me.element
-    local by_element = if e.primary then look.strikes[e.primary :: PrimaryElement] else nil
+    local p = e.primary
+    local by_element = if p then look.strikes[p.name] else nil
     if by_element == nil then
         error(string.format("ElemTrap's counterattack: element %s reads past its tables", tostring(e)))
     end

@@ -19,8 +19,6 @@ local TRAILS = {
     normal = true,
     none = true,
 } :: { [string]: boolean }
--- The elements of the bodies.
-local BODIES = { null = true, fire = true, aqua = true, elec = true, wood = true } :: { [string]: boolean }
 
 -- The kinds a card screen lists under its parameters (the other kinds, abilities and bugs, under its abilities): the
 -- stats' changes, the effect numbers below 0x16 in EXE6 (its screen's line drawer 0x08141384 tests `cmp r4, #22`)
@@ -98,12 +96,13 @@ function effects.hp_percent(n: number): PatchCardEffect
     return effect({ kind = kind :: any, amount = whole(math.abs(n), "hp_percent", 255) })
 end
 
--- MegaMan's element.
-function effects.body(element: ElementName): PatchCardEffect
-    if not BODIES[element] then
-        error(string.format("patch card body %q is no element", element))
+-- MegaMan's element (`Element.wood`: one of the five, no secondary element). The effect keeps its primary element.
+function effects.body(element: Element): PatchCardEffect
+    local p = element.primary
+    if p == nil or p == PrimaryElement.drain or element ~= Element.new(p) then
+        error(string.format("patch card body %s is not one of the five elements", tostring(element)))
     end
-    return effect({ kind = "body", element = element })
+    return effect({ kind = "body", element = p })
 end
 
 -- The buster's Attack, Rapid and Charge, the custom screen's size, the

@@ -139,7 +139,7 @@ local function idle(_me: Object) end
 -- `sub_80CD7A0`: a fire hit sets it off (its HP emptied but EXE4's).
 local function catch_fire(me: Object, look: Look)
     local s = me.state :: State
-    if s.set_off or me.collision:element_damage("fire") == 0 then
+    if s.set_off or me.collision:element_damage(PrimaryElement.fire) == 0 then
         return
     end
     s.set_off = true

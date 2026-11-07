@@ -102,7 +102,7 @@ local function init(me: Object, look: Look)
         -- EXE5's by the whole byte, which a secondary element takes past the table.)
         local e = me.element
         local p = e.primary
-        local palette = if p and (not look.whole_byte or e == Element.new(p)) then look.palettes[p] else nil
+        local palette = if p and (not look.whole_byte or e == Element.new(p)) then look.palettes[p.name] else nil
         if palette == nil then
             error(string.format("element %s reads past byte_80CF8A8", tostring(e)))
         end

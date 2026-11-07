@@ -13,7 +13,7 @@ export type SonicBoomLook = {
     sprite: SpriteAsset,
     z: number,
     piercing_palette: number,
-    palettes: { [PrimaryElement]: number },
+    palettes: { [string]: number },
     whole_byte: boolean,
     is: CollisionType,
     hits: CollisionType,
@@ -872,7 +872,7 @@ export type NumbrBlNumberMan = {
 export type PatchCardEffect = {
     kind: string,
     amount: number?,
-    element: ElementName?,
+    element: PrimaryElement?,
     weapon: Weapon?,
     variant: ProjectileVariant?,
     barrier: Barrier?,
@@ -1611,7 +1611,7 @@ export type ElemTrapStrike = { sound: Sound?, spark: Spark, hit_mod: HitModifier
 -- (EXE4's sets the other side's mood to 1, 0x0800F4DE), and where its bursts
 -- go (none: the whole field; EXE4's the other side's area, 0x080E531F).
 export type ElemTrapStrikeLook = {
-    strikes: { [PrimaryElement]: ElemTrapStrike },
+    strikes: { [string]: ElemTrapStrike },
     self_type: CollisionType,
     target: CollisionType,
     bursts: Kind,

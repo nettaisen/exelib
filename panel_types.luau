@@ -23,7 +23,7 @@ local function drain(me: Object)
     local left = c.standing_count - 1
     if left < 0 then
         c.standing_count = DRAIN_EVERY
-        c:add_damage("drain", 1, false)
+        c:add_damage(PrimaryElement.drain, 1, false)
     else
         c.standing_count = left
     end
@@ -36,7 +36,7 @@ end
 
 -- A `stand` that drains a body of `of` as poison drains any, and leaves another be (EXE5's sea, fire bodies:
 -- 0x08016C7E).
-function panel_types.drains(of: ElementName): (Object) -> ()
+function panel_types.drains(of: PrimaryElement): (Object) -> ()
     return function(me: Object)
         if me.collision.element.primary == of then
             drain(me)
@@ -52,7 +52,7 @@ end
 function panel_types.grass(slows_at: number?): (Object) -> ()
     return function(me: Object)
         me.collision.standing_count = 0
-        if me.element.primary ~= "wood" then
+        if me.element.primary ~= PrimaryElement.wood then
             return
         end
         local slow = slows_at ~= nil and me.hp <= slows_at
@@ -86,7 +86,7 @@ function panel_types.burn(spec: BurnSpec): (Object, boolean) -> ()
             return
         end
         local c = me.collision
-        if c.element.primary == "fire" or c.region == nil or me.status.float_shoe then
+        if c.element.primary == PrimaryElement.fire or c.region == nil or me.status.float_shoe then
             return
         end
         for s, on in spec.spared_by do
@@ -95,8 +95,8 @@ function panel_types.burn(spec: BurnSpec): (Object, boolean) -> ()
             end
         end
         if not me.status.guard and not me.status.invulnerable then
-            local damage = bit32.band(bit32.lshift(spec.damage, battle.weakness(c.element.primary :: PrimaryElement, "fire")), 0xFFFF)
-            c:add_damage("fire", damage, true)
+            local damage = bit32.band(bit32.lshift(spec.damage, battle.weakness(c.element.primary :: PrimaryElement, PrimaryElement.fire)), 0xFFFF)
+            c:add_damage(PrimaryElement.fire, damage, true)
             c:add_mood_damage(spec.mood or 0)
             -- (A hit: the hit modifiers 1 and 2, on both sides'.)
             c:add_hit_mod({ flinch = true, flash = true })
@@ -176,7 +176,7 @@ end
 -- Ice's `move_end` (EXE6's `sub_801A3DA`, EXE5's 0x080171F0): a body not of aqua, not floating or submerged, that ice
 -- affects, slides (slide type 2, "rows": the arena's rows by the move's direction).
 function panel_types.ice_slides(me: Object)
-    if me.collision.element.primary ~= "aqua" and not off_the_floor(me) and me.status.affected_by_ice then
+    if me.collision.element.primary ~= PrimaryElement.aqua and not off_the_floor(me) and me.status.affected_by_ice then
         request_slide(me, SlideType.rows)
     end
 end
@@ -187,7 +187,7 @@ end
 -- drag bit.
 function panel_types.ice_pushes(bits: { { [MoveDirection]: HitModifier } }): (Object) -> ()
     return function(me: Object)
-        if me.collision.element.primary ~= "aqua" and not off_the_floor(me) and me.status.affected_by_ice then
+        if me.collision.element.primary ~= PrimaryElement.aqua and not off_the_floor(me) and me.status.affected_by_ice then
             local row = bits[bit32.band(me.alliance, 1) + 1]
             me.collision:add_final_hit_mod(row[me.collision.direction] or {})
         end
@@ -196,7 +196,7 @@ end
 
 -- Ice's `slide`: a slide, a drag or an obstacle's slide that reaches it goes a panel further, unless of aqua.
 function panel_types.ice(me: Object, _how: SlideHow): SlideAnswer?
-    return if me.collision.element.primary ~= "aqua" then SlideAnswer.on else nil
+    return if me.collision.element.primary ~= PrimaryElement.aqua then SlideAnswer.on else nil
 end
 
 -- EXE4's pitfall's `slide` (0x080102FC, 0x08010B54; an obstacle's, 0x080106B8 and its kin): a slide, a drag or an
@@ -209,7 +209,7 @@ end
 -- (`freeze`, its hits' status in their place) and the panel turns normal.
 function panel_types.freezes(freeze: Status): (Object, PrimaryElement?) -> ()
     return function(me: Object, element: PrimaryElement?)
-        if element == "aqua" then
+        if element == PrimaryElement.aqua then
             local c = me.collision
             field.set_type(c.panel_x, c.panel_y, PanelType.normal)
             c.status_final = freeze

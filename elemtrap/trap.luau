@@ -28,7 +28,7 @@ export type State = {
     armed: boolean,
     -- The element that sprang it (the original's first parameter); in a
     -- trap that watches one element, that element from the start.
-    sprung_by: ElementName,
+    sprung_by: PrimaryElement,
 }
 
 local trap = {}
@@ -40,7 +40,7 @@ local HIT_MOD: HitModifier = {}
 
 -- What springs it: damage in these elements (fire to wood; the first one
 -- that has some).
-local SPRUNG_BY: { ElementName } = { "fire", "aqua", "elec", "wood" }
+local SPRUNG_BY: { PrimaryElement } = { PrimaryElement.fire, PrimaryElement.aqua, PrimaryElement.elec, PrimaryElement.wood }
 
 -- Its actions (`off_80CE02C`, byte offsets).
 local WATCH, SPRING = 0, 4
@@ -155,7 +155,7 @@ function trap.make_kind(id: string, look: ElemTrapLook): Kind
     return new.kind {
         id = id,
         pool = Pool.attack,
-        state = { chip = schema.chip, bonus = schema.u16, armed = schema.bool, sprung_by = { "null", "fire", "aqua", "elec", "wood" } },
+        state = { chip = schema.chip, bonus = schema.u16, armed = schema.bool, sprung_by = schema.choice(PrimaryElement) },
         -- `sub_80CDF84`.
         update = function(me: Object)
             local l = me.lifecycle
@@ -174,7 +174,7 @@ end
 -- the controller's damage word, its chip and the bonus; a trap that
 -- watches one element watches `element`. (Its position is the spawner's
 -- registers, which nothing reads.)
-function trap.spawn(kind: Kind, controller: Object, user: Object, chip: Chip?, bonus: number, element: ElementName?): Object?
+function trap.spawn(kind: Kind, controller: Object, user: Object, chip: Chip?, bonus: number, element: PrimaryElement?): Object?
     local o = battle.spawn(kind, Vec3.new(0, controller.element.byte, 0))
     if not o then
         return nil
