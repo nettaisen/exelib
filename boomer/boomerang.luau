@@ -83,7 +83,7 @@ local function grow_grass(me: Object, s: State)
     if field.check(x, y, OWN_AREA, me.alliance) then
         return
     end
-    field.set_type(x, y, "grass")
+    field.set_type(x, y, PanelType.grass)
 end
 
 -- `sub_80CA2D4`.

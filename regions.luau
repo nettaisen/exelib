@@ -170,7 +170,7 @@ function regions.effects_on_panels(x: number, y: number, effect: Effect, r: Regi
         local px, py = x + p[1] * dir, y + p[2]
         if valid(px, py) then
             local panel = field.panel(px, py)
-            if panel and panel.kind ~= "missing" then
+            if panel and panel.kind ~= PanelType.missing then
                 local cx, cy = field.center(px, py)
                 battle.effect(Vec3.new(cx, cy, z), effect)
             end

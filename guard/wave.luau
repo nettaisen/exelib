@@ -54,9 +54,9 @@ end
 
 -- EXE6's `sub_80C6CFC`, EXE5's 0x080C7544 (EXE4's 0x08009AEC on any mark): what the variant does to its panel.
 local function mark(x: number, y: number, v: GuardWaveVariant)
-    if v.panel == "cracked" then
+    if v.panel == PanelType.cracked then
         field.crack(x, y)
-    elseif v.panel == "broken" then
+    elseif v.panel == PanelType.broken then
         field.shatter(x, y)
     elseif v.panel then
         field.set_type(x, y, v.panel)

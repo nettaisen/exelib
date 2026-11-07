@@ -167,7 +167,7 @@ function quake.make(look: Look): Quake
 
     -- `object_panel_setPoison`: a solid panel turns to poison, with its sound.
     local function poison(x: number, y: number): boolean
-        return field.overwrite(x, y, "poison", look.sounds.poison)
+        return field.overwrite(x, y, PanelType.poison, look.sounds.poison)
     end
 
     return { kind = kind, spawn = spawn, change = quake.change, puff = puff, bubbles = bubbles, poison = poison }
