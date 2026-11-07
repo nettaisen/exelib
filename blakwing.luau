@@ -38,8 +38,8 @@ export type Look = {
     spark: Spark,
     -- EXE4's perches, each in its column's slot (0x080DD1F6).
     perches_by_column: boolean?,
-    -- EXE4's controller's end (0x080E80B6): the panel its user stands on becomes a hole.
-    ends_with_hole: boolean?,
+    -- EXE4's controller's end (0x080E80B6): the panel its user stands on becomes this type (a hole).
+    ends_with: PanelType?,
 }
 
 -- ---- The perch ------------------------------------------------------------------------------------------------------
@@ -441,8 +441,8 @@ function blakwing.make(look: Look): (user: Object, spec: DimmingChipSpec) -> Obj
             local t = me.timer - 1
             me.timer = int.u16(t)
             if t < 0 then
-                if look.ends_with_hole then
-                    field.set_type(me.panel_x, me.panel_y, "hole")
+                if look.ends_with then
+                    field.set_type(me.panel_x, me.panel_y, look.ends_with)
                 end
                 dimming_chips.done(me)
             end

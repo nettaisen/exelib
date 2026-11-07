@@ -76,7 +76,7 @@ local function raise_arm_for(look: BusterLook, navi: Object, holder: Object, whi
     elseif has_trait(form, "mood_palette") then
         -- A form whose palette follows the mood (EXE6's Gregar and Falzar
         -- Beast).
-        if battle.emotion(side) == "full_synchro" then
+        if battle.emotion(side) == Emotion.full_synchro then
             palette_add = NO_CHARGE_PALETTE
         end
     elseif arm and arm.palette_add then

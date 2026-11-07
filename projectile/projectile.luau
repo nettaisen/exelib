@@ -178,7 +178,7 @@ local function init(me: Object, look: Look)
         me.anim = v.anim or 0
         me.anim_loaded = 0xFF
     end
-    me.element = Element.new(v.element, v.secondary)
+    me.element = Element.new(v.element.primary :: PrimaryElement, v.secondary)
     me:set_coordinates_from_panel()
     climb(me, v)
     me.timer2 = WAIT

@@ -102,7 +102,7 @@ function panel_types.burn(spec: BurnSpec): (Object, boolean) -> ()
             c:add_hit_mod({ flinch = true, flash = true })
         end
         local x, y = c.panel_x, c.panel_y
-        field.set_type(x, y, "normal")
+        field.set_type(x, y, PanelType.normal)
         local cx, cy = field.center(x, y)
         battle.spark(me, battle.jitter(0xF, Vec3.new(cx, cy, 0)), spec.spark)
     end
@@ -211,7 +211,7 @@ function panel_types.freezes(freeze: Status): (Object, PrimaryElement?) -> ()
     return function(me: Object, element: PrimaryElement?)
         if element == "aqua" then
             local c = me.collision
-            field.set_type(c.panel_x, c.panel_y, "normal")
+            field.set_type(c.panel_x, c.panel_y, PanelType.normal)
             c.status_final = freeze
         end
     end
@@ -247,7 +247,7 @@ function panel_types.crumbles(ticks: number): Crumbles
                     return
                 end
             end
-            field.set_type(x, y, "normal")
+            field.set_type(x, y, PanelType.normal)
         end,
         changed = function(x: number, y: number)
             field.set_timer(x, y, ticks)

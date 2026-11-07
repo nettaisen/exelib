@@ -91,7 +91,7 @@ local function panel_variant(me: Object, look: TornadoLook): Variant?
     local p = field.panel(me.panel_x, me.panel_y)
     -- (Off the field the game reads a type from address 0 and the tornado
     -- frees itself right after, whatever it found.)
-    return p and look.panel_variants[p.kind]
+    return p and look.panel_variants[p.kind.name]
 end
 
 -- `sub_80C9F98`: take the panel's variant, then spin on it.
@@ -101,7 +101,7 @@ local function init(me: Object, look: TornadoLook)
         local v = panel_variant(me, look)
         if v then
             s.variant = v
-            field.set_type(me.panel_x, me.panel_y, "normal")
+            field.set_type(me.panel_x, me.panel_y, PanelType.normal)
             if look.doubles_on_panel then
                 -- (Its amount as hits read it doubles; the bits above it, the flags, are kept: 0xF800.)
                 local w = me.damage_word

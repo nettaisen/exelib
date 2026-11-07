@@ -80,7 +80,7 @@ function controller.make(spec: Spec): { kind: Kind }
     -- The panel changer's change (`byte_80E272C` row 6): the own panel turns
     -- to poison, in 64 ticks, flickering.
     local change = panel_changer.change {
-        panel = "poison",
+        panel = PanelType.poison,
         panels = "own",
         flicker = true,
         ticks = 0x40,

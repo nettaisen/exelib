@@ -1124,7 +1124,7 @@ export type ProjectileVariant = {
     id: string?,
     collision: { is: CollisionType, hits: CollisionType },
     hit_mod: HitModifier,
-    element: ElementName,
+    element: Element,
     secondary: SecondaryElements?,
     spark: Spark?,
     sprite: SpriteAsset?,
@@ -1367,7 +1367,7 @@ export type RockVariant = {
     id: string?,
     anim: number,
     hp: number,
-    element: ElementName,
+    element: Element,
     debris_palette: number,
     break_sound: Sound,
     -- What it is taken for (none: EXE4's, whose init writes no NameID).
@@ -1553,7 +1553,7 @@ export type TornadoVariant = { palette: number, rearm: number, bug: number?, bug
 export type TornadoLook = {
     sprite: SpriteAsset,
     sound: Sound,
-    panel_variants: { [PanelType]: TornadoVariant },
+    panel_variants: { [string]: TornadoVariant },
     doubles_on_panel: boolean,
     is: CollisionType,
     bug_is: CollisionType?,
@@ -1862,7 +1862,7 @@ export type RushLook = {
     -- it mustn't be (EXE4's rows test the type's number); `pixel_nudge` false: he comes up under the opponent without
     -- EXE6's pixel down and up (EXE4's).
     stand: RushStand?,
-    not_on: { [PanelType]: boolean }?,
+    not_on: { [string]: boolean }?,
     pixel_nudge: boolean?,
 }
 
@@ -2041,7 +2041,7 @@ export type ElemFlameState = {
     paralyzes: boolean,
     attack_480: boolean,
     while_dimmed: boolean,
-    leaves: PanelType?,
+    leaves: string?,
     palette: number,
     hit: boolean,
     sent: boolean,
@@ -2101,7 +2101,7 @@ export type Cannonball = { kind: Kind, thrower: () -> Thrower }
 -- EXE5's 0x02034A90, EXE4's 0x02035810), at which the water's hits land and their sparks show, far above the field.
 -- The Guard chips' shock wave's variant (@exelib/guard/wave, a row of the game's table): its animation and the
 -- steps of its sprite it comes round in, its ticks on a panel, and what it does to the panels it passes.
-export type GuardWaveVariant = { anim: number, steps: number, ticks: number, panel: ("cracked" | "broken" | "poison")? }
+export type GuardWaveVariant = { anim: number, steps: number, ticks: number, panel: PanelType? }
 
 -- A game's Guard shock wave (@exelib/guard/wave): its key, sheet and sound; what a plain one is, what a marking one
 -- is, and what they hit; whether a segment keeps its sender (its flip and the sender as its owner); whether its first
@@ -2301,3 +2301,20 @@ export type SunMeteor = {
 -- the thrower's side), and whether, with no enemy standing, the enemy's area stands in (EXE6's).
 export type FistTargetTest = PanelCondition
 export type FistTargets = { body: FistTargetTest, area_fallback: boolean }
+
+-- The names the game defines, as value tables (docs/design/scripting.md §2.1): what its rules, builds and root
+-- say it has: here, those every game has (written by verify tools/api-names/api-game-names/declare.py).
+declare PanelType: {
+    broken: PanelType, cracked: PanelType, grass: PanelType, holy: PanelType, ice: PanelType, missing: PanelType,
+    normal: PanelType, poison: PanelType,
+}
+declare Family: {
+    aqua: Family, ["break"]: Family, elec: Family, fire: Family, null: Family, plus: Family, program_advance: Family,
+    special: Family, summon: Family, sword: Family, wind: Family, wood: Family,
+}
+declare Emotion: { angry: Emotion, full_synchro: Emotion, normal: Emotion }
+declare Version: {}
+declare Window: {}
+declare Button: { redeal: Button }
+declare Collection: { navicust_programs: Collection, patch_cards: Collection }
+-- (End of the names the game defines.)

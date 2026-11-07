@@ -45,7 +45,7 @@ end
 -- side's, of that side: EXE5's and EXE6's rows are mirror images, EXE4's
 -- misread ones aren't, side 1's asking a side-1 panel and side 0's any:
 -- docs/engine/side-symmetry.md.)
-local function place(me: Object, stand: RushStand, not_on: { [PanelType]: boolean }?)
+local function place(me: Object, stand: RushStand, not_on: { [string]: boolean }?)
     local navi = battle.player(me.alliance)
     local canonical = field.canonical_side()
     local cond = stand[canonical]
@@ -56,7 +56,7 @@ local function place(me: Object, stand: RushStand, not_on: { [PanelType]: boolea
     if
         navi
         and field.check(navi.panel_x, navi.panel_y, cond, canonical)
-        and not (not_on and not_on[(field.panel(navi.panel_x, navi.panel_y) :: Panel).kind])
+        and not (not_on and not_on[(field.panel(navi.panel_x, navi.panel_y) :: Panel).kind.name])
     then
         x, y = navi.panel_x, navi.panel_y
     end

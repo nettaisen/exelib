@@ -253,7 +253,7 @@ function rock.make(look: Look): Rock
         me:set_coordinates_from_panel()
         me.pos = Vec3.new(me.pos.x, me.pos.y, 0)
         me.future_panel_x, me.future_panel_y = me.panel_x, me.panel_y
-        me.element = Element.new(v.element)
+        me.element = v.element
         me.hp, me.max_hp = v.hp, v.hp
         if v.identity then
             me.identity = v.identity

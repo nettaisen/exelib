@@ -81,7 +81,7 @@ function flame.make_kind(look: Look): ElemFlame
         me:hit_spark()
         local s = me.state :: State
         if me.timer == 3 and s.leaves ~= NONE then
-            field.set_type(me.panel_x, me.panel_y, s.leaves :: PanelType)
+            field.set_type(me.panel_x, me.panel_y, (PanelType :: { [string]: PanelType })[s.leaves :: string])
         end
         local t = me.timer - 1
         me.timer = int.u16(t)
@@ -154,9 +154,9 @@ function flame.make_kind(look: Look): ElemFlame
         tick(me)
     end
 
-    local leaves = { NONE }
+    local leaves: { string } = { NONE }
     for _, t in look.leaves or {} do
-        table.insert(leaves, t)
+        table.insert(leaves, (t :: PanelType).name)
     end
     local kind = new.kind {
         id = look.id,
