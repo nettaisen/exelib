@@ -98,10 +98,7 @@ local ENEMY_HITS: HitNames = { enemy_attack = true, enemy_object = true, enemy_b
 local NONE = 0xFF
 -- The strike (`byte_80D4EB4`, by the side it strikes for): every panel with the other side's player navi, a burst
 -- on each, the camera shaking, and the statue in its striking animation. Its hit: hit modifier 3, no spark.
-local STRIKE_REGION: { [number]: Region } = {
-    [0] = new.region { field = { enemy_navi = true }, side = 0 },
-    [1] = new.region { field = { enemy_navi = true }, side = 1 },
-}
+local STRIKE_REGION: { [number]: Region } = regions.other_navi
 local STRIKE_HIT_MOD: HitModifier = { flinch = true, flash = true }
 local STRIKE_ANIM = 1
 -- Its appearance (animation 0) lasts 29 of its sprite's steps, its strike 36 (every game's).

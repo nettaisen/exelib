@@ -63,7 +63,8 @@ regions.tall = new.region { panels = { { 0, 0 }, { 0, -1 } } }
 regions.vee = new.region { panels = { { 0, 0 }, { -1, -1 }, { -1, 1 } } }
 
 -- Six in a row from the anchor (region 0x08: EXE5's MagnetSoul's pull,
--- EXE4's MagBolt and LaserMan's laser).
+-- EXE4's MagBolt and LaserMan's laser, WaveArm's look ahead, DblHero's
+-- shots).
 regions.row = new.region { panels = { { 0, 0 }, { 1, 0 }, { 2, 0 }, { 3, 0 }, { 4, 0 }, { 5, 0 } } }
 
 -- The anchor and the column ahead of it (region 0x15: ElcPuls's pulse).
@@ -105,7 +106,7 @@ regions.field = new.region { field = {} }
 regions.solid = new.region { field = { solid = true } }
 
 -- The panels of the other side's player navi: side 0's target (region
--- 0x85) and side 1's (0x84) (Discord).
+-- 0x85) and side 1's (0x84) (Discord, the Guardian's strike).
 regions.other_navi = {
     [0] = new.region { field = { enemy_navi = true }, side = 0 },
     [1] = new.region { field = { enemy_navi = true }, side = 1 },
@@ -203,7 +204,8 @@ regions.ahead = new.region { panels = { { 1, 0 } } }
 -- The panels above and below the anchor (region 0x05).
 regions.above_below = new.region { panels = { { 0, -1 }, { 0, 1 } } }
 
--- Four in a row from the anchor (region 0x07).
+-- Four in a row from the anchor (region 0x07: WaveArm's look ahead,
+-- DblHero's shots).
 regions.line_4 = new.region { panels = { { 0, 0 }, { 1, 0 }, { 2, 0 }, { 3, 0 } } }
 
 -- The two panels diagonally ahead of the anchor: the fork without its
@@ -214,7 +216,7 @@ regions.diagonals_ahead = new.region { panels = { { 1, -1 }, { 1, 1 } } }
 regions.tee = new.region { panels = { { 0, 0 }, { 0, -1 }, { 0, 1 }, { 1, 0 } } }
 
 -- The anchor and the panel diagonally ahead and up (region 0x16), or ahead
--- and down (0x17).
+-- and down (0x17) (WaveArm's look before it turns).
 regions.up_ahead = new.region { panels = { { 0, 0 }, { 1, -1 } } }
 regions.down_ahead = new.region { panels = { { 0, 0 }, { 1, 1 } } }
 
@@ -222,8 +224,8 @@ regions.down_ahead = new.region { panels = { { 0, 0 }, { 1, 1 } } }
 -- with `tall` for the panel above).
 regions.tall_down = new.region { panels = { { 0, 0 }, { 0, 1 } } }
 
--- The anchor and the three columns ahead of it (region 0x1B), and the four
--- (0x1C).
+-- The anchor and the three columns ahead of it (region 0x1B: EXE5's
+-- BigNoise), and the four (0x1C).
 regions.fan_4 = new.region {
     panels = { { 0, 0 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 2, -1 }, { 2, 0 }, { 2, 1 }, { 3, -1 }, { 3, 0 }, { 3, 1 } },
 }
@@ -242,7 +244,8 @@ regions.fan_5 = new.region {
 regions.across = new.region { panels = { { 0, 0 }, { 1, 0 }, { -1, 0 } } }
 regions.ahead_behind = new.region { panels = { { 1, 0 }, { -1, 0 } } }
 
--- Five in a row from the anchor (region 0x20).
+-- Five in a row from the anchor (region 0x20: WaveArm's look ahead,
+-- DblHero's shots).
 regions.line_5 = new.region { panels = { { 0, 0 }, { 1, 0 }, { 2, 0 }, { 3, 0 }, { 4, 0 } } }
 
 -- The anchor's column and the three ahead of it (region 0x21), column by
@@ -262,8 +265,8 @@ regions.hourglass = new.region {
     panels = { { -1, -1 }, { 0, -1 }, { 1, -1 }, { 0, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 } },
 }
 
--- The anchor's column and the five ahead of it (region 0x23), row by row
--- from the top.
+-- The anchor's column and the five ahead of it (region 0x23: TenguMan's
+-- dash), row by row from the top.
 regions.wide_long_6 = new.region {
     panels = {
         { 0, -1 }, { 1, -1 }, { 2, -1 }, { 3, -1 }, { 4, -1 }, { 5, -1 },
@@ -273,8 +276,8 @@ regions.wide_long_6 = new.region {
 }
 
 -- Three rows of three, each a panel further forward than the one below it
--- (region 0x24), or than the one above it (0x25): the rising and the
--- falling diagonals, three panels thick.
+-- (region 0x24), or than the one above it (0x25: TenguMan's dive): the
+-- rising and the falling diagonals, three panels thick.
 regions.rising_band = new.region {
     panels = {
         { 0, -1 }, { 1, -1 }, { 2, -1 },
@@ -306,7 +309,7 @@ regions.bracket = new.region {
 regions.hammer = new.region { panels = { { 0, 0 }, { 1, 0 }, { 2, 0 }, { 2, -1 }, { 2, 1 } } }
 
 -- The hourglass around the panel ahead of the anchor, the anchor not among
--- them (region 0x29).
+-- them (region 0x29: Colonel's ScreenDivide).
 regions.hourglass_ahead = new.region {
     panels = { { 0, -1 }, { 1, -1 }, { 2, -1 }, { 1, 0 }, { 0, 1 }, { 1, 1 }, { 2, 1 } },
 }
