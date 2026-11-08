@@ -232,37 +232,6 @@ function panels.random_in_region(
     return bit32.band(pick, 7), bit32.band(bit32.rshift(pick, 4), 0xF)
 end
 
--- `GetRandomRelativePanelFiltered` with a region definition: of `r`'s
--- panels around (x, y), dx toward `dir`, one that meets `cond`
--- (of side `of`), at random (one draw of the RNG, only when there is one);
--- nil if none.
-function panels.random_in(
-    x: number,
-    y: number,
-    cond: PanelCondition?,
-    r: Region,
-    dir: number,
-    of: number?
-): (number?, number?)
-    local shape = r.panels
-    if shape == nil then
-        error("GetRandomRelativePanelFiltered takes a region of panels, not a whole-field one")
-    end
-    local found: { number } = {}
-    for _, p in shape do
-        local px, py = x + p[1] * dir, y + p[2]
-        if field.check(px, py, cond, of) then
-            -- The game keeps them as bytes: x in the low 3 bits, y above.
-            table.insert(found, bit32.bor(bit32.band(px, 0xFF), bit32.lshift(bit32.band(py, 0xFF), 4)))
-        end
-    end
-    if #found == 0 then
-        return nil, nil
-    end
-    local pick = found[battle.rng_positive() % #found + 1]
-    return bit32.band(pick, 7), bit32.band(bit32.rshift(pick, 4), 0xF)
-end
-
 local ENEMY_BODY: PanelCondition = { enemy_body = true }
 
 -- `sub_8109708`: a random panel of region `region` around (x, y), forward

@@ -71,6 +71,38 @@ local function fly(me: Object, look: SeedLook)
     me.phase, me.phase_init = 0, 0
 end
 
+-- `object_isValidPanel` on whole numbers (the API's panel arguments wrap
+-- to a byte, which could bring a far-off panel back onto the field).
+local function valid(x: number, y: number): boolean
+    return x >= 1 and x <= 6 and y >= 1 and y <= 3
+end
+
+-- `sub_80CE468`: `sub_801BD3C` (`battle.region_effects`: `effect` on each
+-- panel of region `r` around (x, y), on the ground), skipping missing
+-- panels too, and with dx stepping by `dir` (`panels.side_direction`),
+-- which the seed computes from its side and flip halfword.
+local function effects_on(x: number, y: number, effect: Effect, r: Region, dir: number)
+    for _, p in r.panels or {} do
+        local px, py = x + p[1] * dir, y + p[2]
+        if valid(px, py) then
+            local panel = field.panel(px, py)
+            if panel and panel.kind ~= PanelType.missing then
+                local cx, cy = field.center(px, py)
+                battle.effect(Vec3.new(cx, cy, 0), effect)
+            end
+        end
+    end
+end
+
+-- `sub_80CE424`: panel type `kind` on each panel of region `r` around
+-- (x, y), dx not mirrored (`object_setPanelType` leaves missing panels,
+-- and the field's border, alone).
+local function set_types(x: number, y: number, kind: PanelType, r: Region)
+    for _, p in r.panels or {} do
+        field.set_type(x + p[1], y + p[2], kind)
+    end
+end
+
 -- `sub_80CE3C4`: the tick after landing: grow the panels, and end.
 local function burst(me: Object)
     local v = (me.state :: State).variant
@@ -80,8 +112,8 @@ local function burst(me: Object)
     -- (The game passes the side and flip halfword as the side, unmasked,
     -- so a flipped seed's dx lands far off the field.)
     local dir = panels.side_direction(me.alliance + (if me.flip then 0x100 else 0))
-    regions.effects_on_panels(x, y, v.effect, r, dir, 0)
-    regions.set_types(x, y, v.panel, r)
+    effects_on(x, y, v.effect, r, dir)
+    set_types(x, y, v.panel, r)
     battle.play_sound(v.sound)
     me:enter_destroy()
 end
