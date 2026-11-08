@@ -48,7 +48,7 @@ local FALL_TICKS = 0x10
 local LANDS: PanelFlags = { any_body = true, solid = true }
 -- The landing hits (`dword_80DB564`, `dword_80DB56C`): beside it, then its diagonals, no spark, 100 damage (with
 -- the damage's flag bits) and hit modifier 3.
-local WAVES = { regions.beside, regions.diagonals }
+local WAVES = { regions.neighbors, regions.diagonals }
 local NO_SPARK: Spark? = nil
 local WAVE_DAMAGE, WAVE_HIT_MOD = 0x64, { flinch = true, flash = true }
 -- The dust (effect 0) around its panel (`byte_80DB540`: dx facing forward, dy).
