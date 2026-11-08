@@ -259,9 +259,9 @@ regions.wide_long_4 = new.region {
     },
 }
 
--- The three panels above the anchor, the anchor and the three below
+-- A Z: the three panels above the anchor, the anchor and the three below
 -- (region 0x22).
-regions.hourglass = new.region {
+regions.z = new.region {
     panels = { { -1, -1 }, { 0, -1 }, { 1, -1 }, { 0, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 } },
 }
 
@@ -308,9 +308,9 @@ regions.bracket = new.region {
 -- (region 0x28).
 regions.hammer = new.region { panels = { { 0, 0 }, { 1, 0 }, { 2, 0 }, { 2, -1 }, { 2, 1 } } }
 
--- The hourglass around the panel ahead of the anchor, the anchor not among
--- them (region 0x29: Colonel's ScreenDivide).
-regions.hourglass_ahead = new.region {
+-- The Z around the panel ahead of the anchor, the anchor not among them
+-- (region 0x29: Colonel's ScreenDivide).
+regions.z_ahead = new.region {
     panels = { { 0, -1 }, { 1, -1 }, { 2, -1 }, { 1, 0 }, { 0, 1 }, { 1, 1 }, { 2, 1 } },
 }
 
