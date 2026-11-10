@@ -78,10 +78,15 @@ function apply.in_order(effects: { PatchCardEffect }, game: PatchCardsGame): { P
     return out
 end
 
--- What is wrong with `installed` (a side's setup's `patch_cards`), each said with `problem(text, entry)` (a card's
--- place in the list, from 1): a card installed twice; the cards' MB together past `mb` (the game's list's).
-function apply.check(installed: { InstalledPatchCard }, mb: number, problem: (p: SetupProblem) -> ())
-    local total = 0
+-- The most MB of cards the list holds: the game's list's `mb`, as the tool's ruleset leaves it (`battle.limit`'s
+-- `patch_card_memory`); nil, no limit.
+function apply.memory(mb: number): number?
+    return battle.limit("patch_card_memory", mb)
+end
+
+-- What is wrong with `installed` (a side's setup's `patch_cards`) in any setup, each said with `problem` (its entry a
+-- card's place in the list, from 1): a card installed twice.
+function apply.check(installed: { InstalledPatchCard }, problem: (p: SetupProblem) -> ())
     for i, installed_card in installed do
         local c = installed_card.card
         for j = 1, i - 1 do
@@ -95,15 +100,24 @@ function apply.check(installed: { InstalledPatchCard }, mb: number, problem: (p:
                 break
             end
         end
-        total += c.mb or 0
     end
-    if total > mb then
+end
+
+-- What is wrong with `installed` as a player's build (`build_check`), said as `apply.check` says it: the cards' MB
+-- together past the list's (`apply.memory`: the game's list's `mb`, as the tool's ruleset leaves it).
+function apply.check_memory(installed: { InstalledPatchCard }, mb: number, problem: (p: SetupProblem) -> ())
+    local total = 0
+    for _, installed_card in installed do
+        total += installed_card.card.mb or 0
+    end
+    local most = apply.memory(mb)
+    if most ~= nil and total > most then
         problem({
             kind = SetupProblemKind.budget,
             field = "patch_cards",
             used = total,
-            limit = mb,
-            text = string.format("the patch cards are %d MB, past %d", total, mb),
+            limit = most,
+            text = string.format("the patch cards are %d MB, past %d", total, most),
         })
     end
 end
@@ -144,7 +158,7 @@ end
 -- drawback: Super Armor off, a lost shield) as its card's effect, the card's own line; and a bug slot's value that
 -- is neither a bug nor its fix (a holy trail) is an ability. Of two cards' effects of one kind the later is listed,
 -- as its write is the one that holds. And the list itself: its cards' MB together against the most a list holds
--- (`mb`), a card once. A card's effects are those its variant has (`apply.has`); an effect is
+-- (`mb`, as the tool's ruleset leaves it: `apply.memory`), a card once. A card's effects are those its variant has (`apply.has`); an effect is
 -- named by its place in the card's list.
 --
 -- The cards' effects are listed only where the cards apply (`applies`: the navi that changes form, as each game's
@@ -176,7 +190,7 @@ function apply.overview(
             end
         end
     end
-    local list: SetupList = { field = "patch_cards", cost = "mb", used = total, limit = mb, once = true }
+    local list: SetupList = { field = "patch_cards", cost = "mb", used = total, limit = apply.memory(mb), once = true }
     table.insert(out.lists, list)
     if not applies then
         return
